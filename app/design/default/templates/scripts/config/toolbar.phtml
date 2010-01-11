@@ -1,0 +1,14 @@
+<?php if (!empty($this->toolbar)): ?>
+<div id="toolbar">
+	<ul>
+    	<?php foreach ($this->toolbar as $i => $tool): ?>
+    	<li<?php echo $this->classDecorator($tool['class'], $tool['active'], $i, count($this->toolbar)); ?>>
+    		<a href="<?php echo $this->url(array(
+    		    'action' => $tool['action'],
+    		    'controller' => 'config'
+    		), 'default', true); ?>"><?php echo $tool['label']; ?></a>
+    	</li>
+    	<?php endforeach; ?>
+	</ul>
+</div>
+<?php endif; ?>

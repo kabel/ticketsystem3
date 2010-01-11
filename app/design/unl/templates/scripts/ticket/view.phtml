@@ -1,0 +1,214 @@
+<?php 
+$hidden = array('description', 'resolution', 'status'); 
+$title = 'Ticket #' . $this->ticket['self']['ticket_id'];
+$this->headTitle($title);
+$this->headScript()->appendFile($this->baseUrl('js/autoresize.jquery.min.js'));
+$this->headScript()->appendFile($this->baseUrl('js/wikitext.js'));
+$this->headScript()->appendFile($this->baseUrl('js/actions.js'));
+$onReady = <<<EOD
+$(function() {
+	$("textarea").autoResize();
+});
+EOD;
+$this->headScript()->appendScript($onReady);
+?>
+<?php echo $this->render('messages.phtml'); ?>
+
+<?php if (isset($this->returnUrl)): ?>
+<div style="float: right; font-size: 10px">
+	<a href="<?php echo $this->returnUrl['url']; ?>">Return to <?php echo $this->returnUrl['type']; ?></a>
+</div>
+<?php endif; ?>
+
+<?php if (isset($this->preview)): ?>
+<h1>
+	<?php echo $title; ?>
+	<?php $resolution = $this->attributeValue('resolution', $this->ticket['latest'], $this->preview); ?>
+	<span class="status">(<?php echo $this->escape($this->attributeValue('status', $this->ticket['latest'], $this->preview)); ?><?php echo empty($resolution) ? '' : $this->escape(': ' . $resolution); ?>)</span></h1>
+<fieldset id="ticket-preview">
+	<legend>Preview (<a href="#edit">skip</a>)</legend>
+	<div id="ticketchange" class="ticketdraft">
+		<h3 class="change">Changed by <?php echo $this->preview['owner']; ?></h3>
+		<?php if (!empty($this->preview['changes'])): ?>
+		<ul class="changes">
+		<?php foreach ($this->preview['changes'] as $name => $value): ?>
+			<?php $attr = Default_Model_Attribute::get($name); ?>
+			<li>
+				<strong><?php echo $this->escape($attr['label']); ?></strong>
+		    <?php if (empty($this->ticket['latest'][$name]) || empty($this->ticket['latest'][$name]['value'])): ?>
+				set to <div class="emphasis"><?php echo $this->attributeOutput($attr, $value); ?></div>
+			<?php elseif (empty($value)): ?>
+				<div class="emphasis"><?php echo $this->attributeOutput($attr, $this->ticket['latest'][$name]['value']); ?></div> deleted
+		    <?php else: ?>
+				changed from <div class="emphasis"><?php echo $this->attributeOutput($attr, $this->ticket['latest'][$name]['value']); ?></div> 
+				to <div class="emphasis"><?php echo $this->attributeOutput($attr, $value); ?></div>
+			<?php endif; ?>
+			</li>
+		<?php endforeach; ?>
+		</ul>
+		<?php endif; ?>
+		<div class="comment">
+			<?php echo $this->wiki($this->preview['comment']); ?>
+		</div>
+	</div>
+	<div id="ticket" class="ticketdraft">
+    	<div class="date">
+    		<p>Opened <?php echo $this->timeSince(new Zend_Date($this->ticket['changesets'][0]['create_date'], Zend_Date::ISO_8601)); ?> ago</p>
+    	<?php $csCount = count($this->ticket['changesets']); ?>
+        <?php if ($csCount > 1): ?>
+    		<p>Last modified <?php echo $this->timeSince(new Zend_Date($this->ticket['changesets'][$csCount-1]['create_date'], Zend_Date::ISO_8601)); ?> ago</p>
+    	<?php endif; ?>
+    	</div>
+    	<h2 class="summary"><?php echo $this->escape($this->ticket['self']['summary']); ?></h2>
+    	<table class="properties">
+    		<tbody>
+    			<tr>
+    				<th>Reporter:</th>
+    				<td><?php echo empty($this->ticket['reporter']) ? '--UNKNOWN--' :  $this->escape($this->ticket['reporter']['username']); ?></td>
+    			<?php $i = 1; ?>
+    			<?php $desc = $this->attributeValue('description', $this->ticket['latest'], $this->preview); ?>
+                <?php foreach (Default_Model_Attribute::getAll() as $name => $attr): ?>
+                <?php if (in_array($name, $hidden)) { continue; } ?>
+                <?php $value = $this->attributeValue($name, $this->ticket['latest'], $this->preview); ?>
+        		<?php $value = $this->attributeOutput($attr, $value); ?>
+        		<?php if ($value === false) { continue; } ?>
+        		<?php if ($attr['type'] == Default_Model_Attribute::TYPE_TEXTAREA || ($i % 2 == 0)): ?>
+        		</tr>
+        		<tr>
+        		<?php endif; ?>
+        			<th><?php echo $this->escape($attr['label']); ?>:</th>
+    			<?php if ($attr['type'] == Default_Model_Attribute::TYPE_TEXTAREA): ?>
+        			<td colspan="3"></td>
+    			<?php else: ?>
+        			<td><?php echo $value; ?></td>
+        		<?php endif; ?>
+        		<?php $i++; ?>
+        		<?php endforeach; ?>
+    			</tr>
+    		</tbody>
+    	</table>
+    	<div class="description">
+    		<h3 id="comment:description">
+    			Description
+    			<a class="anchor" href="#comment:description" title="Link to this section">&para;</a>
+    		</h3>
+    		<div>
+    			<?php echo $this->wiki($desc); ?>
+    		</div>
+    	</div>
+    </div>
+</fieldset>
+<?php else: ?>
+<h1>
+	<?php echo $title; ?>
+	<?php $resolution = $this->attributeValue('resolution', $this->ticket['latest']); ?>
+	<span class="status">(<?php echo $this->escape($this->attributeValue('status', $this->ticket['latest'])); ?><?php echo empty($resolution) ? '' : $this->escape(': ' . $resolution); ?>)</span></h1>
+<div id="ticket">
+	<div class="date">
+		<p>Opened <?php echo $this->timeSince(new Zend_Date($this->ticket['changesets'][0]['create_date'], Zend_Date::ISO_8601)); ?> ago</p>
+	<?php $csCount = count($this->ticket['changesets']); ?>
+    <?php if ($csCount > 1): ?>
+		<p>Last modified <?php echo $this->timeSince(new Zend_Date($this->ticket['changesets'][$csCount-1]['create_date'], Zend_Date::ISO_8601)); ?> ago</p>
+	<?php endif; ?>
+	</div>
+	<h2 class="summary"><?php echo $this->escape($this->ticket['self']['summary']); ?></h2>
+	<table class="properties">
+		<tbody>
+			<tr>
+				<th>Reporter:</th>
+				<td><?php echo empty($this->ticket['reporter']) ? '--UNKNOWN--' :  $this->escape($this->ticket['reporter']['username']); ?></td>
+			<?php $i = 1; ?>
+			<?php $desc = $this->attributeValue('description', $this->ticket['latest']); ?>
+            <?php foreach (Default_Model_Attribute::getAll() as $name => $attr): ?>
+            <?php if (in_array($name, $hidden)) { continue; } ?>
+            <?php $value = $this->attributeValue($name, $this->ticket['latest']); ?>
+    		<?php $value = $this->attributeOutput($attr, $value); ?>
+    		<?php if ($value === false) { continue; } ?>
+    		<?php if ($attr['type'] == Default_Model_Attribute::TYPE_TEXTAREA || ($i % 2 == 0)): ?>
+    		</tr>
+    		<tr>
+    		<?php endif; ?>
+    			<th><?php echo $this->escape($attr['label']); ?>:</th>
+			<?php if ($attr['type'] == Default_Model_Attribute::TYPE_TEXTAREA): ?>
+    			<td colspan="3"></td>
+			<?php else: ?>
+    			<td><?php echo $value; ?></td>
+    		<?php endif; ?>
+    		<?php $i++; ?>
+    		<?php endforeach; ?>
+			</tr>
+		</tbody>
+	</table>
+	<div class="description">
+		<h3 id="comment:description">
+			Description
+			<a class="anchor" href="#comment:description" title="Link to this section">&para;</a>
+		</h3>
+		<div>
+			<?php echo $this->wiki($desc); ?>
+		</div>
+	</div>
+</div>
+<?php endif; ?>
+<h2>Attachments</h2>
+<div id="attachments">
+	<?php if (count($this->ticket['uploads'])): ?>
+	<ul>
+	<?php foreach ($this->ticket['uploads'] as $upload): ?>
+		<li><?php echo $this->uploadLink($upload); ?></li>
+	<?php endforeach; ?>
+	</ul>
+	<?php endif; ?>
+	<?php if (!Default_Model_Setting::get('restrict_late_uploads')): ?>
+	<form id="attachfile" method="get" action="<?php echo $this->url(array(
+	    'action' => 'attach',
+	    'controller' => 'upload',
+	    'id' => $this->ticket['self']['ticket_id']
+	), 'default', true); ?>" enctype="application/x-www-form-urlencoded">
+		<div><input type="submit" value="Attach file" /></div>
+	</form>
+	<?php endif; ?>
+</div>
+<?php if (count($this->ticket['changesets']) > 1): ?>
+<h2>Change History</h2>
+<div id="changelog">
+<?php $cs = new Default_Model_Changeset(); ?>
+<?php $ticketState = $cs->setData($this->ticket['changesets'][0])->getAttributeValues(); ?>
+<?php for ($i = 1; $i < count($this->ticket['changesets']); $i++): ?>
+	<?php $values = $cs->setData($this->ticket['changesets'][$i])->getAttributeValues(); ?>
+	<div class="change">
+		<h3 id="comment:<?php echo $i; ?>" class="change">
+			<?php $changer = $cs->getChanger(); ?>
+			Changed <?php echo $this->timeSince(new Zend_Date($this->ticket['changesets'][$i]['create_date'], Zend_Date::ISO_8601)); ?> ago
+			by <?php echo empty($changer) ? '--UNKNOWN--' : $this->escape($changer['username']); ?>
+			<a class="anchor" href="#comment:<?php echo $i; ?>" title="Link to this change">&para;</a>
+		</h3>
+		<?php if (!empty($values)): ?>
+		<ul class="changes">
+		<?php foreach ($values as $id => $value): ?>
+			<?php $attr = Default_Model_Attribute::findRow($id); ?>
+			<li>
+				<strong><?php echo $this->escape($attr['label']); ?></strong>
+		    <?php if (empty($ticketState[$id])): ?>
+				set to <div class="emphasis"><?php echo $this->attributeOutput($attr, $value); ?></div>
+			<?php elseif (empty($value)): ?>
+				<div class="emphasis"><?php echo $this->attributeOutput($attr, $ticketState[$id]); ?></div> deleted
+		    <?php else: ?>
+				changed from <div class="emphasis"><?php echo $this->attributeOutput($attr, $ticketState[$id]); ?></div> 
+				to <div class="emphasis"><?php echo $this->attributeOutput($attr, $value); ?></div>
+			<?php endif; ?>
+			</li>
+			<?php $ticketState[$id] = $value; ?>
+		<?php endforeach; ?>
+		</ul>
+		<?php endif; ?>
+		<div class="comment">
+			<?php echo $this->wiki($cs['comment']); ?>
+		</div>
+	</div>
+<?php endfor; ?>
+</div>
+<?php endif; ?>
+<h3>
+	<a id="edit" onfocus="$('#comment').get(0).focus()">Change #<?php echo $this->ticket['self']['ticket_id']; ?> (<?php echo $this->escape($this->ticket['self']['summary']); ?>)</a></h3>
+<?php echo $this->form; ?>

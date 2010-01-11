@@ -1,0 +1,34 @@
+<?php if ($this->pageCount): ?>
+<div class="paginationControl">
+	<div class="f-right">
+	<?php echo $this->firstItemNumber; ?> - <?php echo $this->lastItemNumber; ?>
+ 	of <?php echo $this->totalItemCount; ?>
+	</div>
+
+<?php if (isset($this->previous)): ?>
+  <a href="<?php echo $this->url(array('pg' => $this->first, 'ps' => null)); ?>"><span class="first">First</span></a>
+<?php else: ?>
+  <span class="first disabled">First</span>
+<?php endif; ?>
+
+<?php if (isset($this->previous)): ?>
+  <a href="<?php echo $this->url(array('pg' => $this->previous, 'ps' => null)); ?>"><span class="previous">&lt; Previous</span></a>
+<?php else: ?>
+  <span class="previous disabled">&lt; Previous</span>
+<?php endif; ?>
+
+
+<?php if (isset($this->next)): ?>
+  <a href="<?php echo $this->url(array('pg' => $this->next, 'ps' => null)); ?>"><span class="next">Next &gt;</span></a>
+<?php else: ?>
+  <span class="next disabled">Next &gt;</span>
+<?php endif; ?>
+
+<?php if (isset($this->next)): ?>
+  <a href="<?php echo $this->url(array('pg' => $this->last, 'ps' => null)); ?>"><span class="last">Last</span></a>
+<?php else: ?>
+  <span class="last disabled">Last</span>
+<?php endif; ?>
+
+</div>
+<?php endif; ?>

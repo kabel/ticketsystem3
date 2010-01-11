@@ -1,0 +1,4 @@
+<?php $this->headTitle("New Attactment: Ticket #{$this->id}"); ?>
+
+<h1>Add Attachment to <a href="<?php echo $this->url(array('id' => $this->id), 'ticket')?>">Ticket #<?php echo $this->id; ?></a></h1>
+<?php echo $this->form; ?>

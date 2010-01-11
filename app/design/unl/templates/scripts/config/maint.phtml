@@ -1,0 +1,14 @@
+<?php $this->headTitle('Configuration - Maintenance'); ?>
+<?php echo $this->render('config/toolbar.phtml'); ?>
+<?php echo $this->render('messages.phtml'); ?>
+<?php echo $this->partial('messages.phtml', array('messages' => array(
+    'type' => 'error',
+    'content' => array(
+        'The actions below cannot be undone. The data removed from these actions will be permanently deleted',
+        'Only run these actions if you are restarting your server from scratch or would like to rollback to a fresh install. It is recommended that you run a backup/dump of the data in the database just in case!'
+    )
+))); ?>
+<h1>Database Maintenance</h1>
+<p>Clicking the optimize button will run MySQL table optimization on each of the installed tables. This is supposed to speed up the indexing of tables that have undergone major data changes. It is usually NOT necessary to run this action.</p>
+<p>By checking a box and clicking the confirm button below, you are committing to the selected actions.</p>
+<?php echo $this->form; ?>

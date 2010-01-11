@@ -1,0 +1,59 @@
+<?php
+$this->headTitle('New Ticket'); 
+$this->headScript()->appendFile($this->baseUrl('js/autoresize.jquery.min.js'));
+$this->headScript()->appendFile($this->baseUrl('js/wikitext.js'));
+$onReady = <<<EOD
+$(function() {
+	$("textarea").autoResize();
+});
+EOD;
+$this->headScript()->appendScript($onReady);
+?>
+<h1>New Ticket</h1>
+<p class="description">NOTE: Uploads are <em>not</em> saved when using preview.</p>
+<?php if (isset($this->preview)): ?>
+<fieldset id="preview">
+	<legend>Preview <a href="#fieldset-properties">(skip)</a></legend>
+	<div id="ticket" class="ticketdraft">
+		<div class="date">
+			<p><em>(ticket not yet created)</em></p>
+		</div>
+		<h2 class="summary"><?php echo $this->escape($this->preview['summary']); ?></h2>
+		<table class="properties">
+			<tbody>
+				<tr>
+					<th>Reporter:</th>
+					<td><?php echo $this->escape($this->preview['reporter']); ?></td>
+    			<?php $i = 1; ?>
+                <?php foreach ($this->preview['properties'] as $name => $value): ?>
+                <?php $attr = Default_Model_Attribute::get($name); ?>
+        		<?php $value = $this->attributeOutput($attr, $value); ?>
+        		<?php if ($value === false) { continue; }?>
+        		<?php if ($attr['type'] == Default_Model_Attribute::TYPE_TEXTAREA || ($i % 2 == 0)): ?>
+        		</tr>
+        		<tr>
+        		<?php endif; ?>
+        			<th><?php echo $this->escape($attr['label']); ?>:</th>
+    			<?php if ($attr['type'] == Default_Model_Attribute::TYPE_TEXTAREA): ?>
+        			<td colspan="3"></td>
+    			<?php else: ?>
+        			<td><?php echo $value; ?></td>
+        		<?php endif; ?>
+        		<?php $i++; ?>
+        		<?php endforeach; ?>
+    			</tr>
+			</tbody>
+		</table>
+		<div class="description">
+			<h3 id="comment:description">
+				Description
+				<a class="anchor" href="#comment:description" title="Link to this section">&para;</a>
+			</h3>
+			<div>
+				<?php echo $this->wiki($this->preview['description']); ?>
+			</div>
+		</div>
+	</div>
+</fieldset>
+<?php endif; ?>
+<?php echo $this->form; ?>

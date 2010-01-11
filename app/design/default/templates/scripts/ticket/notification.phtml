@@ -1,0 +1,44 @@
+<?php $authorShown = false; ?>
+<?php $this->attributeInflection($this->ticket, $this->latest, $this->dates); ?>
+#<?php echo $this->ticket['ticket_id']; ?>: <?php echo $this->ticket['summary']; ?>
+
+<?php printf("%'*75s", ''); ?>
+
+<?php foreach ($this->staticAttrs as $attr): ?>
+<?php printf(" %{$this->colWidth}s:  %s", $attr['label'], $this->attributeInflection()->getValue('_' . $attr['name'], false, false, true)); ?>
+
+<?php endforeach; ?>
+<?php foreach (array_keys($this->dates) as $attr): ?>
+<?php printf(" %{$this->colWidth}s:  %s", ucfirst($attr), $this->attributeInflection()->getValue('_' . $attr, false, false, true)); ?>
+
+<?php endforeach; ?>
+<?php foreach ($this->attrs as $attr): ?>
+<?php printf(" %{$this->colWidth}s:  %s", $attr['label'], $this->attributeInflection()->getValue($attr['name'], false, false, true)); ?>
+
+<?php endforeach; ?>
+<?php printf("%'*75s", ''); ?>
+
+<?php if (isset($this->description)): ?>
+<?php echo $this->description; ?>
+
+<?php else: ?>
+<?php if (isset($this->changes)): ?>
+<?php $authorShown = true; ?>
+Changes (by <?php echo $this->author; ?>):
+<?php foreach ($this->changes as  $change): ?>
+  * <?php echo $change['label']; ?>: <?php echo $change['change']; ?>
+
+<?php endforeach; ?>
+
+<?php endif; ?>
+<?php if (isset($this->comment)): ?>
+Comment<?php echo (!$authorShown) ? '(by ' . $this->author . ')' : ''; ?>:
+
+<?php echo $this->comment; ?>
+
+<?php endif; ?>
+<?php endif; ?>
+
+--
+Ticket URL: <<?php echo 'http://' . $_SERVER['SERVER_NAME'] . $this->url(array('id' => $this->ticket['ticket_id']), 'ticket', true); ?>>
+<?php echo Default_Model_Setting::get('site_banner'); ?> <<?php echo 'http://' . $_SERVER['SERVER_NAME'] . $this->url(array('action' => 'index', 'controller' => 'index'), 'default', true); ?>>

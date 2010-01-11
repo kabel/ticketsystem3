@@ -1,0 +1,44 @@
+<?php
+$this->headTitle('Login');
+$this->form_legacy->setAction($this->url(
+    array(
+        'controller' => 'auth',
+        'action' => 'login'
+    ),
+    'default',
+    true
+));
+$this->form_cas->setAction($this->url(
+    array(
+        'controller' => 'auth',
+        'action' => 'cas'
+    ),
+    'default',
+    true
+));
+$this->headLink()->appendStylesheet($this->baseUrl('js/css/redmond/jquery-ui-1.7.2.custom.css'));
+$this->headScript()->appendFile($this->baseUrl('js/jquery-ui-1.7.2.custom.min.js'));
+$onReady = <<<EOD
+$(function() {
+	$("#login-options").tabs();
+});
+EOD;
+$this->headScript()->appendScript($onReady); ?>
+<?php echo $this->render('messages.phtml'); ?>
+<div style="margin: 0 auto; width: 505px; height: 265px;">
+	<div id="login-options">
+		<ul>
+			<li><a href="#tab-legacy">Legacy Account</a></li>
+			<li><a href="#tab-cas">LDAP/Blackboard</a></li>
+		</ul>
+		<div id="tab-legacy">
+	        <?php echo $this->form_legacy; ?>
+	        <div class="clear"></div>
+	    </div>
+	    <div id="tab-cas">
+	    	<p>Click the login button to be redirected to the UNL centralized authentication service</p>
+	    	<?php echo $this->form_cas; ?>
+	    	<div class="clear"></div>
+	    </div>
+	</div>
+</div>

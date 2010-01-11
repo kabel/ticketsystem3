@@ -1,0 +1,5 @@
+<?php $type = ($this->id === 'new') ? 'Add' : 'Edit'; ?>
+<?php $this->headTitle("Configuration - Users ($type)"); ?>
+<?php echo $this->render('config/toolbar.phtml'); ?>
+<h1><?php echo $type; ?> User</h1>
+<?php echo $this->form; ?>

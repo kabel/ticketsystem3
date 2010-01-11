@@ -1,0 +1,14 @@
+<div id="metanav" class="nav">
+    <?php if (!empty($this->metanav)): ?>
+    <ul>
+    	<?php foreach ($this->metanav as $i => $nav): ?>
+    	<li<?php echo $this->classDecorator(null, false, $i, count($this->metanav)); ?>>
+    		<a href="<?php echo $this->url(array(
+    		    'controller' => $nav['controller'],
+    		    'action' => $nav['action']
+    		), 'default', true); ?>"><?php echo $nav['label']; ?></a>
+    	</li>
+    	<?php endforeach; ?>
+    </ul>
+    <?php endif; ?>
+</div>

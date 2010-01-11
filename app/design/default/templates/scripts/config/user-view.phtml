@@ -1,0 +1,20 @@
+<?php $this->headTitle('Configuration - Users (Edit)'); ?>
+<?php echo $this->render('config/toolbar.phtml'); ?>
+<?php echo $this->render('messages.phtml'); ?>
+<h1>Edit User</h1>
+<dl>
+	<dt class="col_half left a-right">Username:</dt>
+	<dd class="two_col_half"><p><?php echo $this->escape($this->user->getUsername()); ?></p></dd>
+	<?php if ($this->user->getPasswd()): ?>
+	<dt class="col_half left a-right">Password:</dt>
+	<dd class="two_col_half "><p>********</p></dd>
+	<?php endif; ?>
+	<dt class="col_half left a-right">Level:</dt>
+	<dd class="two_col_half"><p><?php echo Default_Model_User::getLevelStringValue($this->user->getLevel()); ?></p></dd>
+	<dt class="col_half left a-right">E-Mail:</dt>
+	<dd class="two_col_half"><p><?php echo $this->escape($this->user->getEmail()); ?>&nbsp;</p></dd>
+	<dt class="col_half left a-right">Info:</dt>
+	<dd class="two_col_half"><p><?php echo $this->escape($this->user->getInfo()); ?></p></dd>
+	<dt class="col_half left a-right">Group:</dt>
+	<dd class="two_col_half"><p><?php echo (is_null($this->group)) ? 'None' : $this->group->toHtml(); ?></p></dd>
+</dl>

@@ -1,0 +1,191 @@
+<?php
+$special = array('resolution', 'status');
+$defaultCols = array('_summary', 'status', 'owner', 'priority');
+$SEARCH = (isset($this->search)) ? $this->search : array();
+$this->headTitle('Search'); 
+$this->headScript()->appendFile($this->baseUrl('js/filters.js'));
+?>
+<h1>Search</h1>
+<form id="query" action="<?php echo $this->url(array('action' => 'search', 'controller' => 'ticket'), 'default', true); ?>" method="post" enctype="application/x-www-form-urlencoded">
+	<fieldset id="filters">
+		<legend class="foldable"><a href="#">Filters</a></legend>
+		<table class="full-width" cellspacing="0">
+		<?php foreach ($this->staticAttrs as $filter): ?>
+			<tr class="_<?php echo $filter['name']; ?>">
+				<?php
+				$disabled = ' disabled="disabled"'; 
+				$selected = false;
+				$filtered = false;
+				if (isset($SEARCH['filters']['_' . $filter['name']])) {
+			        $disabled = '';
+			        $selected = $SEARCH['filters']['_' . $filter['name']]['mode'];
+			        $filtered = true;
+				}
+				?>
+				<th><?php echo $filter['label'];?></th>
+				<td class="mode">
+					<select name="filters[_<?php echo $filter['name']; ?>][mode]"<?php echo $disabled; ?>>
+                        <option value="~"<?php echo ($selected === '~') ? ' selected="selected"' : ''; ?>>contains</option>
+                        <option value="!~"<?php echo ($selected === '!~') ? ' selected="selected"' : ''; ?>>doesn't contain</option>
+                        <option value="^"<?php echo ($selected === '^') ? ' selected="selected"' : ''; ?>>begins with</option>
+                        <option value="$"<?php echo ($selected === '$') ? ' selected="selected"' : ''; ?>>ends with</option>
+                        <option value=""<?php echo ($selected === '') ? ' selected="selected"' : ''; ?>>is</option>
+                        <option value="!"<?php echo ($selected === '!') ? ' selected="selected"' : ''; ?>>is not</option>
+                    </select>
+				</td>
+				<td class="filter">
+					<input type="text" name="filters[_<?php echo $filter['name']; ?>][filter][]"<?php echo $disabled; ?><?php echo ($filtered) ? ' value="' . $this->escape($SEARCH['filters']['_' . $filter['name']]['filter'][0]) . '"' : ''; ?> size="42" />
+				</td>
+				<td class="actions">
+					<input class="add-filter" type="button" value="+" />
+					<input class="remove-filter" type="button" value="-"<?php echo $disabled; ?> />
+				</td>
+			</tr>
+			<?php if ($filtered): ?>
+			<?php for ($i = 1; $i < count($SEARCH['filters']['_' . $filter['name']]['filter']); ++$i): ?>
+			<tr class="_<?php echo $filter['name']; ?>">
+				<th colspan="2">or</th>
+				<td class="filter">
+					<input type="text" name="filters[_<?php echo $filter['name']; ?>][filter][]" value="<?php $this->escape($SEARCH['filters']['_' . $filter['name']]['filter'][$i]); ?>" size="42" />
+				</td>
+				<td class="actions">
+					<input class="remove-filter" type="button" value="-" />
+				</td>
+			</tr>
+			<?php endfor; ?>
+			<?php endif;?>
+		<?php endforeach; ?>
+		<?php foreach ($this->attrs as $filter): ?>
+			<?php $filtered = false; ?>
+			<tr class="<?php echo $filter['name']; ?>">
+				<th><?php echo $this->escape($filter['label']); ?></th>
+				<?php if (in_array($filter['name'], $special) || $filter['type'] == Default_Model_Attribute::TYPE_CHECKBOX): ?>
+				<td class="filter" colspan="2">
+				<?php if ($filter['type'] == Default_Model_Attribute::TYPE_CHECKBOX): ?>
+					<input type="checkbox" name="filters[<?php echo $filter['name']; ?>][filter][]" value="1"<?php echo (isset($SEARCH['update'], $SEARCH['filters'][$filter['name']]['filter'])) ? ' checked="checked"' : ''; ?> />
+				<?php else: ?>
+					<?php foreach ($filter->getMultiOptions(false) as $value => $label): ?>
+					<input type="checkbox" id="filters_<?php echo $filter['name']; ?>_filter_<?php echo $this->escape(str_replace(' ', '', (ucwords($value)))); ?>" name="filters[<?php echo $filter['name']; ?>][filter][]" value="<?php echo $this->escape($value); ?>"<?php echo (isset($SEARCH['filters'][$filter['name']]['filter']) && in_array($value, $SEARCH['filters'][$filter['name']]['filter'])) ? ' checked="checked"' : ''; ?> />
+					<label for="filters_<?php echo $filter['name']; ?>_filter_<?php echo $this->escape(str_replace(' ', '', (ucwords($value)))); ?>"><?php echo $this->escape($label); ?></label>
+					<?php endforeach; ?>
+				<?php endif; ?>
+				</td>
+				<td class="actions"></td>
+				<?php else: ?>
+				<?php
+				$disabled = ' disabled="disabled"'; 
+				$selected = false;
+				if (isset($SEARCH['filters'][$filter['name']])) {
+			        $disabled = '';
+			        $selected = $SEARCH['filters'][$filter['name']]['mode'];
+			        $filtered = true;
+				}
+				?>
+				<td class="mode">
+				<?php if ($filter['type'] == Default_Model_Attribute::TYPE_TEXT || $filter['type'] == Default_Model_Attribute::TYPE_TEXTAREA): ?>
+					<select name="filters[<?php echo $filter['name']; ?>][mode]"<?php echo $disabled; ?>>
+                        <option value="~"<?php echo ($selected === '~') ? ' selected="selected"' : ''; ?>>contains</option>
+                        <option value="!~"<?php echo ($selected === '!~') ? ' selected="selected"' : ''; ?>>doesn't contain</option>
+                        <option value="^"<?php echo ($selected === '^') ? ' selected="selected"' : ''; ?>>begins with</option>
+                        <option value="$"<?php echo ($selected === '$') ? ' selected="selected"' : ''; ?>>ends with</option>
+                        <option value=""<?php echo ($selected === '') ? ' selected="selected"' : ''; ?>>is</option>
+                        <option value="!"<?php echo ($selected === '!') ? ' selected="selected"' : ''; ?>>is not</option>
+                    </select>
+				<?php else: ?>
+					<select name="filters[<?php echo $filter['name']; ?>][mode]"<?php echo $disabled; ?>>
+                        <option value=""<?php echo ($selected === '') ? ' selected="selected"' : ''; ?>>is</option>
+                        <option value="!"<?php echo ($selected === '!') ? ' selected="selected"' : ''; ?>>is not</option>
+                    </select>
+				<?php endif; ?>
+				</td>
+				<td class="filter">
+				<?php if ($filter['type'] == Default_Model_Attribute::TYPE_TEXT || $filter['type'] == Default_Model_Attribute::TYPE_TEXTAREA): ?>
+					<input type="text" name="filters[<?php echo $filter['name']; ?>][filter][]"<?php echo $disabled; ?><?php echo ($filtered) ? ' value="' . $this->escape($SEARCH['filters'][$filter['name']]['filter'][0]) . '"' : ''; ?> size="42"/>
+				<?php else: ?>
+					<select name="filters[<?php echo $filter['name']; ?>][filter][]"<?php echo $disabled; ?>>
+					<?php foreach ($filter->getMultiOptions() as $value => $label): ?>
+						<option value="<?php echo $this->escape($value); ?>"<?php echo ($filtered && $SEARCH['filters'][$filter['name']]['filter'][0] === $value) ? ' selected="selected"' : ''; ?>><?php echo $this->escape($label); ?></option>
+					<?php endforeach; ?>
+					</select>
+				<?php endif; ?>
+				</td>
+				<td class="actions">
+					<input class="add-filter" type="button" value="+" />
+					<input class="remove-filter" type="button" value="-"<?php echo $disabled; ?> />
+				</td>
+				<?php endif; ?>
+			</tr>
+			<?php if ($filtered): ?>
+			<?php for ($i = 1; $i < count($SEARCH['filters'][$filter['name']]['filter']); ++$i): ?>
+			<tr class="<?php echo $filter['name']; ?>">
+				<th colspan="2">or</th>
+				<td class="filter">
+				<?php if ($filter['type'] == Default_Model_Attribute::TYPE_TEXT || $filter['type'] == Default_Model_Attribute::TYPE_TEXTAREA): ?>
+					<input type="text" name="filters[<?php echo $filter['name']; ?>][filter][]" value="<?php $this->escape($SEARCH['filters'][$filter['name']]['filter'][$i]); ?>" size="42" />
+				<?php else: ?>
+					<select name="filters[<?php echo $filter['name']; ?>][filter][]">
+					<?php foreach ($filter->getMultiOptions() as $value => $label): ?>
+						<option value="<?php echo $this->escape($value); ?>"<?php echo ($SEARCH['filters'][$filter['name']]['filter'][$i] === $value) ? ' selected="selected"' : ''; ?>><?php echo $this->escape($label); ?></option>
+					<?php endforeach; ?>
+					</select>
+				<?php endif; ?>
+				</td>
+				<td class="actions">
+					<input class="remove-filter" type="button" value="-" />
+				</td>
+			</tr>
+			<?php endfor; ?>
+			<?php endif;?>
+		<?php endforeach; ?>
+		</table>
+	</fieldset>
+	<fieldset id="columns">
+		<legend class="foldable"><a href="#">Columns</a></legend>
+		<div>
+		<?php foreach ($this->staticAttrs as $col): ?>
+			<label>
+			    <?php $checked = ''; 
+				if (!empty($SEARCH['cols'])) {
+				    if (in_array('_' . $col['name'], $SEARCH['cols'])) {
+				        $checked = ' checked="checked"';
+				    }
+				} elseif (in_array('_' . $col['name'], $defaultCols)) {
+				    $checked = ' checked="checked"';
+				} ?>
+				<input type="checkbox" value="_<?php echo $col['name']; ?>" name="cols[]"<?php echo $checked; ?> /> 
+				<?php echo $col['label']; ?>
+			</label>
+		<?php endforeach; ?>
+		<?php foreach ($this->attrs as $col): ?>
+			<?php if ($col['type'] == Default_Model_Attribute::TYPE_TEXTAREA) { continue; } ?>
+			<label>
+				<?php $checked = ''; 
+				if (!empty($SEARCH['cols'])) {
+				    if (in_array($col['name'], $SEARCH['cols'])) {
+				        $checked = ' checked="checked"';
+				    }
+				} elseif (in_array($col['name'], $defaultCols)) {
+				    $checked = ' checked="checked"';
+				} ?>
+				<input type="checkbox" value="<?php echo $col['name']; ?>" name="cols[]"<?php echo $checked; ?> /> 
+				<?php echo $this->escape($col['label']); ?>
+			</label>
+		<?php endforeach; ?>
+		<?php foreach ($this->extraCols as $col): ?>
+			<label>
+				<?php $checked = ''; 
+			    if (!empty($SEARCH['cols'])) {
+			        if (in_array('_' . $col, $SEARCH['cols'])) {
+			            $checked = ' checked="checked"';
+			        }
+				} elseif (in_array('_' . $col, $defaultCols)) {
+				    $checked = ' checked="checked"';
+				} ?>
+				<input type="checkbox" value="_<?php echo $col; ?>" name="cols[]"<?php echo $checked; ?> /> 
+				<?php echo ucfirst($col); ?>
+			</label>
+		<?php endforeach; ?>
+		</div>
+	</fieldset>
+	<div style="float: right; margin-bottom:1.1em;"><input type="submit" value="Update" name="update"/></div>
+</form>

@@ -1,0 +1,23 @@
+<?php $this->headTitle('Configuration - My Profile'); ?>
+<?php echo $this->render('config/toolbar.phtml'); ?>
+<?php echo $this->render('messages.phtml'); ?>
+
+<?php if (!empty($this->screen)): ?>
+<?php if ($this->screen == 'newCAS'): ?>
+<h3>Welcome <?php echo (empty($this->user->info)) ? $this->user->username : $this->escape($this->user->info); ?>!</h3>
+<p>We noticed you are new to this service. Please complete the form below with your info and e-mail to ensure full functionality.</p>
+<?php elseif ($this->screen == 'oldCAS'): ?>
+<p>Please complete the form below with your info and e-mail to ensure full functionality.</p>
+<?php endif; ?>
+<?php endif; ?>
+
+<h1>Edit My Profile</h1>
+<div class="three_col left">
+    <?php echo $this->form; ?>
+</div>
+<div class="col right">
+	<dl class="block-separator-left">
+		<dt>Group:</dt>
+		<dd><?php echo (is_null($this->group)) ? 'None' : $this->group->toHtml(); ?></dd>
+	</dl>
+</div>

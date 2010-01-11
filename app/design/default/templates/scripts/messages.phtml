@@ -1,0 +1,11 @@
+<?php if (!empty($this->messages)): ?>
+<div id="messages">
+	<ul class="messages">
+		<li class="<?php echo $this->messages['type']; ?>-msg"><ul>
+		<?php foreach ($this->messages['content'] as $msg) :?>
+        	<li><?php echo $msg; ?></li>
+        <?php endforeach; ?>
+		</ul></li>
+	</ul>
+</div>
+<?php endif; ?>

@@ -1,0 +1,37 @@
+<?php $type = ($this->id === 'new') ? 'Add' : 'Edit'; ?>
+<?php $this->headTitle("Configuration - Groups ($type)"); ?>
+<?php echo $this->render('config/toolbar.phtml'); ?>
+<h1><?php echo $type; ?> Group</h1>
+<?php echo $this->form; ?>
+<?php if (!empty($this->users)): ?>
+<div class="clr"></div>
+<h2>Group Users</h2>
+<table class="data full-width">
+	<thead>
+		<tr>
+			<th class="one-icon">&nbsp;</th>
+			<th>User</th>
+			<th>Info</th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php if (count($this->users)): ?>
+    <?php foreach ($this->users as $i => $user): ?>
+    	<tr<?php echo ($i % 2 == 0 ? '' : ' class="alt"'); ?>>
+    		<td><a class="edit-user" title="Edit User &quot;<?php echo $this->escape($user['username']); ?>&quot;" href="<?php echo $this->url(array(
+    		    'action' => 'users',
+    		    'controller' => 'config',
+    			'id' => $user['user_id']
+    		), 'default', true); ?>">&nbsp;</a></td>
+    		<td><?php echo $this->escape($user['username']); ?></td>
+    		<td><?php echo $this->escape($user['info']); ?></td>
+    	</tr>
+    <?php endforeach; ?>
+    <?php else: ?>
+    	<tr>
+    		<td colspan="3">[None]</td>
+    	</tr>
+    <?php endif; ?>
+    </tbody>
+</table>
+<?php endif; ?>

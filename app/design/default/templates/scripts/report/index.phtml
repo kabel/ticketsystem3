@@ -1,0 +1,20 @@
+<?php $this->headTitle('Available Reports'); ?>
+<?php echo $this->render('messages.phtml'); ?>
+
+<h1>Available Reports</h1>
+<table class="data full-width">
+	<thead>
+		<tr>
+			<th style="width: 6em;">Report</th>
+			<th>Title</th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php foreach ($this->reports as $i => $report): ?>	
+		<tr>
+			<td><a href="<?php echo $this->url(array('id' => $i + 1), 'report', true); ?>">{<?php echo $i + 1; ?>}</a></td>
+			<td><a href="<?php echo $this->url(array('id' => $i + 1), 'report', true); ?>"><?php echo $this->escape($report['name']); ?></a></td>
+		</tr>
+	<?php endforeach; ?>
+	</tbody>
+</table>
