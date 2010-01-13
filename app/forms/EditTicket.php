@@ -416,7 +416,7 @@ class Default_Form_EditTicket extends Zend_Form
 			'decorators' => $this->_getButtonDecorators()
         ));
         
-        $this->addDisplayGroup(array('preview', 'save'), 'buttons', array(
+        $this->addDisplayGroup(array('save', 'preview'), 'buttons', array(
             'decorators' => array(
                 'FormElements',
                 array('HtmlTag', array('tag' => 'div'))

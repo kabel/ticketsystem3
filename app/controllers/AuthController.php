@@ -32,6 +32,9 @@ class AuthController extends TicketSystem_Controller_EmptyAction
 			return $this->render('form');
 		}
 		
+		//Init Resource to ensure it's ready
+		Default_Model_User::getResourceInstance();
+		
 		$values = $form->getValues();
 		$result = $this->_authenticate($values['username'], $values['passwd'], $userInfo);
 		$auth = Zend_Auth::getInstance();

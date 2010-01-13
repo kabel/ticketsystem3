@@ -39,7 +39,7 @@
 		</resources>
 		
 		<skin>
-			<theme value="unl" />
+			<theme value="default" />
 		</skin>
 		<routes>
 			<ticket>

@@ -1,5 +1,19 @@
 <?php 
 $this->headTitle('Help');
 ?>
-<h1>TODO:</h1> 
-<p>INSERT THE HELP PAGE STUFF HERE!</p>
+<h1>Help</h1> 
+<h2>Select a topic...</h2>
+<div class="help-topics">
+    <div class="col left">
+        <a href="<?php echo $this->url(array('action' => 'tickets')); ?>">Tickets</a>
+    </div>
+    <div class="col middle">
+        <a href="<?php echo $this->url(array('action' => 'reports')); ?>">Reports</a>
+    </div>
+    <div class="col middle">
+        <a href="<?php echo $this->url(array('action' => 'search')); ?>">Search</a>
+    </div>
+    <div class="col right">
+        <a href="<?php echo $this->url(array('action' => 'config')); ?>">Configuration</a>
+    </div>
+</div>

@@ -11,5 +11,10 @@ class HelpController extends TicketSystem_Controller_StdAction
     {
         //TODO: Write Wiki help w/ supported smilies.
     }
+    
+    public function ticketsAction() {}
+    public function reportsAction() {}
+    public function searchAction() {}
+    public function configAction() {}
 }
 
