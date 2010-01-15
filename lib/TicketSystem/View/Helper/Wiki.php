@@ -141,14 +141,18 @@ class TicketSystem_View_Helper_Wiki extends Zend_View_Helper_Abstract
     
     protected $_renderConf = array();
     
-    public function wiki($text)
+    public function wiki($text, $ticketId = null)
     {
         try {
             $wiki = Text_Wiki::factory('Default', $this->_rules);
             $wiki->setParseConf('Smiley', $this->_parseConf['Smiley']);
             $wiki->setRenderConf('Xhtml', 'Smiley', 'prefix', $this->view->designUrl('images', 'smilies/'));
-            $wiki->setRenderConf('Xhtml', 'Image', 'upload_model', 'Default_Model_Upload');
-            $wiki->setRenderConf('Xhtml', 'Image', 'view', $this->view);
+            if ($ticketId) {
+                $wiki->setRenderConf('Xhtml', 'Image', 'upload_ticket_id', $ticketId);
+                $wiki->setRenderConf('Xhtml', 'Image', 'upload_model', 'Default_Model_Upload');
+                $wiki->setRenderConf('Xhtml', 'Image', 'view', $this->view);
+            }
+            
             $wiki->parse($text);
             $output = $wiki->render();
             
