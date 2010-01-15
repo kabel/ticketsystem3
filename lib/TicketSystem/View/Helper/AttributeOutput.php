@@ -2,7 +2,7 @@
 
 class TicketSystem_View_Helper_AttributeOutput extends Zend_View_Helper_Abstract
 {
-    public function attributeOutput($name, $value, $escape = true, $disableWiki = false)
+    public function attributeOutput($name, $value, $ticketId = null, $escape = true, $disableWiki = false)
     {
         if (is_numeric($name)) {
             $attr = Default_Model_Attribute::findRow($name);
@@ -26,7 +26,7 @@ class TicketSystem_View_Helper_AttributeOutput extends Zend_View_Helper_Abstract
 		    case Default_Model_Attribute::TYPE_TEXTAREA:
             case Default_Model_Attribute::TYPE_TEXT:
         		if (isset($extra['format']) && $extra['format'] == 'wiki' && !$disableWiki) {
-    		        $value = $this->view->wiki($value);
+    		        $value = $this->view->wiki($value, $ticketId);
     		    } elseif ($escape) {
     		        $value = $this->view->escape($value);
     		    }

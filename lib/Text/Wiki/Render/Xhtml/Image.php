@@ -54,11 +54,17 @@ class Text_Wiki_Render_Xhtml_Image extends Text_Wiki_Render {
         // note the image source
         $src = $options['src'];
         
+        //check for ticket upload url scheme
         if (strpos($src, 'ticket:') === 0) {
             $uploadModel = $this->getConf('upload_model');
             $ticketId = $this->getConf('upload_ticket_id');
-            if ($uploadModel && $ticketId && $uploadId = call_user_func(array($uploadModel, 'getIdFromNameAndTicket'), substr($src, 7), $ticketId)) {
-                //TODO: Add ticket upload image handling
+            $view = $this->getConf('view');
+            if ($uploadModel && $ticketId && $view && $uploadId = call_user_func(array($uploadModel, 'getIdFromNameAndTicket'), substr($src, 7), $ticketId)) {
+                $src = $view->url(array(
+                	'action' => 'download',
+                	'controller' => 'upload',
+                	'id' => $uploadId
+                ), 'default', true);
             }
         }
 

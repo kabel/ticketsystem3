@@ -557,8 +557,8 @@ class Default_Form_EditTicket extends Zend_Form
                     if (isset($latest[$name])) {
                         if ($latest[$name]['value'] != $row['value']) {
                             $attr = Default_Model_Attribute::get($name);
-                            $old = $view->attributeOutput($attr, $latest[$name]['value'], false, true);
-                            $new = $view->attributeOutput($attr, $row['value'], false, true);
+                            $old = $view->attributeOutput($attr, $latest[$name]['value'], $id, false, true);
+                            $new = $view->attributeOutput($attr, $row['value'], $id, false, true);
                             $view->changes[]  = array(
                                 'label' => $attr['label'],
                                 'change'  => "$old => $new"
@@ -568,7 +568,7 @@ class Default_Form_EditTicket extends Zend_Form
                         $attr = Default_Model_Attribute::get($name);
                         $view->changes[] = array(
                         	'label' => $attr['label'],
-                            'change' => $view->attributeOutput($attr, $row['value'], false, true)
+                            'change' => $view->attributeOutput($attr, $row['value'], $id, false, true)
                         );
                     }
                 }

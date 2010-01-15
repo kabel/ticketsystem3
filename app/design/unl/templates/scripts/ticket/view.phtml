@@ -36,19 +36,19 @@ $this->headScript()->appendScript($onReady);
 			<li>
 				<strong><?php echo $this->escape($attr['label']); ?></strong>
 		    <?php if (empty($this->ticket['latest'][$name]) || empty($this->ticket['latest'][$name]['value'])): ?>
-				set to <div class="emphasis"><?php echo $this->attributeOutput($attr, $value); ?></div>
+				set to <div class="emphasis"><?php echo $this->attributeOutput($attr, $value, $this->ticket['self']['ticket_id']); ?></div>
 			<?php elseif (empty($value)): ?>
-				<div class="emphasis"><?php echo $this->attributeOutput($attr, $this->ticket['latest'][$name]['value']); ?></div> deleted
+				<div class="emphasis"><?php echo $this->attributeOutput($attr, $this->ticket['latest'][$name]['value'], $this->ticket['self']['ticket_id']); ?></div> deleted
 		    <?php else: ?>
-				changed from <div class="emphasis"><?php echo $this->attributeOutput($attr, $this->ticket['latest'][$name]['value']); ?></div> 
-				to <div class="emphasis"><?php echo $this->attributeOutput($attr, $value); ?></div>
+				changed from <div class="emphasis"><?php echo $this->attributeOutput($attr, $this->ticket['latest'][$name]['value'], $this->ticket['self']['ticket_id']); ?></div> 
+				to <div class="emphasis"><?php echo $this->attributeOutput($attr, $value, $this->ticket['self']['ticket_id']); ?></div>
 			<?php endif; ?>
 			</li>
 		<?php endforeach; ?>
 		</ul>
 		<?php endif; ?>
 		<div class="comment">
-			<?php echo $this->wiki($this->preview['comment']); ?>
+			<?php echo $this->wiki($this->preview['comment'], $this->ticket['self']['ticket_id']); ?>
 		</div>
 	</div>
 	<div id="ticket" class="ticketdraft">
@@ -70,7 +70,7 @@ $this->headScript()->appendScript($onReady);
                 <?php foreach (Default_Model_Attribute::getAll() as $name => $attr): ?>
                 <?php if (in_array($name, $hidden)) { continue; } ?>
                 <?php $value = $this->attributeValue($name, $this->ticket['latest'], $this->preview); ?>
-        		<?php $value = $this->attributeOutput($attr, $value); ?>
+        		<?php $value = $this->attributeOutput($attr, $value, $this->ticket['self']['ticket_id']); ?>
         		<?php if ($value === false) { continue; } ?>
         		<?php if ($attr['type'] == Default_Model_Attribute::TYPE_TEXTAREA || ($i % 2 == 0)): ?>
         		</tr>
@@ -93,7 +93,7 @@ $this->headScript()->appendScript($onReady);
     			<a class="anchor" href="#comment:description" title="Link to this section">&para;</a>
     		</h3>
     		<div>
-    			<?php echo $this->wiki($desc); ?>
+    			<?php echo $this->wiki($desc, $this->ticket['self']['ticket_id']); ?>
     		</div>
     	</div>
     </div>
@@ -122,7 +122,7 @@ $this->headScript()->appendScript($onReady);
             <?php foreach (Default_Model_Attribute::getAll() as $name => $attr): ?>
             <?php if (in_array($name, $hidden)) { continue; } ?>
             <?php $value = $this->attributeValue($name, $this->ticket['latest']); ?>
-    		<?php $value = $this->attributeOutput($attr, $value); ?>
+    		<?php $value = $this->attributeOutput($attr, $value, $this->ticket['self']['ticket_id']); ?>
     		<?php if ($value === false) { continue; } ?>
     		<?php if ($attr['type'] == Default_Model_Attribute::TYPE_TEXTAREA || ($i % 2 == 0)): ?>
     		</tr>
@@ -145,7 +145,7 @@ $this->headScript()->appendScript($onReady);
 			<a class="anchor" href="#comment:description" title="Link to this section">&para;</a>
 		</h3>
 		<div>
-			<?php echo $this->wiki($desc); ?>
+			<?php echo $this->wiki($desc, $this->ticket['self']['ticket_id']); ?>
 		</div>
 	</div>
 </div>
@@ -190,12 +190,12 @@ $this->headScript()->appendScript($onReady);
 			<li>
 				<strong><?php echo $this->escape($attr['label']); ?></strong>
 		    <?php if (empty($ticketState[$id])): ?>
-				set to <div class="emphasis"><?php echo $this->attributeOutput($attr, $value); ?></div>
+				set to <div class="emphasis"><?php echo $this->attributeOutput($attr, $value, $this->ticket['self']['ticket_id']); ?></div>
 			<?php elseif (empty($value)): ?>
-				<div class="emphasis"><?php echo $this->attributeOutput($attr, $ticketState[$id]); ?></div> deleted
+				<div class="emphasis"><?php echo $this->attributeOutput($attr, $ticketState[$id], $this->ticket['self']['ticket_id']); ?></div> deleted
 		    <?php else: ?>
-				changed from <div class="emphasis"><?php echo $this->attributeOutput($attr, $ticketState[$id]); ?></div> 
-				to <div class="emphasis"><?php echo $this->attributeOutput($attr, $value); ?></div>
+				changed from <div class="emphasis"><?php echo $this->attributeOutput($attr, $ticketState[$id], $this->ticket['self']['ticket_id']); ?></div> 
+				to <div class="emphasis"><?php echo $this->attributeOutput($attr, $value, $this->ticket['self']['ticket_id']); ?></div>
 			<?php endif; ?>
 			</li>
 			<?php $ticketState[$id] = $value; ?>
@@ -203,7 +203,7 @@ $this->headScript()->appendScript($onReady);
 		</ul>
 		<?php endif; ?>
 		<div class="comment">
-			<?php echo $this->wiki($cs['comment']); ?>
+			<?php echo $this->wiki($cs['comment'], $this->ticket['self']['ticket_id']); ?>
 		</div>
 	</div>
 <?php endfor; ?>

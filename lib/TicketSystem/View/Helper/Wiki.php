@@ -141,6 +141,8 @@ class TicketSystem_View_Helper_Wiki extends Zend_View_Helper_Abstract
     
     protected $_renderConf = array();
     
+    protected $_cssClasses = array();
+    
     public function wiki($text, $ticketId = null)
     {
         try {
@@ -157,15 +159,14 @@ class TicketSystem_View_Helper_Wiki extends Zend_View_Helper_Abstract
             $output = $wiki->render();
             
             $codes = $wiki->getTokens(array('Code'));
-            $cssClasses = array();
             foreach ($codes as $code) {
                 $options = $code[1];
                 if (isset($options['geshi'])) {
                     /* @var $geshi GeSHi */
                     $geshi = $options['geshi'];
-                    if (!$geshi->error && !in_array($geshi->language, $cssClasses)) {
+                    if (!$geshi->error && !in_array($geshi->language, $this->_cssClasses)) {
                         $this->view->headStyle($geshi->get_stylesheet());
-                        $cssClasses[] = $geshi->language;
+                        $this->_cssClasses[] = $geshi->language;
                     }
                 }
             }
