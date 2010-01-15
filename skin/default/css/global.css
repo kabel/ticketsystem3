@@ -147,6 +147,18 @@ ul ul.square { margin-top: 4px; margin-bottom: 5px; }
 .clearer { clear: both; display: block; margin: 0; padding: 0; height: 0; line-height: 1px; font-size: 1px; }
 .block-separator-left { padding: 5px 0 5px 10px; border-left: 1px solid #d7d7d7; }
 
+/* HELP */
+.help-figure {
+	margin-bottom: 1.1em;
+}
+img.frame {
+	background-color: #eff9ff;
+	padding: 6px;
+	border: 1px solid #8cacbb;
+}
+
+.page-nav { float: right; font-size: 0.8em; text-align: right; }
+
 /* MESSAGES */
 .messages li {
     min-height:23px;
@@ -516,6 +528,7 @@ table.inline {
 	border-collapse:collapse;
 	border-spacing:0;
 	margin: 0 0 1.1em;
+	display: table;
 }
 table.inline th {
 	background-color:#DEE7EC;
@@ -527,6 +540,8 @@ table.inline td {
 	border:1px solid #8CACBB;
 	padding:3px;
 }
+
+table.smilies th { font-family: monospace; }
 
 /* PRIORITY ROW COLORS */
 table.data tr:nth-child(even) td {
@@ -552,7 +567,7 @@ table.data tr:nth-child(even).priority-critical td {
 pre {
 	overflow: auto;
 	border: 1px dashed #8CACBB;
-	background-color: #DEE7EC;
+	background-color: #EFF9FF;
 	padding: 5px;
 	margin-bottom: 1.1em;
 }
@@ -688,17 +703,3 @@ a.edit-group {
 .paginationControl .next.disabled { background-position: -44px -22px; }
 .paginationControl .last { background-position: -66px 0; }
 .paginationControl .last.disabled { background-position: -66px -22px; }
-
-.help-topics a {
-    border: 1px solid #d7d7d7;
-    padding: 30px 20px;
-    font-size: 2em;
-    display: block;
-    text-align: center;
-    margin-bottom: 1.1em;
-}
-.help-topics a:hover {
-    text-decoration: none;
-    background: #08c; 
-    color: #fff;
-}

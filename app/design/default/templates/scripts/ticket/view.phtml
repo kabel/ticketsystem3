@@ -15,7 +15,7 @@ $this->headScript()->appendScript($onReady);
 <?php echo $this->render('messages.phtml'); ?>
 
 <?php if (isset($this->returnUrl)): ?>
-<div style="float: right; font-size: 10px">
+<div class="page-nav">
 	<a href="<?php echo $this->returnUrl['url']; ?>">Return to <?php echo $this->returnUrl['type']; ?></a>
 </div>
 <?php endif; ?>

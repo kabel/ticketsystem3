@@ -39,7 +39,7 @@
 		</resources>
 		
 		<skin>
-			<theme value="default" />
+			<theme value="unl" />
 		</skin>
 		<routes>
 			<ticket>
@@ -63,6 +63,7 @@
 				</reqs>
 			</report>
 		</routes>
+		
 		<reports>
 			<report>
 				<name>All Tickets</name>

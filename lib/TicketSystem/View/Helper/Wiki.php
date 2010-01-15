@@ -46,11 +46,11 @@ class TicketSystem_View_Helper_Wiki extends Zend_View_Helper_Abstract
             '>:D<'      => array('hug', 'Big Hug'),
     		':/'        => array('confused', 'Confused', 'O.o', ':???:'),
             ':x'        => array('love', 'Love Struck', '<3'),
-    		':">'       => array('blush', 'Blushing', ':-">'),
+    		':">'       => array('blush', 'Blushing', ':-">', ':oops:'),
             ':P'        => array('tongue', 'Razz'),
     		':*'        => array('kiss', 'Kiss'),
             '=(('       => array('broken_heart', 'Broken Heart'),
-    		':o'        => array('surprised', 'Surprised', ':eek:'),
+    		':o'        => array('surprise', 'Surprised', ':eek:'),
             'X('        => array('angry', 'Angry'),
     		':>'        => array('smug', 'Smug'),
             'B)'        => array('cool', 'Cool'),
@@ -73,7 +73,7 @@ class TicketSystem_View_Helper_Wiki extends Zend_View_Helper_Abstract
             '8>'        => array('day_dream', 'Day Dreaming'),
             'I)'        => array('sleepy', 'Sleepy', ':zzz:'),
             'L)'        => array('loser', 'Loser'),
-            '8|'        => array('rolleyes', 'Rolling Eyes', ':roll:'),
+            '8|'        => array('rolling_eyes', 'Rolling Eyes', ':roll:'),
             ':&'        => array('sick', 'Sick'),
             ':$'        => array('shhh', 'Don\'t tell anyone'),
             '[('        => array('no_talk', 'No talking'),
@@ -88,7 +88,7 @@ class TicketSystem_View_Helper_Wiki extends Zend_View_Helper_Abstract
             ':SS'       => array('nail_bite', 'Nail Biting', ':-SS'),
             '@)'        => array('hypnotized', 'Hypnotized'),
             ':^o'       => array('liar', 'Liar'),
-            ':w'        => array('waiting', 'Waiting'),
+            ':w'        => array('wait', 'Waiting'),
             ':<'        => array('sigh', 'Sigh'),
             '>:P'       => array('phbbbbt', 'Phbbbbt'),
             '<):)'      => array('cowboy', 'Cowboy', '<):-)'),
@@ -116,7 +116,7 @@ class TicketSystem_View_Helper_Wiki extends Zend_View_Helper_Abstract
             '=:)'       => array('bug', 'Bug', '=:-)'),
             '>)'        => array('alien', 'Alien'),
             ':L'        => array('frustrated', 'Frustrated'),
-            '[O<'       => array('praying', 'Praying', '[-O<'),
+            '[O<'       => array('pray', 'Praying', '[-O<'),
             '$)'        => array('money_eyes', 'Money Eyes'),
             ':"'        => array('whistle', 'Whistling'),
             'b('        => array('beat_up', 'Feeling beat up'),
@@ -124,8 +124,7 @@ class TicketSystem_View_Helper_Wiki extends Zend_View_Helper_Abstract
             '[X'        => array('shame', 'Shame on you'),
             '\\:D/'     => array('dance', 'Dancing'),
             '>:/'       => array('bring_it', 'Bring it on'),
-            ':oops:'    => array('redface', 'Embarassed'),
-            ';;)'       => array('chuckle', 'Hee Hee'),
+            ';))'       => array('chuckle', 'Hee Hee'),
             ':@'        => array('chatterbox', 'Chatterbox'),
             '^:)^'      => array('not_worthy', 'Not Worthy'),
             ':j'        => array('oh_go_on', 'Oh go on'),
@@ -148,6 +147,8 @@ class TicketSystem_View_Helper_Wiki extends Zend_View_Helper_Abstract
             $wiki = Text_Wiki::factory('Default', $this->_rules);
             $wiki->setParseConf('Smiley', $this->_parseConf['Smiley']);
             $wiki->setRenderConf('Xhtml', 'Smiley', 'prefix', $this->view->designUrl('images', 'smilies/'));
+            $wiki->setRenderConf('Xhtml', 'Image', 'upload_model', 'Default_Model_Upload');
+            $wiki->setRenderConf('Xhtml', 'Image', 'view', $this->view);
             $wiki->parse($text);
             $output = $wiki->render();
             

@@ -1,10 +1,791 @@
-<h1>TODO:</h1> 
-<p>INSERT SYNTAX INFORMATION ABOUT WIKI FORMAT.</p>
+<div class="page-nav">
+    <a href="<?php echo $this->url(array('action' => 'index')); ?>">Return to Help index</a>
+</div>
+<h1>Help - Wiki Syntax</h1>
+<p>Various features on the system, including ticket attributes and comments, use a special formatting code called wiki syntax. Below you can find some general examples of what you can do with wiki.</p>
+
+<ul>
+    <li><a href="#help:inline-formatting">Inline Formatting</a></li>
+    <li><a href="#help:literal-text">Literal Text</a></li>
+    <li><a href="#help:line-breaks">Line Breaks</a></li>
+    <li><a href="#help:links">Links</a></li>
+    <li><a href="#help:headings">Headings</a></li>
+    <li><a href="#help:horizontal-rule">Horizontal Rule</a></li>
+    <li><a href="#help:blockquotes">Blockquotes</a></li>
+    <li><a href="#help:lists">Lists - Bullet &amp; Ordered</a></li>
+    <li><a href="#help:definition-lists">Definition Lists</a></li>
+    <li><a href="#help:images">Images</a></li>
+    <li><a href="#help:inline-code">Inline Code</a></li>
+    <li><a href="#help:code-blocks">Code Blocks - Syntax Highlighting</a></li>
+    <li><a href="#help:tables">Tables</a></li>
+    <li><a href="#help:smilies">Smilies</a></li>
+</ul>
+
+<h2 id="help:inline-formatting">Inline Formatting</h2>
+<h3>Stong &amp; Bold</h3>
+<p>To make something bold face wrap the text with the strong code ( ** ) OR the bold code ( ''' ).</p>
+<h3>Emphasis &amp; Italics</h3>
+<p>To make something italics wrap the text with the emphasis code ( // ) OR the italics code ( '' ).</p>
+<h3>Underline</h3>
+<p>To make something underlined wrap the text with two underscores ( __ )</p>
+<h3>Strikethrough</h3>
+<p>To make something have a strikethough wrap the text with two tildes ( ~~ )</p>
+<h3>Superscript</h3>
+<p>To make something a superscript wrap the text with two carets ( ^^ ).</p>
+<h3>Subscript</h3>
+<p>To make something a subscript wrap the text with two commas ( ,, ).</p>
+<h3>Examples:</h3>
+<pre>Look at ''all'' the '''''fun''''' things I can '''do''' with __wiki syntax__
+
+~~Delete me~~
+
+E = MC^^2^^
+
+I think I need some H,,2,,O
+</pre>
+<p>This will output: </p>
+<?php 
+$example = <<<EOD
+Look at ''all'' the '''''fun''''' things I can '''do''' with __wiki syntax__
+
+~~Delete me~~
+
+E = MC^^2^^
+
+I think I need some H,,2,,O
+EOD;
+echo $this->wiki($example);
+?>
+
+<h2 id="help:literal-text">Literal Text</h2>
+<p>Sometimes you wish to actually output something that is a wiki code. To force the wiki parser to skip that code prefix it with an exclamation mark ( ! ). You can also tell the parser to skip a block of text by wrapping it in two backticks ( `` )</p>
+<h3>Examples:</h3>
+<pre>'''I can even make !''' look bold'''. Pretty cool.
+
+``Or I can skip __parsing__ on an '''entire''' span ''too''.`` 
+</pre>
+<p>This will output: </p>
+<?php 
+$example = <<<EOD
+'''I can even make !''' look bold'''. Pretty cool.
+
+``Or I can skip __parsing__ on an '''entire''' span ''too''.`` 
+EOD;
+echo $this->wiki($example);
+?>
+
+<h2 id="help:line-breaks">Line Breaks</h2>
+<p>Default, single line-breaks are output on the same line as the line before it. This allows you to wrap your values in the textbox, but not have it wrap when it's rendered. To actually render a break in lines either use a double return OR use insert [[BR]] then a new line where you'd like the line to break.</p>
+<h3>Example:</h3>
+<pre>This is a long line of text to display in a textbox, so I'm adding a line-break
+to make it more readable. However, it won't render a break because I didn't double-space.
+
+This is a new paragraph [[BR]]
+but with a real line break;
+</pre>
+<p>This will output: </p>
+<?php 
+$example = <<<EOD
+This is a long line of text to display in a textbox, so I'm adding a line-break
+to make it more readable. However, it won't render a break because I didn't double-space.
+
+This is a new paragraph [[BR]]
+but with a real line break;
+EOD;
+echo $this->wiki($example);
+?>
+
+<h2 id="help:links">Links</h2>
+<p>Inserting links to URLs is a very simple process, by default any text that looks like a URL is automatically output as a link. To name a link or ensure a piece of text is interpreted as a link, enclose the URL in square-brackets ( [ ] ). To name the link (the name is what is displayed instead of the URL), inside the square-brackets, add a space after the URL and insert the name.</p>
+<h3>Examples:</h3>
+<pre>Visit our website at http://www.unl.edu/. Learn more about our [http://www.unl.edu/ucomm/research/ research]!</pre>
+<p>This will output: </p>
+<?php 
+$example = <<<EOD
+Visit our website at http://www.unl.edu/. Learn more about our [http://www.unl.edu/ucomm/research/ research]!
+EOD;
+echo $this->wiki($example);
+?>
+
+<h2 id="help:headings">Headings</h2>
+<p>Heading are a good way to deliniate sections of content. To make a heading use the wrap a single line with 1-6 equal-signs ( = ).</p>
+<h3>Examples:</h3>
+<pre>= Heading 1 =
+== Heading 2 ==
+=== Heading 3 ===
+==== Heading 4 ====
+===== Heading 5 =====
+====== Heading 6 ======
+</pre>
+<p>This will output: </p>
+<?php 
+$example = <<<EOD
+= Heading 1 =
+== Heading 2 ==
+=== Heading 3 ===
+==== Heading 4 ====
+===== Heading 5 =====
+====== Heading 6 ======
+EOD;
+echo $this->wiki($example);
+?>
+<p>&nbsp;</p>
+
+<h2 id="help:horizontal-rule">Horizontal Rule</h2>
+<p>To make a horizontal rule add a line with 4 dashes ( ---- ).</p>
+<h3>Example:</h3>
+<pre>Hello World
+----
+LOL!</pre>
+<p>This will output: </p>
+<?php 
+$example = <<<EOD
+Hello World
+----
+LOL!
+EOD;
+echo $this->wiki($example);
+?>
+
+<h2 id="help:blockquotes">Blockquotes</h2>
+<p>Sometimes it's nice to quote something that someone said. There is a special element in HTML to render suck a thing and that's a blockquote. To make a blockquote start a line with a greater-than-sign and a space ( &gt;&nbsp; ). The same spaceing rules apply as before, so each line of the quote must begin with this prefix. Blockquotes can be nested.</p>
+<h3>Example:</h3>
+<pre>I was so excited when I heard her say:
+
+&gt; Welcome home!
+</pre>
+<p>This will output: </p>
+<?php 
+$example = <<<EOD
+I was so excited when I heard her say:
+
+> Welcome home!
+EOD;
+echo $this->wiki($example);
+?>
+
+<h2 id="help:lists">Lists - Bullet &amp; Ordered</h2>
+<p>Bullet lists can be created by starting a line with and asterisk ( * ). Ordered/Numbered lists can be created by starting a line with a hash ( # ). You can nest lists by using spaces to make a subitem.</p>
+<h3>Examples:</h3>
+<pre>* Bullet one
+ * Sub-bullet
+
+# Numero uno
+# Number two
+ # Sub-item
+
+# Number one
+ * Bullet
+ * Bullet
+# Number two
+ * Bullet
+ * Bullet
+  * Sub-bullet
+   # Sub-sub-number
+   # Sub-sub-number
+# Number three
+ * Bullet
+ * Bullet
+</pre>
+<p>This will output: </p>
+<?php 
+$example = <<<EOD
+* Bullet one
+ * Sub-bullet
+
+# Numero uno
+# Number two
+ # Sub-item
+
+# Number one
+ * Bullet
+ * Bullet
+# Number two
+ * Bullet
+ * Bullet
+  * Sub-bullet
+   # Sub-sub-number
+   # Sub-sub-number
+# Number three
+ * Bullet
+ * Bullet
+EOD;
+echo $this->wiki($example);
+?>
+
+<h2 id="help:definition-lists">Definition Lists</h2>
+<p>To create a definition list the term must be at the start of a line and wrapped in colons and spaces ( :&nbsp; ) followed by the definition.</p>
+<h3>Example:</h3>
+<pre>: Term 1 : Means something
+: Term 2 : Means something else
+</pre>
+<p>This will output: </p>
+<?php 
+$example = <<<EOD
+: Term 1 : Means something
+: Term 2 : Means something else
+EOD;
+echo $this->wiki($example);
+?>
+
+<h2 id="help:images">Images</h2>
+<p>You can include an image by using the image code ( [[Image()]] ). The URL of the image should be placed inside the parenthesis.</p>
+<h3>Example:</h3>
+<pre>Check out this cool cat
+
+[[Image(http://www.codysortore.com/images/800px-Megahurtz_kitty.jpg)]]</pre>
+<p>This will output: </p>
+<?php 
+$example = <<<EOD
+Check out this cool cat
+
+[[Image(http://www.codysortore.com/images/800px-Megahurtz_kitty.jpg)]]
+EOD;
+echo $this->wiki($example);
+?>
+
+<h2 id="help:inline-code">Inline Code</h2>
+<p>Inline Code is a method of applying monospace type-face to certain text. To use it wrap the text with three curly-braces ( {{{ }}} ).</p>
+<h3>Example:</h3>
+<pre>The file is located at {{{C:\Temp\HelloWorld.txt}}}</pre>
+<p>This will output: </p>
+<?php 
+$example = <<<EOD
+The file is located at {{{C:\Temp\HelloWorld.txt}}}
+EOD;
+echo $this->wiki($example);
+?>
+
+<h2 id="help:code-blocks">Code Blocks - Syntax Highlighting</h2>
+<p>Code Blocks allow you to visually separate code from general information. It is typicially displayed with a monospace font-face. You create a code block by wrapping the code with three curly-braces ( {{{ }}} ) on their own line</p>
+<p>NOTE: The {{{ and }}} must each be on their own line.</p>
+<h3>Example:</h3>
 <pre>{{{
-#!php
-function help()
-{
-    echo 'AHHH!';
-}
+if (foo) then
+    print 'bar'
+end
 }}}
 </pre>
+<p>This will output: </p>
+<?php 
+$example = <<<EOD
+{{{
+if (foo) then
+    print 'bar'
+end
+}}}
+EOD;
+echo $this->wiki($example);
+?>
+
+<p>To utilize the syntax highlighter you must specify the type of code you wish to highlight. This is accomplished by adding a shebang line after the opening curly-braces. A shebang line is a line that contains &quot;#!&quot; followed by the code type (the code type should always be lower-case). The following code types are supported:</p>
+<div class="col left">
+    <ul class="std">
+      <li>abap</li>
+      <li>actionscript</li>
+      <li>actionscript3</li>
+      <li>ada</li>
+      <li>apache</li>
+      <li>applescript</li>
+      <li>apt_sources</li>
+      <li>asm</li>
+      <li>asp</li>
+      <li>autoit</li>
+      <li>avisynth</li>
+      <li>bash</li>
+      <li>basic4gl</li>
+      <li>bf</li>
+      <li>bibtex</li>
+      <li>blitzbasic</li>
+      <li>bnf</li>
+      <li>boo</li>
+      <li>c_mac</li>
+      <li>c</li>
+      <li>caddcl</li>
+      <li>cadlisp</li>
+      <li>cfdg</li>
+      <li>cfm</li>
+      <li>cil</li>
+      <li>cmake</li>
+      <li>cobol</li>
+      <li>cpp-qt</li>
+      <li>cpp</li>
+      <li>csharp</li>
+      <li>css</li>
+      <li>d</li>
+      <li>dcs</li>
+      <li>delphi</li>
+    </ul>
+</div>
+<div class="col middle">
+    <ul class="std">
+      <li>diff</li>
+      <li>div</li>
+      <li>dos</li>
+      <li>dot</li>
+      <li>eiffel</li>
+      <li>email</li>
+      <li>erlang</li>
+      <li>fo</li>
+      <li>fortran</li>
+      <li>freebasic</li>
+      <li>genero</li>
+      <li>gettext</li>
+      <li>glsl</li>
+      <li>gml</li>
+      <li>gnuplot</li>
+      <li>groovy</li>
+      <li>haskell</li>
+      <li>hq9plus</li>
+      <li>html (html4strict)</li>
+      <li>idl</li>
+      <li>ini</li>
+      <li>inno</li>
+      <li>intercal</li>
+      <li>io</li>
+      <li>java</li>
+      <li>java5</li>
+      <li>javascript</li>
+      <li>kixtart</li>
+      <li>klonec</li>
+      <li>klonecpp</li>
+      <li>latex</li>
+      <li>lisp</li>
+      <li>locobasic</li>
+      <li>lolcode</li>
+    </ul>
+</div>
+<div class="col middle">
+    <ul class="std">
+      <li>lotusformulas</li>
+      <li>lotusscript</li>
+      <li>lscript</li>
+      <li>lsl2</li>
+      <li>lua</li>
+      <li>m68k</li>
+      <li>make</li>
+      <li>matlab</li>
+      <li>mirc</li>
+      <li>modula3</li>
+      <li>mpasm</li>
+      <li>mxml</li>
+      <li>mysql</li>
+      <li>msis</li>
+      <li>oberon2</li>
+      <li>objc</li>
+      <li>ocaml-brief</li>
+      <li>ocaml</li>
+      <li>oobas</li>
+      <li>oracle8</li>
+      <li>oracle11</li>
+      <li>pascal</li>
+      <li>per</li>
+      <li>perl</li>
+      <li>php-brief</li>
+      <li>php</li>
+      <li>pic16</li>
+      <li>pixelbender</li>
+      <li>plsql</li>
+      <li>povray</li>
+      <li>powershell</li>
+      <li>progress</li>
+      <li>prolog</li>
+      <li>properties</li>
+    </ul>
+</div>
+<div class="col right">
+    <ul class="std">
+      <li>providex</li>
+      <li>python</li>
+      <li>qbasic</li>
+      <li>rails</li>
+      <li>rebol</li>
+      <li>reg</li>
+      <li>robots</li>
+      <li>ruby</li>
+      <li>sas</li>
+      <li>scala</li>
+      <li>scheme</li>
+      <li>scilab</li>
+      <li>sdlbasic</li>
+      <li>smalltalk</li>
+      <li>smarty</li>
+      <li>sql</li>
+      <li>tcl</li>
+      <li>teraterm</li>
+      <li>text</li>
+      <li>thinbasic</li>
+      <li>tsql</li>
+      <li>typoscript</li>
+      <li>vb</li>
+      <li>vbnet</li>
+      <li>verilog</li>
+      <li>vhdl</li>
+      <li>vim</li>
+      <li>visualfoxpro</li>
+      <li>visualprolog</li>
+      <li>whitespace</li>
+      <li>whois</li>
+      <li>winbatch</li>
+      <li>xml</li>
+      <li>xorg_conf</li>
+      <li>xpp</li>
+      <li>z80</li>
+    </ul>
+</div>
+<p>Please note that some languages are better supported than others and it is recommended that you use the preview feature to ensure thing look alright.</p>
+
+<h3>Examples:</h3>
+<pre>{{{
+#!php
+function hello()
+{
+    echo 'Hello World!';
+}
+}}}
+
+{{{
+#!sql
+SELECT *
+FROM table t
+WHERE t.id &gt; 5
+}}}
+
+{{{
+#!html
+&lt;div class=&quot;foo&quot;&gt;
+    A DIV
+    &lt;span style=&quot;margin: 5px&quot;&gt;A SPAN&lt;/span&gt;&lt;br /&gt;
+    &lt;p&gt;A P&lt;/p&gt;
+&lt;/div&gt;
+}}}
+</pre>
+
+<p>This will output: </p>
+<?php 
+$example = <<<EOD
+{{{
+#!php
+function hello()
+{
+    echo 'Hello World!';
+}
+}}}
+
+{{{
+#!sql
+SELECT *
+FROM ticket t
+WHERE t.id > 5
+}}}
+
+{{{
+#!html
+<div class="foo">
+    A DIV
+    <span style="margin: 5px">A SPAN</span><br />
+    <p>A P</p>
+</div>
+}}}
+EOD;
+echo $this->wiki($example);
+?>
+
+<h2 id="help:tables">Tables</h2>
+<p>You can create tables using pairs of vertical bars ( || ). You can align the contents of a cell by including a &lt;, =, or &gt; character after the || marker. You can mark a cell as a header cell by using a ~ character after the || marker. To span multiple rows, use multiple || markers.</p>
+<h3>Examples:</h3>
+<pre>|| Cell 1 || Cell 2 ||
+|| Cell 3 || Cell 4 ||
+
+||&lt; left ||= center ||&gt; right ||
+|| The quick brown || fox jumps over || the lazy dog. ||
+
+||~ header 1 ||~ header 2 ||
+|| data 1    || data 2    ||
+
+|| cell 1 || cell 2 || cell 3 || cell 4 ||
+|||| span 2 cols || third || fourth ||
+|| first |||||| span 3 cols ||
+</pre>
+<p>This will output: </p>
+<?php 
+$example = <<<EOD
+|| Cell 1 || Cell 2 ||
+|| Cell 3 || Cell 4 ||
+
+||< left ||= center ||> right ||
+|| The quick brown || fox jumps over || the lazy dog. ||
+
+||~ header 1 ||~ header 2 ||
+|| data 1    || data 2    ||
+
+|| cell 1 || cell 2 || cell 3 || cell 4 ||
+|||| span 2 cols || third || fourth ||
+|| first |||||| span 3 cols ||
+EOD;
+echo $this->wiki($example);
+?>
+
+<h2 id="help:smilies">Smilies</h2>
+<p>Everyone loves putting emoticons everywhere right? The following emoticons are replaced by a graphical representaion. NOTE: All of Yahoo! messenger's emotes are supported. All two-character emoticons with work with or without a dash ( - ) for a nose.</p>
+<table width="100%" class="inline smilies">
+    <col width="12%" />
+    <col width="12%" />
+    <col width="12%" />
+    <col width="12%" />
+    <col width="13%" />
+    <col width="13%" />
+    <col width="13%" />
+    <col width="13%" />
+    <tr>
+        <th>:)</th>
+        <td><?php echo $this->wiki(':)'); ?></td>
+        <th>:(</th>
+        <td><?php echo $this->wiki(':('); ?></td>
+        <th>;)</th>
+        <td><?php echo $this->wiki(';)'); ?></td>
+        <th>:D</th>
+        <td><?php echo $this->wiki(':D'); ?></td>
+    </tr>
+    
+    <tr>
+        <th>;;)</th>
+        <td><?php echo $this->wiki(';;)'); ?></td>
+        <th>&nbsp;&gt;:D&lt;</th>
+        <td><?php echo $this->wiki(' >:D<'); ?></td>
+        <th>:/</th>
+        <td><?php echo $this->wiki(':/'); ?></td>
+        <th>:x</th>
+        <td><?php echo $this->wiki(':x'); ?></td>
+    </tr>
+    <tr>
+        <th>:&quot;&gt;</th>
+        <td><?php echo $this->wiki(':">'); ?></td>
+        <th>:P</th>
+        <td><?php echo $this->wiki(':P'); ?></td>
+        <th>:*</th>
+        <td><?php echo $this->wiki(':*'); ?></td>
+        <th>=((</th>
+        <td><?php echo $this->wiki('=(('); ?></td>
+    </tr>
+    <tr>
+        <th>:o</th>
+        <td><?php echo $this->wiki(':o'); ?></td>
+        <th>X(</th>
+        <td><?php echo $this->wiki('X('); ?></td>
+        <th>:&gt;</th>
+        <td><?php echo $this->wiki(':>'); ?></td>
+        <th>B)</th>
+        <td><?php echo $this->wiki('B)'); ?></td>
+    </tr>
+    <tr>
+        <th>:S</th>
+        <td><?php echo $this->wiki(':S'); ?></td>
+        <th>#:S</th>
+        <td><?php echo $this->wiki('#:S'); ?></td>
+        <th>&nbsp;&gt;:)</th>
+        <td><?php echo $this->wiki(' >:)'); ?></td>
+        <th>:'(</th>
+        <td><?php echo $this->wiki(':\'('); ?></td>
+    </tr>
+    <tr>
+        <th>:))</th>
+        <td><?php echo $this->wiki(':))'); ?></td>
+        <th>:|</th>
+        <td><?php echo $this->wiki(':|'); ?></td>
+        <th>/:)</th>
+        <td><?php echo $this->wiki('/:)'); ?></td>
+        <th>=))</th>
+        <td><?php echo $this->wiki('=))'); ?></td>
+    </tr>
+    <tr>
+        <th>O:)</th>
+        <td><?php echo $this->wiki('O:)'); ?></td>
+        <th>:B</th>
+        <td><?php echo $this->wiki(':B'); ?></td>
+        <th>=;</th>
+        <td><?php echo $this->wiki('=;'); ?></td>
+        <th>:C</th>
+        <td><?php echo $this->wiki(':C'); ?></td>
+    </tr>
+    <tr>
+        <th>:)]</th>
+        <td><?php echo $this->wiki(':)]'); ?></td>
+        <th>~X(</th>
+        <td><?php echo $this->wiki('~X('); ?></td>
+        <th>:H</th>
+        <td><?php echo $this->wiki(':H'); ?></td>
+        <th>:T</th>
+        <td><?php echo $this->wiki(':T'); ?></td>
+    </tr>
+    <tr>
+        <th>8&gt;</th>
+        <td><?php echo $this->wiki('8>'); ?></td>
+        <th>I)</th>
+        <td><?php echo $this->wiki('I)'); ?></td>
+        <th>L)</th>
+        <td><?php echo $this->wiki('L)'); ?></td>
+        <th>8|</th>
+        <td><?php echo $this->wiki('8|'); ?></td>
+    </tr>
+    <tr>
+        <th>:&amp;</th>
+        <td><?php echo $this->wiki(':&'); ?></td>
+        <th>:$</th>
+        <td><?php echo $this->wiki(':$'); ?></td>
+        <th>[(</th>
+        <td><?php echo $this->wiki('[('); ?></td>
+        <th>:O)</th>
+        <td><?php echo $this->wiki(':O)'); ?></td>
+    </tr>
+    <tr>
+        <th>8}</th>
+        <td><?php echo $this->wiki('8}'); ?></td>
+        <th>&lt;:P</th>
+        <td><?php echo $this->wiki('<:P'); ?></td>
+        <th>|O</th>
+        <td><?php echo $this->wiki('|O'); ?></td>
+        <th>=P~</th>
+        <td><?php echo $this->wiki('=P~'); ?></td>
+    </tr>
+    <tr>
+        <th>:?</th>
+        <td><?php echo $this->wiki(':?'); ?></td>
+        <th>#O</th>
+        <td><?php echo $this->wiki('#O'); ?></td>
+        <th>=D&gt;</th>
+        <td><?php echo $this->wiki('=D>'); ?></td>
+        <th>:SS</th>
+        <td><?php echo $this->wiki(':SS'); ?></td>
+    </tr>
+    <tr>
+        <th>@)</th>
+        <td><?php echo $this->wiki('@)'); ?></td>
+        <th>:^o</th>
+        <td><?php echo $this->wiki(':^o'); ?></td>
+        <th>:w</th>
+        <td><?php echo $this->wiki(':w'); ?></td>
+        <th>:&lt;</th>
+        <td><?php echo $this->wiki(':<'); ?></td>
+    </tr>
+    <tr>
+        <th>&nbsp;&gt;:P</th>
+        <td><?php echo $this->wiki(' >:P'); ?></td>
+        <th>&lt;):)</th>
+        <td><?php echo $this->wiki('<):)'); ?></td>
+        <th>X_X</th>
+        <td><?php echo $this->wiki('X_X'); ?></td>
+        <th>:!</th>
+        <td><?php echo $this->wiki(':!'); ?></td>
+    </tr>
+    <tr>
+        <th>\m/</th>
+        <td><?php echo $this->wiki('\\m/'); ?></td>
+        <th>:q(</th>
+        <td><?php echo $this->wiki(':q'); ?></td>
+        <th>:bd</th>
+        <td><?php echo $this->wiki(':bd'); ?></td>
+        <th>^#(^</th>
+        <td><?php echo $this->wiki('^#(^'); ?></td>
+    </tr>
+    <tr>
+        <th>:ar!</th>
+        <td><?php echo $this->wiki(':ar!'); ?></td>
+        <th>:o3</th>
+        <td><?php echo $this->wiki(':o3'); ?></td>
+        <th>:??</th>
+        <td><?php echo $this->wiki(':??'); ?></td>
+        <th>%(</th>
+        <td><?php echo $this->wiki('%('); ?></td>
+    </tr>
+    <tr>
+        <th>:@)</th>
+        <td><?php echo $this->wiki(':@)'); ?></td>
+        <th>3:O</th>
+        <td><?php echo $this->wiki('3:O'); ?></td>
+        <th>:(|)</th>
+        <td><?php echo $this->wiki(':(|)'); ?></td>
+        <th>~:&gt;</th>
+        <td><?php echo $this->wiki('~:>'); ?></td>
+    </tr>
+    <tr>
+        <th>@};-</th>
+        <td><?php echo $this->wiki('@};-'); ?></td>
+        <th>%%-</th>
+        <td><?php echo $this->wiki('%%-'); ?></td>
+        <th>**--</th>
+        <td><?php echo $this->wiki('**--'); ?></td>
+        <th>(~~)</th>
+        <td><?php echo $this->wiki('(~~)'); ?></td>
+    </tr>
+    <tr>
+        <th>~O)</th>
+        <td><?php echo $this->wiki('~O)'); ?></td>
+        <th>*-:)</th>
+        <td><?php echo $this->wiki('*-:)'); ?></td>
+        <th>8X</th>
+        <td><?php echo $this->wiki('8X'); ?></td>
+        <th>=:)</th>
+        <td><?php echo $this->wiki('=:)'); ?></td>
+    </tr>
+    <tr>
+        <th>&nbsp;&gt;)</th>
+        <td><?php echo $this->wiki(' >)'); ?></td>
+        <th>:L</th>
+        <td><?php echo $this->wiki(':L'); ?></td>
+        <th>[O&lt;</th>
+        <td><?php echo $this->wiki('[O<'); ?></td>
+        <th>$)</th>
+        <td><?php echo $this->wiki('$)'); ?></td>
+    </tr>
+    <tr>
+        <th>:&quot;</th>
+        <td><?php echo $this->wiki(':"'); ?></td>
+        <th>b(</th>
+        <td><?php echo $this->wiki('b('); ?></td>
+        <th>:)&gt;-</th>
+        <td><?php echo $this->wiki(':)>-'); ?></td>
+        <th>[X</th>
+        <td><?php echo $this->wiki('[X'); ?></td>
+    </tr>
+    <tr>
+        <th>\:D/</th>
+        <td><?php echo $this->wiki('\\:D/'); ?></td>
+        <th>&nbsp;&gt;:/</th>
+        <td><?php echo $this->wiki(' >:/'); ?></td>
+        <th>:oops:</th>
+        <td><?php echo $this->wiki(':oops:'); ?></td>
+        <th>;))</th>
+        <td><?php echo $this->wiki(';))'); ?></td>
+    </tr>
+    <tr>
+        <th>:@</th>
+        <td><?php echo $this->wiki(':@'); ?></td>
+        <th>^:)^</th>
+        <td><?php echo $this->wiki('^:)^'); ?></td>
+        <th>:j</th>
+        <td><?php echo $this->wiki(':j'); ?></td>
+        <th>(*)</th>
+        <td><?php echo $this->wiki('(*)'); ?></td>
+    </tr>
+    <tr>
+        <th>o-&gt;</th>
+        <td><?php echo $this->wiki('o->'); ?></td>
+        <th>o=&gt;</th>
+        <td><?php echo $this->wiki('o=>'); ?></td>
+        <th>o-+</th>
+        <td><?php echo $this->wiki('o-+'); ?></td>
+        <th>(%)</th>
+        <td><?php echo $this->wiki('(%)'); ?></td>
+    </tr>
+    <tr>
+        <th>:bz</th>
+        <td><?php echo $this->wiki(':bz'); ?></td>
+        <th>[..]</th>
+        <td><?php echo $this->wiki('[..]'); ?></td>
+        <th>:unl:</th>
+        <td><?php echo $this->wiki(':unl:'); ?></td>
+        <th></th>
+        <td></td>
+    </tr>
+</table>

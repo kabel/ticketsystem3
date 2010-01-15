@@ -89,7 +89,46 @@ class Text_Wiki_Parse_Paragraph extends Text_Wiki_Parse {
             return '';
         }
         
-        
+        $offset = 0;
+        do {
+            $pos = strpos($matches[0], $delim, $offset);
+            if ($pos !== false) {
+                $offset = $pos + 1;
+                $key = '';
+                $len = strlen($matches[0]);
+                for ($i = $offset; $i < $len; $i++) {
+                    $char = $matches[0][$i];
+                    $offset++;
+                    if ($char == $delim) {
+                        break;
+                    } else {
+                        $key .= $char;
+                    }
+                }
+                
+                $token_type = strtolower($this->wiki->tokens[$key][0]);
+                $skip = $this->getConf('skip', array());
+                
+                if (in_array($token_type, $skip)) {
+                    $start = $this->wiki->addToken(
+                        $this->rule, array('type' => 'start')
+                    );
+                    
+                    $end = $this->wiki->addToken(
+                        $this->rule, array('type' => 'end')
+                    );
+                    
+                    $preMatch = trim(substr($matches[0], 0, $pos));
+                    $postMatch = substr($matches[0], $pos);
+                    
+                    if (empty($preMatch)) {
+                        return $postMatch;
+                    }
+                    
+                    return $start . $preMatch . $end . $postMatch;
+                }
+            }
+        } while ($pos !== false); 
         
         // does the match start with a delimiter?
         if (substr($matches[0], 0, 1) != $delim) { 
@@ -103,6 +142,11 @@ class Text_Wiki_Parse_Paragraph extends Text_Wiki_Parse {
                 $this->rule, array('type' => 'end')
             );
             
+            $realMatch = trim($matches[0]);
+            
+            if (empty($realMatch)) {
+                return;
+            }
             return $start . $matches[0] . $end;
         }
         

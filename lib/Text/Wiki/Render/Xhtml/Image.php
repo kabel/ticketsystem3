@@ -29,7 +29,10 @@ class Text_Wiki_Render_Xhtml_Image extends Text_Wiki_Render {
         'base' => '/',
         'url_base' => null,
         'css'  => null,
-        'css_link' => null
+        'css_link' => null,
+        'view' => null,
+        'upload_model' => null,
+        'upload_ticket_id' => null
     );
 
 
@@ -50,6 +53,14 @@ class Text_Wiki_Render_Xhtml_Image extends Text_Wiki_Render {
     {
         // note the image source
         $src = $options['src'];
+        
+        if (strpos($src, 'ticket:') === 0) {
+            $uploadModel = $this->getConf('upload_model');
+            $ticketId = $this->getConf('upload_ticket_id');
+            if ($uploadModel && $ticketId && $uploadId = call_user_func(array($uploadModel, 'getIdFromNameAndTicket'), substr($src, 7), $ticketId)) {
+                //TODO: Add ticket upload image handling
+            }
+        }
 
         // is the source a local file or URL?
         if (strpos($src, '://') === false) {

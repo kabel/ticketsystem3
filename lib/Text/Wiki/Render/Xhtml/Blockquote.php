@@ -60,12 +60,12 @@ class Text_Wiki_Render_Xhtml_Blockquote extends Text_Wiki_Render {
         }
         // starting
         if ($type == 'start') {
-            return "$pad<blockquote$css>";
+            return "$pad<blockquote$css><div>";
         }
 
         // ending
         if ($type == 'end') {
-            return $pad . "</blockquote>\n";
+            return $pad . "</div></blockquote>\n";
         }
     }
 }

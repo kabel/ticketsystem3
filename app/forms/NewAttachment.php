@@ -65,6 +65,8 @@ class Default_Form_NewAttachment extends Zend_Form
             return false;
         }
         
+        //TODO: Add $file['name'] validation (only one should exists per ticket)
+        
         $values = $this->getValues();
         
         if (isset($values['cancel'])) {

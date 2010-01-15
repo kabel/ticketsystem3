@@ -209,6 +209,8 @@ class Default_Form_NewTicket extends Zend_Form
                     if ($file['error'] == UPLOAD_ERR_OK) {
                         $content = file_get_contents($file['tmp_name']);
         				
+                        //TODO: Add $file['name'] validation (only one should exists per ticket)
+                        
         				$upload = new Default_Model_Upload();
         				$upload->setData(array(
         				    'name' => $file['name'],

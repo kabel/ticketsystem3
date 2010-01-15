@@ -52,7 +52,7 @@ class Text_Wiki_Parse_Heading extends Text_Wiki_Parse {
     
     var $regex = array(
     	'/^(\+{1,6}) (.*)/m',
-        '/^(={1,6})\s*(.*)\s*\1/m'
+        '/^(={1,6})\s*(.*?)\s*\1/m'
     );
     
     var $conf = array(

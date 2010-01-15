@@ -1,6 +1,6 @@
 /* RESET */
 #titlegraphic, .nav-collapsed #titlegraphic { margin-top: 4px !important; }
-#maincontent ul, #maincontent ol { list-style: none; padding: 0; }
+#maincontent ul { list-style: none; padding: 0; }
 #maincontent dd { padding: 0; }
 
 /* TYPE */
@@ -12,11 +12,11 @@ blockquote {
 	padding-left:40px;
 }
 
-ul.std { list-style: disc; margin-left: 2.2em; }
+#maincontent ul.std { list-style: disc; margin: 0 0 1.1em 2.2em; }
 ul.square,
 ul.circle { margin-left: 2em; }
-ul.square { list-style: square outside; }
-ul.circle { list-style: circle outside; }
+#maincontent ul.square { list-style: square outside; }
+#maincontent ul.circle { list-style: circle outside; }
 ul ul.circle,
 ul ul.square { margin-top: 4px; margin-bottom: 5px; }
 
@@ -31,6 +31,13 @@ ul ul.square { margin-top: 4px; margin-bottom: 5px; }
 .clear, .clr { clear: both; }
 .clearer { clear: both; display: block; margin: 0; padding: 0; height: 0; line-height: 1px; font-size: 1px; }
 .block-separator-left { padding: 5px 0 5px 10px; border-left: 1px solid #d7d7d7; }
+
+/* HELP */
+.help-figure {
+    margin-bottom: 1.1em;
+}
+
+.page-nav { float: right; font-size: 0.8em; text-align: right; }
 
 /* MESSAGES */
 .messages li {
@@ -430,6 +437,7 @@ table.inline {
 	border-collapse:collapse;
 	border-spacing:0;
 	margin: 0 0 1.1em;
+	display: table;
 }
 table.inline th {
 	background-color:#DEE7EC;
@@ -441,6 +449,8 @@ table.inline td {
 	border:1px solid #8CACBB;
 	padding:3px;
 }
+
+table.smilies th { font-family: monospace; }
 
 /* PRIORITY ROW COLORS */
 table.data tr:nth-child(even) td {
@@ -466,7 +476,7 @@ table.data tr:nth-child(even).priority-critical td {
 pre {
 	overflow: auto;
 	border: 1px dashed #8CACBB;
-	background-color: #DEE7EC;
+	background-color: #EFF9FF;
 	padding: 5px;
 	margin-bottom: 1.1em;
 }
