@@ -75,7 +75,7 @@ echo $this->wiki($example);
 ?>
 
 <h2 id="help:line-breaks">Line Breaks</h2>
-<p>Default, single line-breaks are output on the same line as the line before it. This allows you to wrap your values in the textbox, but not have it wrap when it's rendered. To actually render a break in lines either use a double return OR use insert [[BR]] then a new line where you'd like the line to break.</p>
+<p>By default single line-breaks are output on the same line as the line before it. This allows you to wrap your values in the textbox, but not have it wrap when it's rendered. To actually render a break in lines either use a double return OR use insert [[BR]] then a new line where you'd like the line to break.</p>
 <h3>Example:</h3>
 <pre>This is a long line of text to display in a textbox, so I'm adding a line-break
 to make it more readable. However, it won't render a break because I didn't double-space.
@@ -278,7 +278,7 @@ EOD;
 echo $this->wiki($example);
 ?>
 
-<p>To utilize the syntax highlighter you must specify the type of code you wish to highlight. This is accomplished by adding a shebang line after the opening curly-braces. A shebang line is a line that contains &quot;#!&quot; followed by the code type (the code type should always be lower-case). The following code types are supported:</p>
+<p>To utilize the syntax highlighter you must specify the type of code you wish to highlight. This is accomplished by adding a shebang line after the opening curly-braces. A shebang line is a line that starts with &quot;#!&quot; followed by the code type (the code type should always be lower-case). The following code types are supported:</p>
 <div class="col left">
     <ul class="std">
       <li>abap</li>
@@ -433,7 +433,7 @@ echo $this->wiki($example);
       <li>z80</li>
     </ul>
 </div>
-<p>Please note that some languages are better supported than others and it is recommended that you use the preview feature to ensure thing look alright.</p>
+<p>Please note that some languages are better supported than others and it is recommended that you use the preview feature to ensure things look alright.</p>
 
 <h3>Examples:</h3>
 <pre>{{{
@@ -527,7 +527,7 @@ echo $this->wiki($example);
 ?>
 
 <h2 id="help:smilies">Smilies</h2>
-<p>Everyone loves putting emoticons everywhere right? The following emoticons are replaced by a graphical representaion. NOTE: All of Yahoo! messenger's emotes are supported. All two-character emoticons with work with or without a dash ( - ) for a nose.</p>
+<p>Everyone loves putting emoticons everywhere, right? The following emoticons are replaced by a graphical representaion. NOTE: All of Yahoo! messenger's emotes are supported. All two-character emoticons will also work with a dash ( - ) for a nose.</p>
 <table width="100%" class="inline smilies">
     <col width="12%" />
     <col width="12%" />

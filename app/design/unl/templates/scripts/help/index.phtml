@@ -12,8 +12,8 @@ $this->headTitle('Help');
 </ul>
 <div class="wdn_tabs_content">
     <div id="tab-tickets">
-        <p>Tickets represent issue or tasks that need to be tracked and acted upon by multiple users. They are able to be modified/commented on multiple times. There is support to attach uploaded files to a ticket. Tickets are described by attributes. Static attribute, which were designed to be uneditable, are stored as the columns of tickets database table. All other attributes are defined in the attributes database table.</p>
-        <p>Some attributes are wiki syntax enabled, meaning you can use text snippets to create HTML to be displayed. For more information see the wiki syntax <a href="<?php echo $this->url(array('action' => 'wiki')); ?>">help page</a>. If a textarea is wiki enabled, a toolbar will be displayed above it that has some easy-to-use buttons for styling a ticket's attribute value.</p>
+        <p>Tickets represent issues or tasks that need to be tracked and acted upon by multiple users. They are able to be modified/commented on multiple times. There is support to attach uploaded files to a ticket. Tickets are described by attributes. Static attributes, which were designed to be uneditable, are stored as the columns of tickets database table. All other attributes are defined in the attributes database table.</p>
+        <p>Some attributes are wiki syntax enabled, meaning you can use text snippets to create HTML to be displayed. For more information see the wiki syntax <a href="<?php echo $this->url(array('action' => 'wiki')); ?>">help page</a>. If a textarea is wiki enabled, a toolbar will be displayed above it that has some easy-to-use buttons for styling a ticket's attribute values.</p>
         <p>The following are the default static attributes</p>
         <ul class="std">
             <li><strong>Summary</strong> - A brief overview of what the issue is or what needs to be accomplished</li>
@@ -45,7 +45,7 @@ $this->headTitle('Help');
         <p>Details about how to properly define new attributes in the attribute database table are still under development. The default attributes should provide general direction for the time being.</p>
     </div>
     <div id="tab-reports">
-        <p>Reports are defined, filtered views of tickets. The allow users to see subsets of all the tickets in the system based on statically configurued filters.</p>
+        <p>Reports are defined, filtered views of tickets. They allow users to see subsets of all the tickets in the system based on statically configurued filters.</p>
         <p>The system will load the default report, if one is specified, on the home page, otherwise a list of available reports will be displayed.</p>
         <div class="help-figure">
             <img class="frame" src="<?php echo $this->designUrl('images', 'help/available-reports.jpg'); ?>" alt="Available Reports screen shot" />
