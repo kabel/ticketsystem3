@@ -205,7 +205,8 @@ class Default_Model_Attribute extends Default_Model_Abstract
         if (isset($extra['src']) && array_key_exists($extra['src'], self::$supportedSrc)) {
             $modelClass = self::$supportedSrc[$extra['src']];
             $srcOptions = call_user_func(array($modelClass, 'getSelectOptions'));
-            $options = array_merge($options, $srcOptions);
+            $options += $srcOptions;
+            //$options = array_merge($options, $srcOptions);
         } elseif (isset($extra['options'])) {
             foreach ($extra['options'] as $opt) {
                 $options[$opt] = $opt;
