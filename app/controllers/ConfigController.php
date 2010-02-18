@@ -402,7 +402,7 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
                         'ugroup_id' => (empty($values['group']) ? null : $values['group'])
                     );
                     
-                    if ($values['username_new'] !== $userModel['username']) {
+                    if (!empty($values['username_new']) && $values['username_new'] !== $userModel['username']) {
                         $data['username'] = $values['username_new'];
                     }
                     
