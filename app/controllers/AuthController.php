@@ -65,6 +65,7 @@ class AuthController extends TicketSystem_Controller_EmptyAction
     
     public function casAction()
     {
+        Zend_Session::start();
         $auth = $this->_getCASAdapter();
         if (!$auth->isLoggedIn()) {
             $auth->login();
@@ -92,6 +93,7 @@ class AuthController extends TicketSystem_Controller_EmptyAction
                     ));
                 }
             } else {
+                $userModel = new Default_Model_User();
                 $pf = new UNL_Peoplefinder();
                 /* @var $pf UNL_Peoplefinder_Driver_WebService */
                 $pfResult = $pf->getUID($user);
