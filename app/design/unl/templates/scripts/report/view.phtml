@@ -50,7 +50,10 @@
 	<?php endforeach; ?>
 	<?php else: ?>
 		<tr>
-			<td colspan="5">[No Tickets Found] - How about creating a <a href="ticket/new/">new ticket?</a></td>
+			<td colspan="5">[No Tickets Found] - How about creating a <a href="<?php echo $this->url(array(
+	           'action' => 'new', 
+	           'controller' => 'ticket'
+			), 'default', true); ?>">new ticket?</a></td>
 		</tr>
 	<?php endif; ?>
 	</tbody>
