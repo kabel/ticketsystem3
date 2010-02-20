@@ -43,11 +43,6 @@ class Default_Form_Profile extends Zend_Form
     
     protected function _addPasswordFields($isRequired=false)
     {
-        $user = Zend_Auth::getInstance()->getIdentity();
-        if ($user->login_type == Default_Model_User::LOGIN_TYPE_CAS) {
-            return;
-        }
-        
         $this->addElement('password', 'passwd_new', array(
             'validators' => array(
 				array('stringLength', false, array(4))
