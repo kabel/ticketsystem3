@@ -8,8 +8,7 @@ class Default_Form_Login extends Zend_Form
         
         $this->addElement('text', 'username', array(
             'validators' => array(
-				'alnum',
-				array('regex', false, array('/^[a-z]/i')),
+				array('regex', false, array('/^[a-z][a-z0-9\-]+$/i')),
 				array('stringLength', false, array(4, 20))
 			),
 			'filters' => array(

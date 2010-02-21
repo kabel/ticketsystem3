@@ -171,13 +171,13 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
                 $content = array();
                 if ($form->getElement('purge')->isChecked()) {
                     $tickets = Default_Model_Ticket::getClosed();
-//                    if (!empty($tickets)) {
-//                        /* @var $ticket Default_Model_Ticket */
-//                        foreach ($tickets as $ticket) {
-//                            $ticket->delete();
-//                        }
-//                    }
-//                    $this->_optimizeTable(array('ticket', 'attribute_value', 'changeset', 'uploads'));
+                    if (!empty($tickets)) {
+                        /* @var $ticket Default_Model_Ticket */
+                        foreach ($tickets as $ticket) {
+                            $ticket->delete();
+                        }
+                    }
+                    $this->_optimizeTable(array('ticket', 'attribute_value', 'changeset', 'uploads'));
                     
                     $content[] = 'Successfully purged closed tickets';
                 }
@@ -213,9 +213,14 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
                     
                     $content[] = 'Users successfully reset';
                 }
+                
+                // Either of the following actions would duplicate work, so only do one
                 if ($form->getElement('settings')->isChecked()) {
                     Default_Model_Setting::resetDefaults();
                     $content[] = 'Settings successfully reset';
+                } elseif ($form->getElement('reload')->isChecked()) {
+                    Default_Model_Setting::resetDefaults(true);
+                    $content[] = 'Settings successfully reloaded';
                 }
                 
                 if (!empty($content)) {
@@ -329,97 +334,16 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
                 return $this->_helper->redirector('users', 'config');
             }
             
-            $form = $this->view->form = new Default_Form_User();
-            if ($id === 'new') {
-                $userModel = new Default_Model_User();
-                $form->setupForUser();
-                
-                if (!$form->isValid($_POST)) {
-                    return $this->render('userEdit');
-                }
-                
-                $values = $form->getValues();
-                $session = new Zend_Session_Namespace('TicketSystem');
-                
-                $data = array(
-                    'username' => $values['username_new'],
-                    'passwd' => md5($values['passwd_new']),
-                    'info' => $values['info'],
-                    'email' => $values['email'],
-                    'level' => $values['level'],
-                    'login_type' => Default_Model_User::LOGIN_TYPE_LEGACY,
-                    'status' => Default_Model_User::STATUS_ACTIVE
-                );
-                if (!empty($values['group'])) {
-                    $data['ugroup_id'] = $values['group'];
-                }
-                $userModel->setData($data);
-                $userModel->save();
-                $session->messages = array(
-                    'type' => 'success',
-                    'content' => array("User '{$userModel['username']}' successfully added")
-                );
-            } else {
-                if (isset($_POST['reset'])) {
-                    return $this->_helper->redirector('users', 'config', null, array('id' => $id));
-                }
-                
-                $userModel = Default_Model_User::findRow($id);
-                $form->setupForUser($userModel);
-                
-                if (!$form->isValid($_POST)) {
-                    return $this->render('userEdit');
-                }
-                
-                $values = $form->getValues();
-                $session = new Zend_Session_Namespace('TicketSystem');
-                
-                if (isset($values['remove'])) {
-                    Default_Model_AttributeValue::flattenSrc('user', $userModel->getId());
-                    $session->messages = array(
-                        'type' => 'success',
-                        'content' => array("User '{$userModel['username']}' successfully deleted")
-                    );
-                    $userModel->delete();
-                } else if (isset($values['statuschange'])) {
-                    if ($values['statuschange'] == 'Enable') {
-                        $userModel['status'] = Default_Model_User::STATUS_ACTIVE;
-                        $verb = 'enabled';
-                    } else {
-                        $userModel['status'] = Default_Model_User::STATUS_BANNED;
-                        $verb = 'disabled';
-                    }
-                    $userModel->save();
-                    $session->messages = array(
-                        'type' => 'success',
-                        'content' => array("User '{$userModel['username']}' successfully $verb")
-                    );
-                } else {
-                    $data = array(
-                        'level' => $values['level'],
-                        'email' => $values['email'],
-                        'info' => $values['info'],
-                        'ugroup_id' => (empty($values['group']) ? null : $values['group'])
-                    );
-                    
-                    if (!empty($values['username_new']) && $values['username_new'] !== $userModel['username']) {
-                        $data['username'] = $values['username_new'];
-                    }
-                    
-                    if (!empty($values['passwd_new'])) {
-                        $data['passwd'] = md5($values['passwd_new']);
-                    }
-                    
-                    $userModel->setData($data);
-                    $userModel->save();
-                    $session->messages = array(
-                        'type' => 'success',
-                        'content' => array("User '{$userModel['username']}' successfully updated")
-                    );
-                }
+        	if (isset($_POST['reset'])) {
+                return $this->_helper->redirector('users', 'config', null, array('id' => $id));
             }
             
-            return $this->_helper->redirector('users', 'config');
+            $form = $this->view->form = new Default_Form_User();
+            if ($form->handlePost($id)) {
+            	return $this->_helper->redirector('users', 'config');
+            } else {
+            	return $this->render('userEdit');
+            }            
         }
         
         if (!empty($id)) {

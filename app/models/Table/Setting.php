@@ -27,7 +27,8 @@ class Default_Model_Table_Setting extends Default_Model_Table_Abstract
 	(13, 'use_public_cc', '1', 2),
 	(14, 'notification_from', 'nobody@localhost', 1),
 	(15, 'notification_from_name', 'TicketSystem3', 1),
-	(16, 'notification_replyto', '', 1);"
+	(16, 'notification_replyto', '', 1),
+	(17, 'lockout_cas', '0', 2);"
     );
     
     protected $_name    = 'setting';

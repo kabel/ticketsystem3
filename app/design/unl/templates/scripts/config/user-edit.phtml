@@ -1,5 +1,19 @@
-<?php $type = ($this->id === 'new') ? 'Add' : 'Edit'; ?>
-<?php $this->headTitle("Configuration - Users ($type)"); ?>
+<?php 
+if ($this->id === 'new') {
+    $type = 'Add';
+    $this->headTitle("Configuration - Users ($type)");
+    $headFunc = <<<EOF
+function loginTypeChange() {
+	$('#email-label label').toggleClass('required');
+	$('#passwd_new-label, #passwd_new-element, #passwd_cfm-label, #passwd_cfm-element').toggle();
+}
+EOF;
+    $this->headScript()->appendScript($headFunc);
+} else {
+    $type = 'Edit';
+    $this->headTitle("Configuration - Users ($type)");
+}
+?>
 <?php echo $this->render('config/toolbar.phtml'); ?>
 <h1><?php echo $type; ?> User</h1>
 <?php echo $this->form; ?>

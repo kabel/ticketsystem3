@@ -62,13 +62,13 @@ class Default_Form_Profile extends Zend_Form
         $this->getElement('passwd_cfm')->addPrefixPath('TicketSystem_Validate', 'TicketSystem/Validate/', 'validate');
     }
     
-    protected function _addUserFields()
+    protected function _addUserFields($requireEmail = true)
     {
         $this->addElement('text', 'email', array(
             'validators' => array(
 				'EmailAddress'
 			),
-			'required' => true,
+			'required' => $requireEmail,
 			'label' => 'E-Mail:'
         ));
         

@@ -22,6 +22,11 @@ class Default_Form_Maint extends Zend_Form
             'description' => 'Removes all users except you and the default admin'
         ));
         
+        $this->addElement('checkbox', 'reload', array(
+            'label' => 'Reload Settings:',
+            'description' => 'Reloads default settings that have been deleted or are missing'
+        ));
+        
         $this->addElement('checkbox', 'settings', array(
 			'label' => 'Reset Settings:',
             'description' => 'Returns all settings to their default values'

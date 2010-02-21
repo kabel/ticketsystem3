@@ -129,6 +129,7 @@ class Default_Model_Setting extends Default_Model_Abstract
                 'always_notify_updater'  => 'Always send notifications to the user updating a ticket',
                 'default_page_size'      => 'The default number of items to show on a pages with page control',
                 'global_cc'              => 'A comma separated list of usernames/e-mails to copy ALL notifications to',
+                'lockout_cas'            => 'Prevent new CAS accounts from login form',
                 'notification_from'      => '',
                 'notification_from_name' => '',
                 'notification_replyto'   => '',
@@ -154,6 +155,7 @@ class Default_Model_Setting extends Default_Model_Abstract
             'always_notify_updater'  => array(0, self::TYPE_BOOL),
             'default_page_size'      => array(15, self::TYPE_INT),
             'global_cc'              => array('', self::TYPE_STRING),
+            'lockout_cas'            => array(0, self::TYPE_BOOL),
             'notification_from'      => array('nobody@localhost', self::TYPE_STRING),
             'notification_from_name' => array('TicketSystem3', self::TYPE_STRING),
             'notification_replyto'   => array('', self::TYPE_STRING),
@@ -166,7 +168,7 @@ class Default_Model_Setting extends Default_Model_Abstract
         );
     }
     
-    public static function resetDefaults()
+    public static function resetDefaults($onlyReload = false)
     {
         $settings = self::fetchAll();
         $byName = array();
@@ -182,7 +184,7 @@ class Default_Model_Setting extends Default_Model_Abstract
                     'value' => $def[0],
                     'type' => $def[1]
                 ))->save();
-            } else {
+            } elseif (!$onlyReload) {
                 $setting = $byName[$name];
                 if ($setting['value'] != $def[0]) {
                     $setting['value'] = $def[0];
@@ -191,7 +193,7 @@ class Default_Model_Setting extends Default_Model_Abstract
             }
         }
     }
-    
+        
     public function __construct()
     {
         parent::_init(self::$_resourceNameInit);

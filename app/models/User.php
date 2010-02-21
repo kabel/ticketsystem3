@@ -15,6 +15,7 @@ class Default_Model_User extends Default_Model_Abstract
     
     protected static $_resourceNameInit = 'Default_Model_Db_User';
     protected static $_levelStringCache;
+    protected static $_loginTypeStringCache;
     
     /**
      * 
@@ -118,6 +119,18 @@ class Default_Model_User extends Default_Model_Abstract
         }
         
         return self::$_levelStringCache;
+    }
+    
+    public static function getLoginTypeStringArray()
+    {
+    	if (null === self::$_loginTypeStringCache) {
+    		self::$_loginTypeStringCache = array(
+    			self::LOGIN_TYPE_LEGACY => 'Legacy',
+    			self::LOGIN_TYPE_CAS    => 'CAS'
+    		);
+    	}
+    	
+    	return self::$_loginTypeStringCache;
     }
     
     public static function getStatusStringValue($status)

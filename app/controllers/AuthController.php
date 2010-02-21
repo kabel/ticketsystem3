@@ -92,7 +92,7 @@ class AuthController extends TicketSystem_Controller_EmptyAction
                     	'view' => 'oldCAS'
                     ));
                 }
-            } else {
+            } elseif (!Default_Model_Setting::get('lockout_cas')) {
                 $userModel = new Default_Model_User();
                 $pf = new UNL_Peoplefinder();
                 /* @var $pf UNL_Peoplefinder_Driver_WebService */
@@ -128,6 +128,10 @@ class AuthController extends TicketSystem_Controller_EmptyAction
                         'view' => 'newCAS'
                     ));
                 }
+            } else {
+                $this->view->messages = $this->_getLockoutMessage();
+                $this->_loadLoginForms();
+                return $this->render('form');
             }
             
             $session = new Zend_Session_Namespace('TicketSystem');
@@ -225,6 +229,19 @@ class AuthController extends TicketSystem_Controller_EmptyAction
         if ($isCAS) {
             $messages['content'][] = $this->_getCASLogoutMessage();
         }
+        
+        return $messages;
+    }
+    
+    private function _getLockoutMessage()
+    {
+        $messages = array(
+            'type' => 'notice',
+            'content' => array(
+                'Your account has not been authorized to use this service, please contact an admin if this is an error',
+                $this->_getCASLogoutMessage()
+            )
+        );
         
         return $messages;
     }
