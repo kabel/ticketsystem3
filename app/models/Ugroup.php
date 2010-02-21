@@ -72,12 +72,20 @@ class Default_Model_Ugroup extends Default_Model_Abstract
             }
         }
         
+        foreach (Default_Model_Membership::getUserCounts() as $id => $count) {
+            $counts[$id] += $count;
+        }
+        
         return $counts;
     }
     
-    public static function getSelectOptions()
+    public static function getSelectOptions($withEmpty = true)
     {
         $options = array();
+        
+        if ($withEmpty) {
+            $options[] = '';
+        }
         
         $select = self::getResourceInstance()->select()->order('name');
         $groups = self::fetchAll($select);
@@ -105,13 +113,18 @@ class Default_Model_Ugroup extends Default_Model_Abstract
     }
     
     /**
-     * Gets a rowset of Users that a members of this group
+     * Gets a rowset of Users that are members of this group
      * 
      * @return Zend_Db_Table_Rowset_Abstract
      */
     public function getUsers()
     {
         return parent::findDependents('Default_Model_Table_User');
+    }
+    
+    public function getMembership()
+    {
+        return parent::findManyToManyRowset('Default_Model_Table_User', 'Default_Model_Table_Membership');
     }
     
     public function __toString()

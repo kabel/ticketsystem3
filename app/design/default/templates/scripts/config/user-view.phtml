@@ -15,6 +15,11 @@
 	<dd class="two_col_half"><p><?php echo $this->escape($this->user->getEmail()); ?>&nbsp;</p></dd>
 	<dt class="col_half left a-right">Info:</dt>
 	<dd class="two_col_half"><p><?php echo $this->escape($this->user->getInfo()); ?></p></dd>
-	<dt class="col_half left a-right">Group:</dt>
-	<dd class="two_col_half"><p><?php echo (is_null($this->group)) ? 'None' : $this->group->toHtml(); ?></p></dd>
+	<dt class="col_half left a-right">Home Group:</dt>
+	<dd class="two_col_half"><p><?php echo $this->group->toHtml(); ?></p></dd>
+	<dt class="col_half left a-right">Group Memberships:</dt>
+<?php foreach ($this->membership as $groupId): ?>
+	<?php $group = Default_Model_Ugroup::findRow($groupId); ?>
+	<dd class="two_col_half"><p><?php echo $group->toHtml(); ?></p></dd>
+<?php endforeach; ?>
 </dl>

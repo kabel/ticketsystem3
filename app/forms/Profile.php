@@ -26,6 +26,11 @@ class Default_Form_Profile extends Zend_Form
         $this->addElement('hash', 'csrf_profile', array(
             'ignore' => true
         ));
+        
+        $this->populate(array(
+            'email' => $user->email,
+            'info' => $user->info
+        ));
     }
     
     protected function _addOldPasswordField()

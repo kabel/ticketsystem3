@@ -65,13 +65,13 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
     public function profileAction() 
     {
         $auth = Zend_Auth::getInstance();
-        $user = $this->view->user = $auth->getIdentity();
+        $userModel = Default_Model_User::fetchActive();
         
-        $group = null;
-        if (!empty($user->ugroup_id)) {
-            $group = Default_Model_Ugroup::findRow($user->ugroup_id);
+        $group = $this->view->group = new Default_Model_Ugroup();
+        if ($data = $userModel->getGroup()) {
+            $group->setData($data);
         }
-        $this->view->group = $group;
+        $this->view->membership = $userModel->getGroupIds(true); 
         $this->view->screen = $this->_getParam('view');
         
         $this->view->form = $form = new Default_Form_Profile();
@@ -103,11 +103,6 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
             );
             return $this->_helper->redirector('profile', 'config');
         }
-        
-        $form->populate(array(
-            'email' => $user->email,
-            'info' => $user->info
-        ));
     }
     
     public function settingsAction()
@@ -315,6 +310,7 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
             } else {
                 $group = Default_Model_Ugroup::findRow($id);
                 $this->view->users = $group->getUsers();
+                $this->view->membership = $group->getMembership();
                 $form->setupForGroup($group);
             }
             $this->render('groupEdit');
@@ -353,7 +349,12 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
                 $this->view->form = $form;
                 $this->render('userEdit');
             } else if ($id == Zend_Auth::getInstance()->getIdentity()->user_id) {
-                $this->view->user = Default_Model_User::findRow($id);
+                $userModel = $this->view->user = Default_Model_User::fetchActive();
+                $group = $this->view->group = new Default_Model_Ugroup();
+                if ($data = $userModel->getGroup()) {
+                    $group->setData($data);
+                }
+                $this->view->membership = $userModel->getGroupIds(true);
                 $this->view->messages = array(
                     'type' => 'notice',
                     'content' => array('Editing the account you are using is dangerous and therefore has been disabled.')

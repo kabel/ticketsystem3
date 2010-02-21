@@ -19,7 +19,8 @@ class Default_Form_User extends Default_Form_Profile
                 'level' => $user['level'],
                 'email' => $user['email'],
                 'info' => $user['info'],
-                'group' => $user['ugroup_id']
+                'group' => $user['ugroup_id'],
+                'membership' => $user->getGroupIds(true)
             ));
         }
     }
@@ -67,9 +68,28 @@ class Default_Form_User extends Default_Form_Profile
            
            if (!empty($values['group'])) {
                $data['ugroup_id'] = $values['group'];
+               $pos = array_search($values['group'], $values['membership']);
+               if ($pos !== false) {
+                   unset($values['membership'][$pos]);
+               }
+           } elseif (!empty($values['membership'])) {
+               $data['ugroup_id'] = array_shift($values['membership']);
            }
+           
            $userModel->setData($data);
            $userModel->save();
+           
+           if (!empty($values['membership'])) {
+               foreach ($values['membership'] as $groupId) {
+                   $membershipModel = new Default_Model_Membership();
+                   $membershipModel->setData(array(
+                       'user_id' => $userModel->getId(),
+                       'ugroup_id' => $groupId
+                   ));
+                   $membershipModel->save();
+               }
+           }
+           
            $session->messages = array(
                'type' => 'success',
                'content' => array("User '{$userModel['username']}' successfully added")
@@ -109,9 +129,49 @@ class Default_Form_User extends Default_Form_Profile
                $data = array(
                    'level' => $values['level'],
                    'email' => $values['email'],
-                   'info' => $values['info'],
-                   'ugroup_id' => (empty($values['group']) ? null : $values['group'])
+                   'info' => $values['info']
                );
+               
+               if (!empty($values['group'])) {
+                   $data['ugroup_id'] = $values['group'];
+                   $pos = array_search($values['group'], $values['membership']);
+                   if ($pos !== false) {
+                       unset($values['membership'][$pos]);
+                   }
+               } elseif (!empty($values['membership'])) {
+                   $data['ugroup_id'] = array_shift($values['membership']);
+               } else {
+                   $data['ugroup_id'] = null;
+               }
+               
+               $currentMembership = $userModel->getGroupIds(true);
+               if (!empty($values['membership'])) {
+                   foreach ($values['membership'] as $groupId) {
+                       if (!in_array($groupId, $currentMembership)) {
+                           $membershipModel = new Default_Model_Membership();
+                           $membershipModel->setData(array(
+                               'user_id' => $userModel->getId(),
+                               'ugroup_id' => $groupId
+                           ));
+                           $membershipModel->save();
+                       }
+                   }
+                   
+                   // Batch delete the unselected groups
+                   $toRemove = array();
+                   foreach ($currentMembership as $groupId) {
+                       if (!in_array($groupId, $values['membership'])) {
+                           $toRemove[] = $groupId;
+                       }
+                   }
+                   if (!empty($toRemove)) {
+                       $db = Zend_Registry::get('bootstrap')->getResource('db');
+                       $db->delete('membership', 'ugroup_id IN (' . implode(',', $toRemove) . ') AND user_id = ' . $id);
+                   }
+               } elseif (!empty($currentMembership)) {
+                   $db = Zend_Registry::get('bootstrap')->getResource('db');
+                   $db->delete('membership', 'user_id = ' . $id);
+               }
                
                if (!empty($values['username_new']) && $values['username_new'] !== $userModel['username']) {
                    $data['username'] = $values['username_new'];
@@ -187,10 +247,20 @@ class Default_Form_User extends Default_Form_Profile
         
         $this->_addUserFields(!$isNew || ($isNew && $_loginType == Default_Model_User::LOGIN_TYPE_LEGACY));
         
-        $this->addElement('select', 'group', array(
-            'multiOptions' => $this->_getUgroupOptions(),
-            'label' => 'Group:'
-        ));
+        $groups = Default_Model_Ugroup::getSelectOptions(false);
+        
+        if (count($groups) > 0) {
+            $this->addElement('select', 'group', array(
+                'multiOptions' => array('') + $groups,
+                'label' => 'Home Group:'
+            ));
+            
+            $this->addElement('multiselect', 'membership', array(
+                'multiOptions' => $groups,
+                'label' => 'Group Memberships:',
+                'size' => 5
+            ));
+        }
         
         $buttons = array();
         if ($isNew) {
@@ -247,25 +317,6 @@ class Default_Form_User extends Default_Form_Profile
         $this->addElement('hash', 'csrf_user', array(
             'ignore' => true
         ));
-    }
-    
-    private function _getUgroupOptions()
-    {
-        $options = array('');
-        
-        $realOptions = array();
-        $groups = Default_Model_Ugroup::fetchAll();
-        foreach ($groups as $id => $group) {
-            $realOptions[$group['name']] = array('id' => $id, 'shortname' => $group['shortname']);
-        }
-        
-        ksort($realOptions);
-        
-        foreach ($realOptions as $name => $option) {
-            $options[$option['id']] = $name . (empty($option['shortname']) ? '' : ' (' . $option['shortname'] . ')');
-        }
-        
-        return $options;
     }
     
     protected function _getButtonDecorators()

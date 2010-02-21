@@ -17,7 +17,12 @@
 </div>
 <div class="col right">
 	<dl class="block-separator-left">
-		<dt>Group:</dt>
-		<dd><?php echo (is_null($this->group)) ? 'None' : $this->group->toHtml(); ?></dd>
+		<dt>Home Group:</dt>
+		<dd><?php echo $this->group->toHtml(); ?></dd>
+		<dt>Group Memberships:</dt>
+    <?php foreach ($this->membership as $groupId): ?>
+		<?php $group = Default_Model_Ugroup::findRow($groupId); ?>
+		<dd><?php echo $group->toHtml(); ?></dd>
+	<?php endforeach; ?>
 	</dl>
 </div>

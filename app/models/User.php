@@ -17,6 +17,9 @@ class Default_Model_User extends Default_Model_Abstract
     protected static $_levelStringCache;
     protected static $_loginTypeStringCache;
     
+    protected $_group;
+    protected $_membership;
+    
     /**
      * 
      * @return array
@@ -66,6 +69,24 @@ class Default_Model_User extends Default_Model_Abstract
     }
     
     /**
+     * 
+     * @return Default_Model_User
+     */
+    public static function fetchActive()
+    {
+        $user = Zend_Auth::getInstance()->getIdentity();
+        $userModel = self::findRow($user->user_id);
+        
+        if (empty($userModel) || $userModel['status'] == self::STATUS_BANNED) {
+            /* @var $redirector Zend_Controller_Action_Helper_Redirector */
+            $redirector = Zend_Controller_Action_HelperBroker::getStaticHelper('redirector');
+            $redirector->gotoSimple('logout', 'auth', null, array('revoke' => true));
+        }
+        
+        return $userModel;
+    }
+    
+    /**
      * Retrieve model resource
      *
      * @return Default_Model_Db_User
@@ -87,9 +108,13 @@ class Default_Model_User extends Default_Model_Abstract
         return $levelArray[$level];
     }
     
-    public static function getSelectOptions()
+    public static function getSelectOptions($withEmpty = false)
     {
         $options = array();
+        
+        if ($withEmpty) {
+            $options[] = '';
+        }
         
         $select = self::getResourceInstance()->select()->order('username');
         $users = self::fetchAll($select);
@@ -186,7 +211,63 @@ class Default_Model_User extends Default_Model_Abstract
      */
     public function getGroup()
     {
-        return parent::findParent('Default_Model_Table_Ugroup');
+        if (null === $this->_group) {
+            $this->_group = parent::findParent('Default_Model_Table_Ugroup');
+        }
+        
+        return $this->_group;
+    }
+    
+    public function getMembership()
+    {
+        if (null === $this->_membership) {
+            $this->_membership = parent::findManyToManyRowset('Default_Model_Table_Ugroup', 'Default_Model_Table_Membership');
+        }
+        
+        return $this->_membership;
+    }
+    
+    /**
+     * 
+     * @return array
+     */
+    public function getAllGroups($onlyMembership = false)
+    {
+        $groups = array();
+        
+        $home = $this->getGroup();
+        
+        if (empty($home)) {
+            return $groups;
+        }
+        
+        if (!$onlyMembership) {
+            $groups[] = $home;
+        }
+        
+        $membership = $this->getMembership();
+        
+        if (!empty($membership)) {
+            foreach ($membership as $row) {
+                $groups[] = $row;
+            }
+        }
+        
+        return $groups;
+    }
+    
+    /**
+     * 
+     * @return array
+     */
+    public function getGroupIds($onlyMembership = false)
+    {
+        $ids = array();
+        foreach ($this->getAllGroups($onlyMembership) as $group) {
+            $ids[] = $group['ugroup_id'];
+        }
+        
+        return $ids;
     }
     
     public function __toString()

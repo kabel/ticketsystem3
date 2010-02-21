@@ -130,12 +130,14 @@ class Default_Model_Ticket extends Default_Model_Abstract
             );
             
             $attribute = Default_Model_Attribute::get('group');
+            $userModel = Default_Model_User::fetchActive();
+            $groupIds = $userModel->getGroupIds();
             if ($acl->isAllowed((string)$user->level, 'ticket', 'view-group') &&
-                !empty($user->ugroup_id)) {
+                !empty($groupIds)) {
                 $permIds[] = $attribute['attribute_id'];
                 $perm[] = array(
                     "(av0.attribute_id = {$attribute['attribute_id']})",
-        			self::_getCond('av0.value', $user->ugroup_id)
+        			self::_getCond('av0.value', $groupIds)
                 );
             }
             self::_addAttributeValueJoin($select, $permIds, 0);

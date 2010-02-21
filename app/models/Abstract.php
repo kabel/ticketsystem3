@@ -436,6 +436,24 @@ abstract class Default_Model_Abstract implements ArrayAccess
     }
     
     /**
+     * 
+     * @param string|Zend_Db_Table_Abstract  $table
+     * @param string|Zend_Db_Table_Abstract  $intersection
+     * @param string                         OPTIONAL $rule1
+     * @param string                         OPTIONAL $rule2
+     * @param Zend_Db_Table_Select           OPTIONAL $select
+     * @return Zend_Db_Table_Row_Abstract
+     */
+    public function findManyToManyRowset($table, $intersection, $rule1 = null, $rule2 = null, Zend_Db_Table_Select $select = null)
+    {
+        if (!$this->hasData()) {
+            return null;
+        }
+        
+        return $this->_data->findManyToManyRowset($table, $intersection, $rule1, $rule2, $select);
+    }
+    
+    /**
      * If $key is empty, checks whether there's any data in the object
      * Otherwise checks if the specified attribute is set.
      *

@@ -149,10 +149,18 @@ class AuthController extends TicketSystem_Controller_EmptyAction
             $auth->clearIdentity();
             session_unset();
             Zend_Session::regenerateId();
-            $this->view->messages = array(
-    			'type' => 'success',
-    			'content' => array('You successfully logged out')
-    		);
+            if ($this->_getParam('revoke')) {
+                $this->view->messages = array(
+                    'type' => 'notice',
+                    'content' => array('Your access to this service has been revoked, contact an admin if this is an error')
+                );
+            } else {
+                $this->view->messages = array(
+        			'type' => 'success',
+        			'content' => array('You successfully logged out')
+        		);
+            }
+            
     		if ($userInfo->login_type == Default_Model_User::LOGIN_TYPE_CAS) {
     		    $this->view->messages['content'][] = $this->_getCASLogoutMessage();
     		}
