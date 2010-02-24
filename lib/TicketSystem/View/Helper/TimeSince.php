@@ -21,7 +21,7 @@ class TicketSystem_View_Helper_TimeSince extends Zend_View_Helper_Abstract
             $depth = 1;
         }
         
-        $since = $now->sub($then);
+        $since = $now->sub($then)->toValue();
         $chunks = array();
         
         $currentDepth = 0;
