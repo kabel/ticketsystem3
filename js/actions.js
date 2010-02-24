@@ -1,3 +1,5 @@
+var jQuery = jQuery || WDN.jQuery;
+
 jQuery(document).ready(function($) {
 	$(".action input:radio").click(function() {
 		$(this).siblings("input, select").attr("disabled", false);

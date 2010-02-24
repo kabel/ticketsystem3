@@ -1,3 +1,5 @@
+var jQuery = jQuery || WDN.jQuery;
+
 /*
  * jQuery autoResize (textarea auto-resizer)
  * @copyright James Padolsey http://james.padolsey.com

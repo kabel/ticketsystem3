@@ -4,8 +4,8 @@ if ($this->id === 'new') {
     $this->headTitle("Configuration - Users ($type)");
     $headFunc = <<<EOF
 function loginTypeChange() {
-	$('#email-label label').toggleClass('required');
-	$('#passwd_new-label, #passwd_new-element, #passwd_cfm-label, #passwd_cfm-element').toggle();
+	WDN.jQuery('#email-label label').toggleClass('required');
+	WDN.jQuery('#passwd_new-label, #passwd_new-element, #passwd_cfm-label, #passwd_cfm-element').toggle();
 }
 EOF;
     $this->headScript()->appendScript($headFunc);

@@ -3,7 +3,7 @@ $this->headTitle('New Ticket');
 $this->headScript()->appendFile($this->baseUrl('js/autoresize.jquery.min.js'));
 $this->headScript()->appendFile($this->baseUrl('js/wikitext.js'));
 $onReady = <<<EOD
-$(function() {
+WDN.jQuery(function($) {
 	$("textarea").autoResize();
 });
 EOD;

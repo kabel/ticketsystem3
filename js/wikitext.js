@@ -1,3 +1,5 @@
+var jQuery = jQuery || WDN.jQuery;
+
 (function($){
   
   
