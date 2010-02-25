@@ -1,3 +1,5 @@
+var jQuery = jQuery || WDN.jQuery;
+
 jQuery(document).ready(function($) {
 	var removeFunc = function() {
 		var parent = $(this).closest("tr");
