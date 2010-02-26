@@ -365,7 +365,7 @@ function copyUploads($oldId, $newId, $oldDb)
             $upload = new Default_Model_Upload();
             $upload->setData($data);
             try {
-                $changeset->save();
+                $upload->save();
             } catch (Exception $e) {}
         }
     }
