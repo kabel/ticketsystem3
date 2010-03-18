@@ -53,6 +53,4 @@ jQuery(document).ready(function($) {
 	});
 	
 	$("#columns").toggleClass("collapsed");
-	
-	$("#filters input.add-filter").trigger('click');
 });

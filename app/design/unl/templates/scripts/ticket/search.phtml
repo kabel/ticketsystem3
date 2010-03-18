@@ -13,7 +13,7 @@ $this->headScript()->appendFile($this->baseUrl('js/filters.js'));
 		<?php foreach ($this->staticAttrs as $filter): ?>
 			<tr class="_<?php echo $filter['name']; ?>">
 				<?php
-				$disabled = ' disabled="disabled"'; 
+				$disabled = ''; 
 				$selected = false;
 				$filtered = false;
 				if (isset($SEARCH['filters']['_' . $filter['name']])) {
@@ -73,7 +73,7 @@ $this->headScript()->appendFile($this->baseUrl('js/filters.js'));
 				<td class="actions"></td>
 				<?php else: ?>
 				<?php
-				$disabled = ' disabled="disabled"'; 
+				$disabled = ''; 
 				$selected = false;
 				if (isset($SEARCH['filters'][$filter['name']])) {
 			        $disabled = '';
