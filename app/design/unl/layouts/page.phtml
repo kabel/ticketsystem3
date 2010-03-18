@@ -34,13 +34,39 @@
   <?php echo $this->headStyle(); ?>
   <?php echo $this->headScript(); ?>
 </head>
-<body class="secure fixed">
+<body class="document">
 <p class="skipnav"> <a class="skipnav" href="#maincontent">Skip Navigation</a> </p>
 <div id="wdn_wrapper">
     <div id="header"> <a href="http://www.unl.edu/" title="UNL website"><img src="/wdn/templates_3.0/images/logo.png" alt="UNL graphic identifier" id="logo" /></a>
         <h1>University of Nebraska&ndash;Lincoln</h1>
     </div>
-  <?php echo $this->render('mainnav.phtml'); ?>
+  <div id="wdn_navigation_bar">
+        <div id="breadcrumbs">
+            <!-- WDN: see glossary item 'breadcrumbs' -->
+            <!-- InstanceBeginEditable name="breadcrumbs" -->
+			<!-- WDN: see glossary item 'breadcrumbs' -->
+			<ul>
+				<li class="first"><a href="http://www.unl.edu/">UNL</a></li>
+				<li><a href="http://ucomm.unl.edu/">UComm</a></li>
+				<li><a href="<?php echo $this->baseUrl(); ?>">Support Request System</a></li>
+				<li><?php echo $this->headTitle() ?></li>
+			</ul>
+			 <!-- InstanceEndEditable -->
+		</div>
+        <div id="wdn_navigation_wrapper">
+            <div id="navigation"><!-- InstanceBeginEditable name="navlinks" -->
+				<ul>
+	 				<li><a href="<?php echo $this->baseUrl(); ?>">Home</a></li>
+				</ul>
+				<!-- InstanceEndEditable -->
+				<div id="navigation-close" style="display: none;"></div>
+				<div id="navigation-expand-collapse"><span>roll over for full navigation</span></div>
+			</div>
+        </div>
+    </div>
+    
+    
+    
   <div id="wdn_content_wrapper">
         <div id="titlegraphic">
             <h1><a href="<?php echo $this->baseUrl(); ?>"><?php echo $this->escape($this->siteBanner); ?></a></h1>

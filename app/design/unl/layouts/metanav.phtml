@@ -1,10 +1,9 @@
 <?php if (!empty($this->metanav)): ?>
-<div class="two_col right">
-<div id="metanav" class="nav">
+<div id="metanav" class="nav right">
 	<div class="nav_wrapper">
-        <ul>
+        <ul> 
         	<?php foreach ($this->metanav as $i => $nav): ?>
-        	<li<?php echo $this->classDecorator(null, false, $i, count($this->metanav)); ?>>
+        	<li<?php echo $this->classDecorator($nav['class'], $nav['active'], $i, count($this->metanav)); ?>>
         		<a href="<?php echo $this->url(array(
         		    'controller' => $nav['controller'],
         		    'action' => $nav['action']
@@ -13,7 +12,6 @@
         	<?php endforeach; ?>
         </ul>
     </div>
-</div>
 </div>
 <div class="clear"></div>
 <?php endif; ?>

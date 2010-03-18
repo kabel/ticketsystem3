@@ -1,5 +1,4 @@
-/* RESET */
-#titlegraphic, .nav-collapsed #titlegraphic { margin-top: 4px !important; }
+/* RESET */ 
 #maincontent ul { list-style: none; padding: 0; }
 #maincontent dd { padding: 0; }
 
@@ -362,74 +361,63 @@ div#ticketchange.ticketdraft h3 {
 .nav h2, .nav hr { display: none }
 
 
-#metanav { background-image: url(../images/breadcrumbBarSprite3.png); }
+#metanav { background-image: url(../images/breadcrumbBarSprite3.png); display:inline-block;}
 #metanav .nav_wrapper { background-image: url(../images/breadcrumbBarSprite3.png); }
 #maincontent #metanav ul { background-image: url(../images/breadcrumbBarSprite3.png); }
-#maincontent #metanav ul li a { font-size: 1em; background: none; height:24px; padding-top:8px; font-weight:normal; }
-#maincontent #metanav ul li a:hover { background:transparent url(../images/breadcrumbBarSprite4.png) repeat scroll 0 -36px; }
-/*#mainnav {
- background: #f7f7f7 url(../images/topbar_gradient.png) 0 0;
- border: 1px solid #d7d7d7;
- font-weight: normal;
- font-size: 10px;
- line-height: normal;
- clear: both;
- margin: 0 20px 2.1em;
- padding: 2px 0;
+#maincontent #metanav ul li a { 
+	font-size: 1.2em;
+	letter-spacing:-0.2px;
+	color:#333;
+	background:none;
+	background-position:3px 50%;
+	background-repeat:no-repeat;
+	height:24px;
+	padding:8px 5px 0 25px;
+	font-weight:normal;
 }
-#mainnav li { border-right: none; padding: 3px 0 }
-#mainnav :link, #mainnav :visited {
- background: url(../images/dots.gif) 0 0 no-repeat;
- border-right: 1px solid #fff;
- border-bottom: none;
- border-left: 1px solid #7f7f7f;
- color: #000;
- padding: 2px 20px;
+#maincontent #metanav ul li a:hover,
+#maincontent #metanav ul li.active a {
+	background-color:#f1f7fb;
+	border:1px solid #cddeea;
+	color:#ba0000; 
+	height:21px;
+	padding:5px 4px 0 24px;
 }
-#mainnav :link:hover, #mainnav :visited:hover {
- text-decoration: none;
- background-color: #C2E0EF;
- border-right: 1px solid #ddd;
-}
-#mainnav .active :link, #mainnav .active :visited {
- background: #333 url(../images/topbar_gradient2.png) 0 0 repeat-x;
- border-top: none;
- border-right: 1px solid #d7d7d7;
- color: #eee;
- font-weight: bold;
-}
-#mainnav .active :link:hover, #mainnav .active :visited:hover {
- border-right: 1px solid #d7d7d7;
-}*/
+
+#maincontent #metanav ul li.viewtickets a {background-image:url("../images/folder_page_white.png");}
+#maincontent #metanav ul li.searchtickets a {background-image:url("../images/magnifier.png");}
+#maincontent #metanav ul li.newticket a {background-image:url("../images/page_white_star.png");}
+#maincontent #metanav ul li.configuration a {background-image:url("../images/cog.png");}
+#maincontent #metanav ul li.logout a {background-image:url("../images/door_in.png");}
+#maincontent #metanav ul li.login a {background-image:url("../images/door_out.png");}
+#maincontent #metanav ul li.help a {background-image:url("../images/help.png");}
+
+ 
 
 /* TABLE/GRID */
 table.data {
 	margin-bottom: 1.1em;
-	border-collapse: separate;
-	border: 1px solid #a1a1a1;
-	border-top: 1px solid #555;
+	border:1px solid #d7d7d7;
 }
-table.full-width { width: 100%; }
+table.full-width { width: 100%; } 
 #maincontent table.data th {
-	color: #202020;
-	padding: 2px 5px;
-	text-align: left;
-	background: #dbdbdb url(../images/theadBg.png) repeat-x 0 bottom;
-	border-bottom: 1px solid #555;
-	border-right: 1px solid #a5a5a5;
-	border-left: 1px solid #e2e2e2;
-	font-weight: bold;
+	background-color:#3E83C9;
+	border-bottom:3px solid #BFD6F5;
+	color:#fff;
+	font-weight:bold;
+	padding:7px;
+	text-align:left !important;
 }
 #maincontent table.data th :link, #maincontent table.data th :visited {
-	color: #202020;
+	color: #fff;
 	display: block;
 }
 table.data th :link.asc, table.data th :visited.asc { padding-right: 12px; background: transparent url(../images/sort.png) no-repeat right bottom; }
 table.data th :link.desc, table.data th :visited.desc { padding-right: 12px; background: transparent url(../images/sort.png) no-repeat right top; }
 table.data th.one-icon { width: 16px; }
 table.data td {
-	padding: 2px 5px;
-	border-left: 1px solid #d9d9d9;
+	border-bottom:1px solid #d7d7d7;
+	padding: 6px 5px; 
 }
 
 table.inline {
@@ -454,7 +442,7 @@ table.smilies th { font-family: monospace; }
 
 /* PRIORITY ROW COLORS */
 table.data tr:nth-child(even) td {
-	background-color: #f1f5fa;
+	background-color: #e8f5fa;
 }
 
 table.data tr.priority-major td {
@@ -465,12 +453,9 @@ table.data tr:nth-child(even).priority-major td {
 }
 
 table.data tr.priority-critical td {
-	background-color: #FFEFEF;
-	font-weight: bold;
-}
-table.data tr:nth-child(even).priority-critical td {
 	background-color: #FFCFCF;
-}
+	font-weight: bold;
+} 
 
 /* CODE */
 pre {
@@ -483,11 +468,12 @@ pre {
 
 /* CONFIG TOOLBAR */
 #toolbar {
-	display: block;
+	display: inline-block;
 	border: 1px solid #d7d7d7;
 	text-align: center;
 	margin-bottom: 30px;
 	padding: 2px;
+	float:right;
 }
 #toolbar ul {
 	text-transform: uppercase;
