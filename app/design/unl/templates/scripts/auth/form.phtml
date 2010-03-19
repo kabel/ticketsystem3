@@ -18,22 +18,42 @@ $this->form_cas->setAction($this->url(
 ));
 ?>
 <?php echo $this->render('messages.phtml'); ?>
-<div style="margin: 0 auto; width: 505px; height: 265px;">
+<div class="two_col left">
 	<div id="login-options">
 		<ul class="wdn_tabs">
+			<li><a href="#tab-cas">My.UNL Login</a></li>
 			<li><a href="#tab-legacy">Legacy Account</a></li>
-			<li><a href="#tab-cas">LDAP/Blackboard</a></li>
 		</ul>
 		<div class="wdn_tabs_content">
-    		<div id="tab-legacy">
-    	        <?php echo $this->form_legacy; ?>
-    	        <div class="clear"></div>
-    	    </div>
     	    <div id="tab-cas">
     	    	<p>Click the login button to be redirected to the UNL centralized authentication service</p>
     	    	<?php echo $this->form_cas; ?>
     	    	<div class="clear"></div>
     	    </div>
+    		<div id="tab-legacy">
+    	        <?php echo $this->form_legacy; ?>
+    	        <div class="clear"></div>
+    	    </div>
 	    </div>
+	</div>
+</div>
+<div class="two_col right">
+	<div class="zenbox energetic">
+		<h3>Account Notice</h3>
+		<p>Soon we will be disabling the "Legacy Account" login option.  
+		After that point you will need to login with your My.UNL account.
+		</p>
+		<p>
+		<a href="http://login.unl.edu/faq/">See this page for more information and help finding/resetting your password</a>
+		</p>
+	</div>
+	<div class="zenbox soothing">
+		<h3>Comments</h3>
+		<p>Please be aware, while this new system has been tested, 
+		there may still be some small issues that arise.
+		 If something should happen OR you have general suggestions/comments,
+		 <a href="http://www1.unl.edu/comments/">please send them to us!</a>
+		 </p>
+	
 	</div>
 </div>
