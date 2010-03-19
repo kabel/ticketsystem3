@@ -443,18 +443,13 @@ table.inline td {
 
 table.smilies th { font-family: monospace; }
 
-/* PRIORITY ROW COLORS */
-table.data tr:nth-child(even) td {
-	background-color: #e8f5fa;
-}
-
+/* PRIORITY ROW COLORS */ 
+table.data tr.priority-minor td {
+	background-color: #FEFEFE;
+} 
 table.data tr.priority-major td {
-	background-color: #FFFFDF;
-}
-table.data tr:nth-child(even).priority-major td {
 	background-color: #FFFFCF;
-}
-
+} 
 table.data tr.priority-critical td {
 	background-color: #FFCFCF;
 	font-weight: bold;
