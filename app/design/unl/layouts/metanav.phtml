@@ -1,9 +1,18 @@
-<?php if (!empty($this->metanav)): ?>
+<?php if (!empty($this->metanav) || !empty($this->mainnav)): ?>
 <div id="metanav" class="nav right">
 	<div class="nav_wrapper">
-        <ul> 
-        	<?php foreach ($this->metanav as $i => $nav): ?>
-        	<li<?php echo $this->classDecorator($nav['class'], $nav['active'], $i, count($this->metanav)); ?>>
+        <ul>
+            <?php $total = count($this->metanav) + count($this->mainnav); ?>
+        	<?php foreach ($this->mainnav as $i => $nav): ?>
+            <li<?php echo $this->classDecorator($nav['class'], $nav['active'], $i, $total); ?>>
+                <a href="<?php echo $this->url(array(
+                    'controller' => $nav['controller'],
+                    'action' => $nav['action']
+                ), 'default', true); ?>"><?php echo $nav['label']; ?></a>
+            </li>
+            <?php endforeach; ?>
+            <?php foreach ($this->metanav as $j => $nav): ?>
+        	<li<?php echo $this->classDecorator($nav['class'], empty($nav['active']) ? false : $nav['active'], $i + $j, $total); ?>>
         		<a href="<?php echo $this->url(array(
         		    'controller' => $nav['controller'],
         		    'action' => $nav['action']

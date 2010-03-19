@@ -23,7 +23,9 @@
   <?php
   $this->headTitle($this->escape($this->siteTitle), 'PREPEND');
   $this->headTitle($this->escape('UNL'), 'PREPEND');
-  echo $this->headTitle()->setSeparator(' | ') 
+  echo $this->headTitle()->setSeparator(' | ');
+  $pageTitle = $this->headTitle()->getContainer()->getArrayCopy();
+  $pageTitle = end($pageTitle);
   ?>
   <?php
   $this->headLink()->prependStylesheet($this->designUrl('css', 'ieLt8.css'), 'screen', 'lt IE 8');
@@ -48,7 +50,7 @@
 				<li class="first"><a href="http://www.unl.edu/">UNL</a></li>
 				<li><a href="http://ucomm.unl.edu/">UComm</a></li>
 				<li><a href="<?php echo $this->baseUrl(); ?>">Support Request System</a></li>
-				<li><?php echo $this->headTitle() ?></li>
+				<li><?php echo $pageTitle; ?></li>
 			</ul>
 			 <!-- TemplateEndEditable --></div>
         <div id="wdn_navigation_wrapper">

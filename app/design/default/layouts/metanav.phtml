@@ -2,7 +2,7 @@
 <div id="metanav" class="nav"> 
         <ul> 
         	<?php foreach ($this->metanav as $i => $nav): ?>
-        	<li<?php echo $this->classDecorator(null, $nav['active'], $i, count($this->metanav)); ?>>
+        	<li<?php echo $this->classDecorator(null, empty($nav['active']) ? false : $nav['active'], $i, count($this->metanav)); ?>>
         		<a href="<?php echo $this->url(array(
         		    'controller' => $nav['controller'],
         		    'action' => $nav['action']

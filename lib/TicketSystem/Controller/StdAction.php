@@ -11,9 +11,47 @@ class TicketSystem_Controller_StdAction extends TicketSystem_Controller_EmptyAct
         $isAuthenticated = Zend_Auth::getInstance()->hasIdentity();
         
         $metanav = array();
-
+        if ($isAuthenticated) {
+            $metanav[] = array(
+                'label' => 'Configuration',
+                'controller' => 'config',
+                'action' => 'profile',
+                'class' => 'configuration',
+                'active' => $this->_isActiveNav('*', 'config')
+            );
+            $metanav[] = array(
+                'label' => 'Help',
+                'controller' => 'help',
+                'action' => 'index',
+                'class' => 'help',
+                'active' => $this->_isActiveNav('*','help')
+            );
+            $metanav[] = array(
+                'label' => 'Logout',
+                'controller' => 'auth',
+                'action' => 'logout',
+                'class' => 'logout'
+            );
+        } else {
+            $metanav[] = array(
+                'label' => 'Help',
+                'controller' => 'help',
+                'action' => 'index',
+                'class' => 'help',
+                'active' => $this->_isActiveNav('*','help')
+            );
+            $metanav[] = array(
+                'label' => 'Login',
+                'controller' => 'auth',
+                'action' => 'index',
+                'class' => 'login'
+            );
+        }
+        $this->view->metanav = $metanav;
+        
+        $nav = array();
         if ($isAuthenticated) { 
-        	$metanav[] = array(
+        	$nav[] = array(
                 'label' => 'View Tickets ',
                 'controller' => 'index',
                 'action' => 'index',
@@ -22,7 +60,7 @@ class TicketSystem_Controller_StdAction extends TicketSystem_Controller_EmptyAct
                              $this->_isActiveNav('index', 'report')|| $this->_isActiveNav('view', 'report'))
             );
             if ($this->_isAclAllowed((string)Zend_Auth::getInstance()->getIdentity()->level, 'ticket', 'create')) {
-                $metanav[] = array(
+                $nav[] = array(
                     'label' => 'New Ticket ',
                     'controller' => 'ticket',
                     'action' => 'new',
@@ -30,52 +68,16 @@ class TicketSystem_Controller_StdAction extends TicketSystem_Controller_EmptyAct
                     'active' => $this->_isActiveNav('new', 'ticket')
                 );
             }
-            $metanav[] = array(
+            $nav[] = array(
                 'label' => 'Search',
                 'controller' => 'ticket',
                 'action' => 'search',
         		'class' => 'searchtickets',
                 'active' => ($this->_isActiveNav('search', 'ticket') || $this->_isActiveNav('results', 'ticket'))
-            );       
-            $metanav[] = array(
-                'label' => 'Configuration',
-                'controller' => 'config',
-                'action' => 'profile',
-        		'class' => 'configuration',
-                'active' => $this->_isActiveNav('profile', 'config')
             );
-            $metanav[] = array(
-	            'label' => 'Help',
-	            'controller' => 'help',
-	            'action' => 'index',
-        		'class' => 'help',
-                'active' => $this->_isActiveNav('','help')
-	        );
-            $metanav[] = array(
-                'label' => 'Logout',
-                'controller' => 'auth',
-                'action' => 'logout',
-        		'class' => 'logout',
-                'active' => $this->_isActiveNav('logout', 'auth')
-            );
-        } else {
-            $metanav[] = array(
-                'label' => 'Login',
-                'controller' => 'auth',
-                'action' => 'index',
-        		'class' => 'login',
-                'active' => $this->_isActiveNav('login', 'auth')
-            );
-            $metanav[] = array(
-	            'label' => 'Help',
-	            'controller' => 'help',
-	            'action' => 'index',
-        		'class' => 'help',
-                'active' => $this->_isActiveNav('help')
-	        );
         }
         
-        $this->view->metanav = $metanav;
+        $this->view->mainnav = $nav;
         
         parent::postDispatch();
     }
@@ -86,7 +88,7 @@ class TicketSystem_Controller_StdAction extends TicketSystem_Controller_EmptyAct
             return false;
         }
         
-        if ($action !== $this->getRequest()->getActionName()) {
+        if ($action !== '*' && $action !== $this->getRequest()->getActionName()) {
             return false;
         }
         
