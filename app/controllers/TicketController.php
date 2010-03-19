@@ -46,7 +46,7 @@ class TicketController extends TicketSystem_Controller_ProtectedAction
             if (!empty($_POST['filters'])) {
                 foreach ($_POST['filters']  as $name => $filter) {
                     if ($name[0] == '_') {
-                        if (in_array(substr($name, 1), $this->view->staticAttrs)) {
+                        if (array_key_exists(substr($name, 1), $this->view->staticAttrs)) {
                             $filters[$name] = $filter;
                         }
                     } elseif (array_key_exists($name, $this->view->attrs)) {
