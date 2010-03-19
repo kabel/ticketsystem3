@@ -88,7 +88,10 @@ class Default_Model_Attribute extends Default_Model_Abstract
         array_unshift($args, $class);
         $obj = call_user_func_array(array('Default_Model_Abstract', 'findRow'), $args);
         
-        self::_saveToCache($obj);
+        if ($obj !== null) {
+            self::_saveToCache($obj);
+        }
+        
         return $obj;
     }
     
@@ -121,7 +124,10 @@ class Default_Model_Attribute extends Default_Model_Abstract
         array_unshift($args, $class);
         $obj = call_user_func_array(array('Default_Model_Abstract', 'fetchRow'), $args);
         
-        self::_saveToCache($obj);
+        if ($obj !== null) {
+            self::_saveToCache($obj);
+        }
+        
         return $obj;
     }
     

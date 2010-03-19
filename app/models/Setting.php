@@ -23,6 +23,11 @@ class Default_Model_Setting extends Default_Model_Abstract
             self::fetchRow($select);
         }
         
+        if (!isset(self::$_cache[$key])) {
+            $defaults = self::getDefaults(); 
+            return isset($defaults[$key]) ? $defaults[$key] : false;
+        }
+        
         return self::$_cache[$key];
     }
     
@@ -61,7 +66,10 @@ class Default_Model_Setting extends Default_Model_Abstract
         array_unshift($args, $class);
         $obj = call_user_func_array(array('Default_Model_Abstract', 'findRow'), $args);
         
-        self::_saveToCache($obj);
+        if ($obj !== null) {
+            self::_saveToCache($obj);
+        }
+        
         return $obj;
     }
     
@@ -94,7 +102,10 @@ class Default_Model_Setting extends Default_Model_Abstract
         array_unshift($args, $class);
         $obj = call_user_func_array(array('Default_Model_Abstract', 'fetchRow'), $args);
         
-        self::_saveToCache($obj);
+        if ($obj != null) {
+            self::_saveToCache($obj);
+        }
+        
         return $obj;
     }
     

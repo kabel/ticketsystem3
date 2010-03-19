@@ -36,6 +36,11 @@ abstract class Default_Model_Abstract implements ArrayAccess
     {
         $args = func_get_args();
         $collection = call_user_func_array(array('Default_Model_Abstract', 'find'), $args);
+        
+        if (empty($collection)) {
+            return null;
+        }
+        
         return array_shift($collection);
     }
     
