@@ -444,6 +444,9 @@ div#ticketchange.ticketdraft h3 {
 #ticket-preview .emphasis, #changelog .emphasis { font-style: italic; display: inline; }
 #ticket-preview ul, #changelog ul { list-style: square; margin-left: 2em; }
 
+#ticket .comment:after, 
+#ticket-preview .comment:after { display:block; content:"."; clear:both; font-size:0; line-height:0; height:0; overflow:hidden; }
+
 
 /* NAV */
 .nav h2, .nav hr { display: none }
