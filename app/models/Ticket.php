@@ -493,12 +493,12 @@ class Default_Model_Ticket extends Default_Model_Abstract
         }
         
         if (isset($latest['cc']) && !empty($latest['cc']['value'])) {
-            $recipients['cc'] = array_merge($recipients['cc'], Default_Model_AttributeValue::prepareCc($latest['cc']['value']));
+            $recipients['cc'] = array_merge($recipients['cc'], Default_Model_User::prepareCc($latest['cc']['value']));
         }
         
         $globalCc = Default_Model_Setting::get('global_cc');
         if (!empty($globalCc)) {
-            $recipients['cc'] = array_merge($recipients['cc'], Default_Model_AttributeValue::prepareCc(Default_Model_Setting::get('global_cc')));
+            $recipients['cc'] = array_merge($recipients['cc'], Default_Model_User::prepareCc(Default_Model_Setting::get('global_cc')));
         }
         
         return $recipients;

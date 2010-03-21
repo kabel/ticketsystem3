@@ -96,6 +96,45 @@ class Default_Model_User extends Default_Model_Abstract
         return parent::getResourceInstance(self::$_resourceNameInit);
     }
     
+    public static function prepareCc($cc)
+    {
+        $recipients = array();
+        $items = explode(',', $cc);
+        
+        foreach ($items as $item) {
+            $item = trim($item);
+            if (empty($item)) {
+                continue;
+            }
+            $validator = new Zend_Validate_EmailAddress();
+            
+            if ($validator->isValid($item)) {
+                $recipients[] = array($item, '');
+            } else {
+                $pos = strpos($item, ':');
+                if ($pos !== false) {
+                    $username = substr($item, 0, $pos);
+                    $loginType = substr($item, $pos + 1);
+                    if ($loginType == self::LOGIN_TYPE_LEGACY || $loginType == self::LOGIN_TYPE_CAS) {
+                        $select = self::getResourceInstance()->select()->where('username = ?', $item)->where('login_type = ?', $loginType);
+                        $user = self::fetchRow($select);
+                    } else {
+                        $user = null;
+                    }
+                } else {
+                    $select = self::getResourceInstance()->select()->where('username = ?', $item)->order('login_type');
+                    $user = self::fetchRow($select);
+                }
+                
+                if ($user !== null && !empty($user['email'])) {
+                    $recipients[] = array($user['email'], $user['info']);
+                }
+            }
+        }
+        
+        return $recipients;
+    }
+    
     /**
      * Returns the string representation of a user level
      * 
