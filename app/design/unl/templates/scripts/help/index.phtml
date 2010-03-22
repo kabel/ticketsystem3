@@ -103,11 +103,11 @@ EOD;
         ?>
         
         <h4><code>&lt;columns&gt;</code> node</h4>
-        <p>This node defines the grid columns that will be displayed. By default, all reports will have Ticket ID as the first column, with a link to the ticket's details. It is made from multiple nodes the uniquely identify each column. Those idenity nodes must each contain a <code>&lt;title&gt;</code> and <code>&lt;index&gt;</code> node. The <code>&lt;title&gt;</code> node contains the value that will be displayed as the column header. The <code>&lt;index&gt;</code> node contains the attribute name, or &quot;_&quot; appended with the column name in the case of static attributes (attributes that are actual columns of the ticket table).</p>
+        <p>This node defines the grid columns that will be displayed. By default, all reports will have Ticket ID as the first column, with a link to the ticket's details. It is made from multiple nodes that uniquely identify each column. Those identity nodes must each contain a <code>&lt;title&gt;</code> and <code>&lt;index&gt;</code> node. The <code>&lt;title&gt;</code> node contains the value that will be displayed as the column header. The <code>&lt;index&gt;</code> node contains the attribute name, or &quot;_&quot; appended with the column name in the case of static attributes (attributes that are actual columns of the ticket table).</p>
         <p><em>Note:</em> There are two special static attributes that can be displayed. They are</p>
         <ul class="std">
             <li>&quot;_created&quot; (displays the date the ticket was created)</li>
-            <li>&quot;_modified&quot; (displays the date the ticket was last modified</li>
+            <li>&quot;_modified&quot; (displays the date the ticket was last modified)</li>
         </ul>
         <p>Exmaple:</p>
         <?php 
