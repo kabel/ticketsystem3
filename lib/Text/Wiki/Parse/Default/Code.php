@@ -124,6 +124,7 @@ class Text_Wiki_Parse_Code extends Text_Wiki_Parse {
             require_once 'geshi.php';
             $geshi = new GeSHi($text, $type);
             $geshi->enable_classes();
+            $geshi->enable_keyword_links(false);
             $options['geshi'] = $geshi;
         }
         
