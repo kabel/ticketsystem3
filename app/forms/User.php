@@ -25,6 +25,11 @@ class Default_Form_User extends Default_Form_Profile
         }
     }
     
+    /**
+     * 
+     * @param mixed $id
+     * @return boolean
+     */
     public function handlePost($id)
     {
         if ($id === 'new') {
@@ -96,6 +101,11 @@ class Default_Form_User extends Default_Form_Profile
            );
         } else {
            $userModel = Default_Model_User::findRow($id);
+           
+            if (null === $userModel) {
+                return true;
+            }
+           
            $this->setupForUser($userModel);
            
            if (!$this->isValid($_POST)) {
@@ -105,15 +115,15 @@ class Default_Form_User extends Default_Form_Profile
            $values = $this->getValues();
            $session = new Zend_Session_Namespace('TicketSystem');
            
-           if (isset($values['remove'])) {
+           if ($this->remove->isChecked()) {
                Default_Model_AttributeValue::flattenSrc('user', $userModel->getId());
                $session->messages = array(
                    'type' => 'success',
                    'content' => array("User '{$userModel['username']}' successfully deleted")
                );
                $userModel->delete();
-           } else if (isset($values['statuschange'])) {
-               if ($values['statuschange'] == 'Enable') {
+           } else if ($this->statuschange->isChecked()) {
+               if ($this->statuschange->getValue() == 'Enable') {
                    $userModel['status'] = Default_Model_User::STATUS_ACTIVE;
                    $verb = 'enabled';
                } else {

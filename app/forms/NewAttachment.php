@@ -69,7 +69,7 @@ class Default_Form_NewAttachment extends Zend_Form
         
         $values = $this->getValues();
         
-        if (isset($values['cancel'])) {
+        if ($this->cancel->isChecked()) {
             return -1;
         } else {
             $attachment = $this->attachment;

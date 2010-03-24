@@ -175,7 +175,7 @@ class Default_Form_NewTicket extends Zend_Form
         
         $values = $this->getValues();
         
-        if (isset($values['preview'])) {
+        if ($this->preview->isChecked()) {
             $reporter = $this->_getAuthUser()->username;
             $summary = $values['properties']['summary_'];
             $description = $values['properties']['description'];

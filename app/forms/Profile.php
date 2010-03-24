@@ -85,4 +85,39 @@ class Default_Form_Profile extends Zend_Form
 			'label' => 'Info:'
         ));
     }
+    
+    /**
+     * 
+     * @param Default_Model_User $userModel
+     * @return boolean
+     */
+    public function handlePost($userModel)
+    {
+        if (!$this->isValid($_POST)) {
+            return false;
+        }
+        
+        $values = $this->getValues();
+        $data = array(
+            'email' => $values['email'],
+            'info' => $values['info']
+        );
+        if (!empty($values['passwd_new'])) {
+            $data['passwd'] = md5($values['passwd_new']);
+        }
+        $userModel->setData($data);
+        $userModel->save();
+        
+        $newIdentArray = $userModel->toArray();
+        unset($newIdentArray['passwd']);
+        Zend_Auth::getInstance()->getStorage()->write((object)$newIdentArray);
+        
+        $session = new Zend_Session_Namespace('TicketSystem');
+        $session->messages = array(
+            'type' => 'success',
+            'content' => array('Profile successfully updated')
+        );
+        
+        return true;
+    }
 }

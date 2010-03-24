@@ -68,4 +68,37 @@ class Default_Form_Settings extends Zend_Form
             'ignore' => true
         ));
     }
+    
+    /**
+     * 
+     * @return boolean
+     */
+    public function handlePost()
+    {
+        if ($this->isValid($_POST)) {
+            $values = $this->getValues();
+            $realUpdate = false;
+            
+            foreach ($values['settings'] as $name => $elements) {
+                $id = (int)$name;
+                if ($id > 0 && isset($settings[$id]) && $settings[$id]['value'] !== $elements['value']) {
+                    $settings[$id]['value'] = $elements['value'];
+                    $settings[$id]->save();
+                    $realUpdate = true;
+                }
+            }
+            
+            if ($realUpdate) {
+                $session = new Zend_Session_Namespace('TicketSystem');
+                $session->messages = array(
+                    'type' => 'success',
+                    'content' => array("Settings successfully saved")
+                );
+            }
+            
+            return true;
+        }
+        
+        return false;
+    }
 }

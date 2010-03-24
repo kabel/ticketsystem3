@@ -104,4 +104,77 @@ class Default_Form_Ugroup extends Zend_Form
             'ViewHelper'
         );
     }
+    
+    /**
+     * 
+     * @param Zend_View_Interface $view
+     * @param mixed $id
+     * @return boolean
+     */
+    public function handlePost($view, $id)
+    {
+        if ($id === 'new') {
+            $groupModel = new Default_Model_Ugroup();
+            $this->setupForGroup();
+            
+            if (!$this->isValid($_POST)) {
+                return false;
+            }
+            
+            $values = $this->getValues();
+            $session = new Zend_Session_Namespace('TicketSystem');
+            
+            $data = array(
+                'name' => $values['name'],
+                'shortname' => $values['shortname']
+            );
+            $groupModel->setData($data)
+                ->save();
+            
+            $session->messages = array(
+                'type' => 'success',
+                'content' => array("Group '{$view->escape($groupModel['name'])}' successfully added")
+            );
+        } else {
+            $groupModel = Default_Model_Ugroup::findRow($id);
+            
+            if (null === $groupModel) {
+                return true;
+            }
+            
+            $this->setupForGroup($groupModel);
+            $view->users = $groupModel->getUsers();
+            $view->membership = $groupModel->getMembership();
+            
+            if (!$this->isValid($_POST)) {
+                return false;
+            }
+            
+            $values = $this->getValues();
+            $session = new Zend_Session_Namespace('TicketSystem');
+            
+            if (isset($values['remove'])) {
+                Default_Model_AttributeValue::flattenSrc('ugroup', $groupModel->getId());
+                $session->messages = array(
+                    'type' => 'success',
+                    'content' => array("Group '{$view->escape($groupModel['name'])}' successfully deleted")
+                );
+                $groupModel->delete();
+            } else {
+                $data = array(
+                    'name' => $values['name'],
+                    'shortname' => $values['shortname']
+                );
+                
+                $groupModel->setData($data)
+                    ->save();
+                $session->messages = array(
+                    'type' => 'success',
+                    'content' => array("Group '{$view->escape($groupModel['name'])}' successfully updated")
+                );
+            }
+        }
+        
+        return true;
+    }
 }

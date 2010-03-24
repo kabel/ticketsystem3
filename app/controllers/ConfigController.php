@@ -64,8 +64,12 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
     
     public function profileAction() 
     {
-        $auth = Zend_Auth::getInstance();
         $userModel = Default_Model_User::fetchActive();
+        
+        $this->view->form = $form = new Default_Form_Profile();
+        if ($this->getRequest()->isPost() && $form->handlePost($userModel)) {
+            return $this->_helper->redirector('profile', 'config');
+        }
         
         $group = $this->view->group = new Default_Model_Ugroup();
         if ($data = $userModel->getGroup()) {
@@ -73,36 +77,6 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
         }
         $this->view->membership = $userModel->getGroupIds(true); 
         $this->view->screen = $this->_getParam('view');
-        
-        $this->view->form = $form = new Default_Form_Profile();
-        if ($this->getRequest()->isPost()) {
-            if (!$form->isValid($_POST)) {
-                return;
-            }
-            
-            $values = $form->getValues();
-            $userModel = Default_Model_User::findRow($user->user_id);
-            $data = array(
-                'email' => $values['email'],
-                'info' => $values['info']
-            );
-            if (!empty($values['passwd_new'])) {
-                $data['passwd'] = md5($values['passwd_new']);
-            }
-            $userModel->setData($data);
-            $userModel->save();
-            
-            $newIdentArray = $userModel->toArray();
-            unset($newIdentArray['passwd']);
-            $auth->getStorage()->write((object)$newIdentArray);
-            
-            $session = new Zend_Session_Namespace('TicketSystem');
-            $session->messages = array(
-                'type' => 'success',
-                'content' => array('Profile successfully updated')
-            );
-            return $this->_helper->redirector('profile', 'config');
-        }
     }
     
     public function settingsAction()
@@ -112,29 +86,8 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
         $form->setupForSettings($settings);
         
         //Check for postback
-        if ($this->getRequest()->isPost()) {
-            if ($form->isValid($_POST)) {
-                $values = $form->getValues();
-                
-                $realUpdate = false;
-                foreach ($values['settings'] as $name => $elements) {
-                    $id = (int)$name;
-                    if ($id > 0 && isset($settings[$id]) && $settings[$id]['value'] !== $elements['value']) {
-                        $settings[$id]['value'] = $elements['value'];
-                        $settings[$id]->save();
-                        $realUpdate = true;
-                    }
-                }
-                
-                if ($realUpdate) {
-                    $session = new Zend_Session_Namespace('TicketSystem');
-                    $session->messages = array(
-                        'type' => 'success',
-                        'content' => array("Settings successfully saved")
-                    );
-                }
-                return $this->_helper->redirector('settings', 'config');
-            }
+        if ($this->getRequest()->isPost() && $form->handlePost()) {
+            return $this->_helper->redirector('settings', 'config');
         }
         
         $this->view->user = Zend_Auth::getInstance()->getIdentity();
@@ -149,82 +102,7 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
     {
         $form = $this->view->form = new Default_Form_Maint();
         
-        if ($this->getRequest()->isPost()) {
-            if (!$form->isValid($_POST)) {
-                return;
-            }
-            $session = new Zend_Session_Namespace('TicketSystem');
-            
-            if ($form->getElement('optimize')->isChecked()) {
-                $this->_optimizeTable();
-                $session->messages = array(
-                    'type' => 'success',
-                    'content' => array('Databases successfully optimized')
-                );
-            } else {
-                $db = Zend_Registry::get('bootstrap')->getResource('db');
-                $content = array();
-                if ($form->getElement('purge')->isChecked()) {
-                    $tickets = Default_Model_Ticket::getClosed();
-                    if (!empty($tickets)) {
-                        /* @var $ticket Default_Model_Ticket */
-                        foreach ($tickets as $ticket) {
-                            $ticket->delete();
-                        }
-                    }
-                    $this->_optimizeTable(array('ticket', 'attribute_value', 'changeset', 'uploads'));
-                    
-                    $content[] = 'Successfully purged closed tickets';
-                }
-                if ($form->getElement('tickets')->isChecked()) {
-                    $sql = 'TRUNCATE TABLE `ticket`';
-                    $db->exec($sql);
-                    $this->_optimizeTable(array('attribute_value', 'changeset', 'uploads'));
-                }
-                if ($form->getElement('users')->isChecked()) {
-                    $user = Zend_Auth::getInstance()->getIdentity();
-                    $keepIds = array($user->user_id, 1);
-                    Default_Model_AttributeValue::flattenSrc('user', $keepIds, true);
-                    $db->delete('user', 'user_id NOT IN (' . implode(',', $keepIds) . ')');
-                    
-                    $defaultAdmin = Default_Model_User::findRow(1);
-                    if (empty($defaultAdmin)) {
-                        $defaultAdmin = new Default_Model_User();
-                        $data = array(
-                            'user_id' => 1,
-                            'username' => 'admin',
-                            'passwd' => md5('admin'),
-                            'info' => 'Administrator',
-                            'email' => '',
-                            'level' => Default_Model_User::LEVEL_ADMIN,
-                            'login_type' => Default_Model_User::LOGIN_TYPE_LEGACY,
-                            'status' => Default_Model_User::STATUS_ACTIVE
-                        );
-                        $defaultAdmin->setData($data)
-                            ->save();
-                    }
-                    
-                    $this->_optimizeTable('user');
-                    
-                    $content[] = 'Users successfully reset';
-                }
-                
-                // Either of the following actions would duplicate work, so only do one
-                if ($form->getElement('settings')->isChecked()) {
-                    Default_Model_Setting::resetDefaults();
-                    $content[] = 'Settings successfully reset';
-                } elseif ($form->getElement('reload')->isChecked()) {
-                    Default_Model_Setting::resetDefaults(true);
-                    $content[] = 'Settings successfully reloaded';
-                }
-                
-                if (!empty($content)) {
-                    $session->messages = array(
-                        'type' => 'success',
-                        'content' => $content
-                    );
-                }
-            }
+        if ($this->getRequest()->isPost() && $form->handlePost()) {
             return $this->_helper->redirector('maint', 'config');
         }
     }
@@ -239,68 +117,16 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
                 return $this->_helper->redirector('groups', 'config');
             }
             
-            $form = $this->view->form = new Default_Form_Ugroup();
-            if ($id === 'new') {
-                $groupModel = new Default_Model_Ugroup();
-                $form->setupForGroup();
-                
-                if (!$form->isValid($_POST)) {
-                    return $this->render('groupEdit');
-                }
-                
-                $values = $form->getValues();
-                $session = new Zend_Session_Namespace('TicketSystem');
-                
-                $data = array(
-                    'name' => $values['name'],
-                    'shortname' => $values['shortname']
-                );
-                $groupModel->setData($data)
-                    ->save();
-                
-                $session->messages = array(
-                    'type' => 'success',
-                    'content' => array("Group '{$this->view->escape($groupModel['name'])}' successfully added")
-                );
-            } else {
-                if (isset($_POST['reset'])) {
-                    return $this->_helper->redirector('groups', 'config', null, array('id' => $id));
-                }
-                
-                $groupModel = Default_Model_Ugroup::findRow($id);
-                $form->setupForGroup($groupModel);
-                $this->view->users = $groupModel->getUsers();
-                
-                if (!$form->isValid($_POST)) {
-                    return $this->render('groupEdit');
-                }
-                
-                $values = $form->getValues();
-                $session = new Zend_Session_Namespace('TicketSystem');
-                
-                if (isset($values['remove'])) {
-                    Default_Model_AttributeValue::flattenSrc('ugroup', $groupModel->getId());
-                    $session->messages = array(
-                        'type' => 'success',
-                        'content' => array("Group '{$this->view->escape($groupModel['name'])}' successfully deleted")
-                    );
-                    $groupModel->delete();
-                } else {
-                    $data = array(
-                        'name' => $values['name'],
-                        'shortname' => $values['shortname']
-                    );
-                    
-                    $groupModel->setData($data)
-                        ->save();
-                    $session->messages = array(
-                        'type' => 'success',
-                        'content' => array("Group '{$this->view->escape($groupModel['name'])}' successfully updated")
-                    );
-                }
+            if (isset($_POST['reset'])) {
+                return $this->_helper->redirector('groups', 'config', null, array('id' => $id));
             }
             
-            return $this->_helper->redirector('groups', 'config');
+            $form = $this->view->form = new Default_Form_Ugroup();
+            if ($form->handlePost($this->view, $id)) {
+                return $this->_helper->redirector('groups', 'config');
+            } else {
+                return $this->render('groupEdit');
+            }
         }
         
         if (!empty($id)) {
@@ -309,9 +135,14 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
                 $form->setupForGroup();
             } else {
                 $group = Default_Model_Ugroup::findRow($id);
+                
+                if (null === $group) {
+                    return $this->_helper->redirector('groups', 'config');
+                }
+                
+                $form->setupForGroup($group);
                 $this->view->users = $group->getUsers();
                 $this->view->membership = $group->getMembership();
-                $form->setupForGroup($group);
             }
             $this->render('groupEdit');
         } else {
@@ -343,10 +174,9 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
         }
         
         if (!empty($id)) {
-            $form = new Default_Form_User();
+            $form = $this->view->form = new Default_Form_User();
             if ($id === 'new') {
                 $form->setupForUser();
-                $this->view->form = $form;
                 $this->render('userEdit');
             } else if ($id == Zend_Auth::getInstance()->getIdentity()->user_id) {
                 $userModel = $this->view->user = Default_Model_User::fetchActive();
@@ -362,29 +192,17 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
                 $this->render('userView');
             } else {
                 $user = Default_Model_User::findRow($id);
+                
+                if (null === $user) {
+                    return $this->_helper->redirector('users', 'config');
+                }
+                
                 $form->setupForUser($user);
-                $this->view->form = $form;
                 $this->render('userEdit');
             }
         } else {
             $this->view->users = Default_Model_User::fetchAll();
         }
-    }
-    
-    protected function _optimizeTable($tables=array())
-    {
-        if (!is_array($tables)) {
-            $tables = array($tables);
-        }
-        
-        $db = Zend_Registry::get('bootstrap')->getResource('db');
-        
-        if (empty($tables)) {
-            $tables = $db->listTables();
-        }
-        
-        $sql = 'OPTIMIZE TABLE ' . implode(', ', $tables);
-        $db->exec($sql);
     }
     
     protected function _isAllowed($userLevel)

@@ -640,8 +640,8 @@ class Default_Form_EditTicket extends Zend_Form
                 
                 $notification->send();
             }
-            
-            return true;
         }
+        
+        return true;
     }
 }
