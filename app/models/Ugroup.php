@@ -84,7 +84,7 @@ class Default_Model_Ugroup extends Default_Model_Abstract
         $options = array();
         
         if ($withEmpty) {
-            $options[] = '';
+            $options[''] = '';
         }
         
         $select = self::getResourceInstance()->select()->order('name');

@@ -1,5 +1,4 @@
 <?php 
-$hidden = array('description', 'resolution', 'status'); 
 $title = 'Ticket #' . $this->ticket['self']['ticket_id'];
 $this->headTitle($title);
 $this->headScript()->appendFile($this->baseUrl('js/autoresize.jquery.min.js'));
@@ -68,10 +67,9 @@ $this->headScript()->appendScript($onReady);
     			<?php $i = 1; ?>
     			<?php $desc = $this->attributeValue('description', $this->ticket['latest'], $this->preview); ?>
                 <?php foreach (Default_Model_Attribute::getAll() as $name => $attr): ?>
-                <?php if (in_array($name, $hidden)) { continue; } ?>
-                <?php $value = $this->attributeValue($name, $this->ticket['latest'], $this->preview); ?>
-        		<?php $value = $this->attributeOutput($attr, $value, $this->ticket['self']['ticket_id']); ?>
-        		<?php if ($value === false) { continue; } ?>
+                <?php if (!$attr->getIsGrid()) { continue; } ?>
+                <?php $value = $this->attributeOutput($attr, $this->attributeValue($name, $this->ticket['latest'], $this->preview), $this->ticket['self']['ticket_id']); ?>
+                <?php if ($value === false) { continue; } ?>
         		<?php if ($attr['type'] == Default_Model_Attribute::TYPE_TEXTAREA || ($i % 2 == 0)): ?>
         		</tr>
         		<tr>
@@ -120,10 +118,9 @@ $this->headScript()->appendScript($onReady);
 			<?php $i = 1; ?>
 			<?php $desc = $this->attributeValue('description', $this->ticket['latest']); ?>
             <?php foreach (Default_Model_Attribute::getAll() as $name => $attr): ?>
-            <?php if (in_array($name, $hidden)) { continue; } ?>
-            <?php $value = $this->attributeValue($name, $this->ticket['latest']); ?>
-    		<?php $value = $this->attributeOutput($attr, $value, $this->ticket['self']['ticket_id']); ?>
-    		<?php if ($value === false) { continue; } ?>
+            <?php if (!$attr->getIsGrid()) { continue; } ?>
+            <?php $value = $this->attributeOutput($attr, $this->attributeValue($name, $this->ticket['latest']), $this->ticket['self']['ticket_id']); ?>
+            <?php if ($value === false) { continue; } ?>
     		<?php if ($attr['type'] == Default_Model_Attribute::TYPE_TEXTAREA || ($i % 2 == 0)): ?>
     		</tr>
     		<tr>

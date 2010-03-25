@@ -2,6 +2,8 @@
 
 class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 {
+    protected $_version = '0.1.1';
+    
     protected function _initAutoload()
     {
         $autoloader = new Zend_Application_Module_Autoloader(array(
@@ -9,6 +11,84 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
             'basePath'  => dirname(__FILE__),
         ));
         return $autoloader;
+    }
+    
+    protected function _initUpdates()
+    {
+        $this->bootstrap('db');
+        $this->bootstrap('autoload');
+        
+        $version = Default_Model_Version::findRow('core');
+        
+        if ($version && (version_compare($version->getVersion(), $this->_version) === -1)) {
+            $fromVersion = $version->getVersion();
+            $toVersion = $this->_version;
+            
+            $sqlFilesDir = dirname(__FILE__) . '/sql';
+            if (!is_dir($sqlFilesDir) || !is_readable($sqlFilesDir)) {
+                return;
+            }
+            
+            $arrAvailableFiles = array();
+            $sqlDir = dir($sqlFilesDir);
+            while (false !== ($sqlFile = $sqlDir->read())) {
+                $matches = array();
+                if (preg_match('#^update-(.*)\.php$#i', $sqlFile, $matches)) {
+                    $arrAvailableFiles[$matches[1]] = $sqlFile;
+                }
+            }
+            $sqlDir->close();
+            if (empty($arrAvailableFiles)) {
+                return;
+            }
+            
+            $arrModifyFiles = $this->_getUpdateSqlFiles($fromVersion, $toVersion, $arrAvailableFiles);
+            if (empty($arrModifyFiles)) {
+                return;
+            }
+            
+            foreach ($arrModifyFiles as $resourceFile) {
+                $sqlFile = $sqlFilesDir.'/'.$resourceFile['fileName'];
+                $fileType = pathinfo($resourceFile['fileName'], PATHINFO_EXTENSION);
+                
+                try {
+                    if ($fileType == 'php') {
+                        $result = include($sqlFile);
+                    } else {
+                        $result = false;
+                    }
+                    
+                    if ($result) {
+                        $version->setVersion($resourceFile['toVersion']);
+                        $version->save();
+                    }
+                } catch (Exception $e) {
+                    error_log(print_r($e,1));
+                }
+            }
+        }
+    }
+    
+    protected function _getUpdateSqlFiles($fromVersion, $toVersion, $arrFiles)
+    {
+        $arrRes = array();
+        
+        uksort($arrFiles, 'version_compare');
+        foreach ($arrFiles as $version => $file) {
+            $version_info = explode('-', $version);
+
+            // In array must be 2 elements: 0 => version from, 1 => version to
+            if (count($version_info)!=2) {
+                break;
+            }
+            $infoFrom = $version_info[0];
+            $infoTo   = $version_info[1];
+            if (version_compare($infoFrom, $fromVersion) !== -1 && version_compare($infoTo, $toVersion) !== 1) {
+                $arrRes[] = array('toVersion'=>$infoTo, 'fileName'=>$file);
+            }
+        }
+        
+        return $arrRes;
     }
     
     protected function _initRegistry()

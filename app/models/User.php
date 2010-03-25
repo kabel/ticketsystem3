@@ -152,7 +152,7 @@ class Default_Model_User extends Default_Model_Abstract
         $options = array();
         
         if ($withEmpty) {
-            $options[] = '';
+            $options[''] = '';
         }
         
         $select = self::getResourceInstance()->select()->order('username');

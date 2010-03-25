@@ -208,7 +208,7 @@ class Default_Model_Attribute extends Default_Model_Abstract
         } elseif (isset($extra['options'])) {
             $options = array();
             if ($allowEmpty) {
-                $options[] = '';
+                $options[''] = '';
             }
             foreach ($extra['options'] as $opt) {
                 $options[$opt] = $opt;

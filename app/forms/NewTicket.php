@@ -187,7 +187,7 @@ class Default_Form_NewTicket extends Zend_Form
                 'summary' => $summary,
                 'description' => $description,
                 'reporter' => $reporter,
-                'properties' => $values['properties']
+                'changes' => $values['properties']
             );
             
             return false;
