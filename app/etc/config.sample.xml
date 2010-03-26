@@ -27,6 +27,7 @@
 					<username>ticket</username>
 					<password>t1ck3t</password>
 					<dbname>tickets</dbname>
+					<charset>utf8</charset>
 				</params>
 				<isDefaultTableAdapter value="true" />
 			</db>

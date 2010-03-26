@@ -6,6 +6,8 @@ class TicketSystem_Controller_ProtectedAction extends TicketSystem_Controller_St
 {
     public function preDispatch()
     {
+        parent::preDispatch();
+        
         if (!Zend_Auth::getInstance()->hasIdentity()) {
             $this->_forward('index', 'auth');
             return false;

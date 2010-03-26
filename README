@@ -1,1 +1,8 @@
 config settings in /app/etc/config.xml
+
+To get the RewriteEngine to work correctly when this project is not hosted at the server root update the .htaccess file:
+
+############################################
+## always send 404 on missing files in these folders
+
+    RewriteCond %{REQUEST_URI} !^/path-to-ticketsystem3/(skin|js)/

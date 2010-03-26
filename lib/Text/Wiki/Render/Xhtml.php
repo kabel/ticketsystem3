@@ -28,7 +28,7 @@ class Text_Wiki_Render_Xhtml extends Text_Wiki_Render {
     var $conf = array(
     	'translate' => HTML_ENTITIES,
     	'quotes'    => ENT_COMPAT,
-    	'charset'   => 'ISO-8859-1'
+    	'charset'   => 'UTF-8'
     );
 
     function pre()
@@ -57,7 +57,7 @@ class Text_Wiki_Render_Xhtml extends Text_Wiki_Render {
         // get the config options.
         $type = $this->getConf('translate', HTML_ENTITIES);
         $quotes = $this->getConf('quotes', ENT_COMPAT);
-        $charset = $this->getConf('charset', 'ISO-8859-1');
+        $charset = $this->getConf('charset', 'UTF-8');
 
         // have to check null and false because HTML_ENTITIES is a zero
         if ($type === HTML_ENTITIES) {
