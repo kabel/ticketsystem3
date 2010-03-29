@@ -26,7 +26,7 @@ class UploadController extends TicketSystem_Controller_ProtectedAction
         $form = $this->view->form = new Default_Form_NewAttachment();
         
         if ($this->getRequest()->isPost()) {
-            if ($form->handlePost()) {
+            if ($form->handlePost($ticket)) {
                 return $this->_helper->redirector->gotoRoute(array('id' => $id), 'ticket');
             } else {
                 return;
@@ -55,9 +55,9 @@ class UploadController extends TicketSystem_Controller_ProtectedAction
         $this->_helper->viewRenderer->setNoRender();
         $this->_helper->layout->disableLayout();
         $response = $this->getResponse();
-        $response->setHeader('Content-length', $upload['content_length'])
-            ->setHeader('Content-type', $upload['mimetype'])
-            ->setHeader('Content-disposition', "filename=$name")
+        $response->setHeader('Content-Length', $upload['content_length'])
+            ->setHeader('Content-Type', $upload['mimetype'])
+            ->setHeader('Content-Disposition', "inline; filename=$name")
             ->setBody($upload['content']);
     }
 }

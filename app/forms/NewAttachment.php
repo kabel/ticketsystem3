@@ -59,7 +59,7 @@ class Default_Form_NewAttachment extends Zend_Form
         );
     }
     
-    public function handlePost()
+    public function handlePost($ticket)
     {
         if (!$this->isValid($_POST)) {
             return false;
