@@ -201,6 +201,8 @@ class Default_Form_NewTicket extends Zend_Form
             $ticket->save();
             unset($values['properties']['summary_']);
             
+            $create_date = new Zend_Date();
+            
             $uploads = array();
             /* @var $attachments Zend_Form_Element_File */
             $attachments = $this->uploads->attachments;
@@ -208,26 +210,27 @@ class Default_Form_NewTicket extends Zend_Form
                 foreach ($attachments->getFileInfo() as $id => $file) {
                     if ($file['error'] == UPLOAD_ERR_OK) {
                         $content = file_get_contents($file['tmp_name']);
-        				
-                        //TODO: Add $file['name'] validation (only one should exists per ticket)
+                        $mime = Default_Model_Upload::detectMimeType($file);
+        				$name = Default_Model_Upload::getUniqueName($file['name'], $ticket->getId());
                         
         				$upload = new Default_Model_Upload();
         				$upload->setData(array(
-        				    'name' => $file['name'],
-        				    'mimetype' => $file['type'],
+        				    'name' => $name,
+        				    'mimetype' => $mime,
         				    'content_length' => $file['size'],
         				    'content' => $content,
-        				    'ticket_id' => $ticket->getId()
+        				    'ticket_id' => $ticket->getId(),
+        				    'uploader' => $reporter,
+        				    'create_date' => $create_date->toString('YYYY-MM-dd HH:mm:ss')
         				));
         				$upload->save();
         				
-        				$uploads[] = $file['name'];
+        				$uploads[] = $name;
                     }
                 }
             }
             
             $changeset = new Default_Model_Changeset();
-            $create_date = new Zend_Date();
             $changeset->setData(array(
                 'comment' => '',
                 'create_date' => $create_date->toString('YYYY-MM-dd HH:mm:ss'),

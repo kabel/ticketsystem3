@@ -414,7 +414,7 @@ class Default_Model_Ticket extends Default_Model_Abstract
      */
     public function getUploads()
     {
-        $select = $this->getResource()->select()->from('upload', array('upload_id', 'name', 'mimetype'));
+        $select = $this->getResource()->select()->from('upload', array('upload_id', 'name', 'mimetype', 'content_length', 'create_date', 'uploader'));
         return parent::findDependents('Default_Model_Table_Upload', null,  $select);
     }
     

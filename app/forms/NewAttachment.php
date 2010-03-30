@@ -64,9 +64,7 @@ class Default_Form_NewAttachment extends Zend_Form
         if (!$this->isValid($_POST)) {
             return false;
         }
-        
-        //TODO: Add $file['name'] validation (only one should exists per ticket)
-        
+                
         $values = $this->getValues();
         
         if ($this->cancel->isChecked()) {
@@ -75,15 +73,20 @@ class Default_Form_NewAttachment extends Zend_Form
             $attachment = $this->attachment;
             if ($attachment->isReceived()) {
                 $file = current($attachment->getFileInfo());
+                $create_date = new Zend_Date();
                 $content = file_get_contents($file['tmp_name']);
+                $mime = Default_Model_Upload::detectMimeType($file);
+                $name = Default_Model_Upload::getUniqueName($file['name'], $ticket->getId());
                 
                 $upload = new Default_Model_Upload();
 				$upload->setData(array(
-				    'name' => $file['name'],
-				    'mimetype' => $file['type'],
+				    'name' => $name,
+				    'mimetype' => $mime,
 				    'content_length' => $file['size'],
 				    'content' => $content,
-				    'ticket_id' => $ticket->getId()
+				    'ticket_id' => $ticket->getId(),
+				    'uploader' => Zend_Auth::getInstance()->getIdentity()->user_id,
+				    'create_date' => $create_date->toString('YYYY-MM-dd HH:mm:ss')
 				));
 				$upload->save();
             } else {
@@ -93,7 +96,7 @@ class Default_Form_NewAttachment extends Zend_Form
             $session = new Zend_Session_Namespace('TicketSystem');
             $session->messages = array(
                 'type' => 'success',
-                'content' => array("Successfully uploaded '{$file['name']}'")
+                'content' => array("Successfully uploaded '{$name}'")
             );
                         
             return true;
