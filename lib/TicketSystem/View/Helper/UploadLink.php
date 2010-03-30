@@ -16,6 +16,20 @@ class TicketSystem_View_Helper_UploadLink extends Zend_View_Helper_Abstract
     {
         $type = str_replace(array('/', '.'), '-', str_replace(array('gif','pjpeg','jpeg','png','richtext','plain'), 'x-generic', $upload['mimetype']));
         
+        if (in_array($type, array('application-octet-stream', 'application-zip', 'application-vnd-openxmlformats'))) {
+            switch (substr(strrchr($upload['name'], '.'), 1)) {
+                case 'xlsx':
+                    $type = 'application-vnd-ms-excel';
+                    break;
+                case 'pptx':
+                    $type = 'application-vnd-ms-powerpoint';
+                    break;
+                case 'docx':
+                    $type = 'application-msword';
+                    break;
+            }
+        }
+        
         $output = '<a class="' . $type . '"  onclick="window.open(this.href, \'_blank\'); return false;" href="' . 
             $this->view->url(array(
                 'action' => 'download',
