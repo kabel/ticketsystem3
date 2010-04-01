@@ -203,28 +203,28 @@ class Default_Model_Ticket extends Default_Model_Abstract
                         $select->order('m.create_date ' . ($desc ? 'DESC' : 'ASC'));
                     } elseif ($order != '_created') {
                         $order = substr($order, 1);
-                        if (!in_array($order, $resource->getDbTable()->info(Zend_Db_Table::COLS))) {
-                            throw new Exception('Invalid static attribte: ' . $order);
+                        if (in_array($order, $resource->getDbTable()->info(Zend_Db_Table::COLS))) {
+                            $select->order("t.{$order} " . ($desc ? 'DESC' : 'ASC'));
                         }
-                        $select->order("t.{$order} " . ($desc ? 'DESC' : 'ASC'));
                     }
                 } else {
-                    $attribute = self::_getAttributeByName($order);
-                    $order = $attribute['attribute_id'];
-                     $select->joinLeft(array('lv' => Default_Model_AttributeValue::getLatestSelect($order, $ticketIds)), 'lv.ticket_id = t.ticket_id', array())
+                    try{
+                        $attribute = self::_getAttributeByName($order);
+                        $order = $attribute['attribute_id'];
+                         $select->joinLeft(array('lv' => Default_Model_AttributeValue::getLatestSelect($order, $ticketIds)), 'lv.ticket_id = t.ticket_id', array())
+                            ->joinLeft(array('av1' => 'attribute_value'), 'av1.attribute_id = lv.attribute_id AND av1.changeset_id = lv.changeset_id', array())
+                            ->where('t.ticket_id IN (?)', $ticketIds)
+                            ->order('av1.value ' . ($desc ? 'DESC' : 'ASC'));
+                    } catch (Exception $e) { }
+                }
+            } else {
+                $attribute = Default_Model_Attribute::findRow($order);
+                if ($attribute) {
+                    $select->joinLeft(array('lv' => Default_Model_AttributeValue::getLatestSelect($order, $ticketIds)), 'lv.ticket_id = t.ticket_id', array())
                         ->joinLeft(array('av1' => 'attribute_value'), 'av1.attribute_id = lv.attribute_id AND av1.changeset_id = lv.changeset_id', array())
                         ->where('t.ticket_id IN (?)', $ticketIds)
                         ->order('av1.value ' . ($desc ? 'DESC' : 'ASC'));
                 }
-            } else {
-                $attribute = Default_Model_Attribute::findRow($order);
-                if (!$attribute) {
-                    throw new Exception('Invalid Attribute Id');
-                }
-                 $select->joinLeft(array('lv' => Default_Model_AttributeValue::getLatestSelect($order, $ticketIds)), 'lv.ticket_id = t.ticket_id', array())
-                    ->joinLeft(array('av1' => 'attribute_value'), 'av1.attribute_id = lv.attribute_id AND av1.changeset_id = lv.changeset_id', array())
-                    ->where('t.ticket_id IN (?)', $ticketIds)
-                    ->order('av1.value ' . ($desc ? 'DESC' : 'ASC'));
             }
         } else {
             $defaultDir = ($desc) ? 'ASC' : $defaultDir;
