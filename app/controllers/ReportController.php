@@ -22,6 +22,9 @@ class ReportController extends TicketSystem_Controller_ProtectedAction
             return $this->_helper->redirector('index', 'report');
         }
         
+        $this->view->reports = Default_Model_Ticket::getReports();
+        unset($this->view->reports[$id-1]);
+        
         $appSession = new Zend_Session_Namespace('TicketSystem');
         $appSession->lastQuery = array(
             'type' => 'report',

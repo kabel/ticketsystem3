@@ -17,7 +17,7 @@ SetEnv APPLICATION_ENV dev
 ############################################
 ## always send 404 on missing files in these folders
 
-    RewriteCond %{REQUEST_URI} !^/(skin|js)/
+    RewriteCond %{REQUEST_URI} !^/workspace/TicketSystem3/(skin|js)/
 
 ############################################
 ## never rewrite for existing files, directories and links

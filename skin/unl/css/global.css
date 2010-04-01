@@ -242,6 +242,9 @@ h4:hover .anchor, h5:hover .anchor, h6:hover .anchor {
  visibility: visible;
 }
 
+#report_head { float:left; position:relative; }
+#report_head h1 { background:url(../images/report_bg.png) no-repeat right 7px; padding-right: 25px; }
+#report_head ul { display:none; position:absolute; border-color:#f3f3f3; border-width:0 1px 2px; border-style:solid; background:#fff; padding:7px; margin-top:-8px; right:0; }
 
 /* TICKET */
 #ticket {
