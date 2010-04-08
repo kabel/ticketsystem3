@@ -200,13 +200,13 @@ class Default_Model_Attribute extends Default_Model_Abstract
     
     public function getMultiOptions($allowEmpty = true)
     {
+        $options = array();
         $extra = Zend_Json::decode($this['extra']);
         
         if (isset($extra['src']) && array_key_exists($extra['src'], self::$supportedSrc)) {
             $modelClass = self::$supportedSrc[$extra['src']];
             $options = call_user_func(array($modelClass, 'getSelectOptions'), $allowEmpty);
         } elseif (isset($extra['options'])) {
-            $options = array();
             if ($allowEmpty) {
                 $options[''] = '';
             }

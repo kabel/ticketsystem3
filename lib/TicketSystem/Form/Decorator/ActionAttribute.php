@@ -22,25 +22,11 @@ class TicketSystem_Form_Decorator_ActionAttribute extends Zend_Form_Decorator_Ab
         if (is_string($attr)) {
             $attrElement = $attr;
         } else if ($attr instanceof Default_Model_Attribute) {
+            $value = $this->getOption('value');
             if ($attr['type'] == Default_Model_Attribute::TYPE_SELECT) {
-                $options = array();
-                if (!empty($attr['extra'])) {
-                    $extra = Zend_Json::decode($attr['extra']);
-                }
-                
-                if (isset($extra['src'])) {
-                    if ($extra['src'] == 'user') {
-                        $options += Default_Model_User::getSelectOptions();
-                    } else if ($extra['src'] == 'ugroup') {
-                        $options += Default_Model_Ugroup::getSelectOptions();
-                    }
-                } else {
-                    $options += $this->_buildOptionsArray($extra['options']);
-                }
-                
-                $attrElement = $view->formSelect($element->getName() . '_' . $attr['name'], null, null, $options);
+                $attrElement = $view->formSelect($element->getName() . '_' . $attr['name'], $value, null, $attr->getMultiOptions(false));
             } else {
-                $attrElement = $view->formText($element->getName() . '_' . $attr['name']);
+                $attrElement = $view->formText($element->getName() . '_' . $attr['name'], $value);
             }
         }
         
@@ -53,15 +39,5 @@ class TicketSystem_Form_Decorator_ActionAttribute extends Zend_Form_Decorator_Ab
         $this->removeOption('attribute');
         
         return $attr;
-    }
-    
-    protected function _buildOptionsArray($optionSpec)
-    {
-        $options = array();
-        foreach ($optionSpec as $opt) {
-            $options[$opt] = $opt;
-        }
-        
-        return $options;
     }
 }

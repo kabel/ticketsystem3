@@ -228,6 +228,13 @@ class Default_Form_EditTicket extends Zend_Form
                         if (is_array($attr)) {
                             if (isset($attr['model'])) {
                                 $attr = Default_Model_Attribute::get($attr['model']);
+                                if (null === $attr) {
+                                    throw new InvalidArgumentException();
+                                }
+                                
+                                if (isset($_POST['action_' . $name . '_' . $attr['name']])) {
+                                    $aaSpec['value'] = $_POST['action_' . $name . '_' . $attr['name']];
+                                }
                             } elseif (isset($attr['static'])) {
                                 $attr = $attr['static'];
                             } else {

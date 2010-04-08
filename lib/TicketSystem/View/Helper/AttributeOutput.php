@@ -34,28 +34,10 @@ class TicketSystem_View_Helper_AttributeOutput extends Zend_View_Helper_Abstract
             case Default_Model_Attribute::TYPE_RADIO:
             case Default_Model_Attribute::TYPE_SELECT:
     		    if (isset($extra['src'])) {
-                    if ($extra['src'] == 'user') {
+                    if (array_key_exists($extra['src'], Default_Model_Attribute::$supportedSrc)) {
+                        $modelClass = Default_Model_Attribute::$supportedSrc[$extra['src']];
                         if (is_numeric($value)) {
-                            $model = Default_Model_User::findRow($value);
-                            if (null === $model) {
-                                $value = '--UNKNOWN--';
-                            } elseif ($escape) {
-                                $value = $this->view->escape((string)$model);
-                            } else {
-                                $value = (string)$model;
-                            }
-                        } else {
-                            if (empty($value)) {
-                                $value = 'None';
-                            } elseif ($escape) {
-                                $value = '<del>' . $this->view->escape($value) . '</del>';
-                            } else {
-                                $value = '--' . $value;
-                            }
-                        }
-                    } else if ($extra['src'] == 'ugroup') {
-                        if (is_numeric($value)) {
-                            $model = Default_Model_Ugroup::findRow($value);
+                            $model = call_user_func(array($modelClass, 'findRow'), $value);
                             if (null === $model) {
                                 $value = '--UNKNOWN--';
                             } elseif ($escape) {
