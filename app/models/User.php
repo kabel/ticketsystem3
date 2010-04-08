@@ -155,7 +155,7 @@ class Default_Model_User extends Default_Model_Abstract
             $options[''] = '';
         }
         
-        $select = self::getResourceInstance()->select()->order('username');
+        $select = self::getResourceInstance()->select()->where('status = ?', self::STATUS_ACTIVE)->order('username');
         $users = self::fetchAll($select);
         
         foreach ($users as $user) {
