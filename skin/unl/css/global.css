@@ -407,14 +407,13 @@ table.data {
 	border:1px solid #d7d7d7;
 }
 table.full-width { width: 100%; } 
-#maincontent table.data th {
+#maincontent table.data thead {
 	background-color:#3E83C9;
 	border-bottom:3px solid #BFD6F5;
 	color:#fff;
 	font-weight:bold;
-	padding:7px;
-	text-align:left !important;
 }
+#maincontent table.data th { padding:7px; text-align:left !important; }
 #maincontent table.data th :link, #maincontent table.data th :visited {
 	color: #fff;
 	display: block;
@@ -426,6 +425,8 @@ table.data td {
 	border-bottom:1px solid #d7d7d7;
 	padding: 6px 5px; 
 }
+
+table.data .filters input, table.data .filters select { width:100%; }
 
 table.inline {
 	background-color:#FFFFFF;
@@ -457,7 +458,8 @@ table.data tr.priority-major td {
 table.data tr.priority-critical td {
 	background-color: #FFCFCF;
 	font-weight: bold;
-} 
+}
+table.data tr.on-mouse td { background-color: #fcf5dd; cursor:pointer; }
 
 /* CODE */
 pre {
@@ -600,3 +602,9 @@ a.edit-group {
 .paginationControl .next.disabled { background-position: -44px -22px; }
 .paginationControl .last { background-position: -66px 0; }
 .paginationControl .last.disabled { background-position: -66px -22px; }
+
+table.actions { width:100%; }
+.pager .arrow { vertical-align:middle; }
+.pager input.page { width:2em; }
+.pager select.limit { width:4em; }
+.separator { font-size:0.9em; padding: 0 6px; } 

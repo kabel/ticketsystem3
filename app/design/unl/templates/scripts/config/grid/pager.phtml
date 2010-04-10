@@ -1,0 +1,34 @@
+<?php $pageSizes = array(15, 30, 60, 120); ?>
+Page
+<?php if (isset($this->previous)): ?>
+<a class="prev" title="<?php echo $this->previous; ?>">
+    <img class="arrow" alt="Go to Previous Page" src="<?php echo $this->designUrl('images', 'pager_arrow_left.gif'); ?>" />
+</a>
+<?php else: ?>
+<img class="arrow" alt="Go to Previous Page" src="<?php echo $this->designUrl('images', 'pager_arrow_left_off.gif'); ?>" />
+<?php endif ?>
+
+<input class="page" type="text"<?php echo ($this->last <= 1) ? ' disabled="disabled"' : ''?> value="<?php echo ($this->last) ? $this->current : 0; ?>" name="page" />
+
+<?php if (isset($this->next)): ?>
+<a class="next" title="<?php echo $this->next; ?>">
+    <img class="arrow" alt="Go to Next Page" src="<?php echo $this->designUrl('images', 'pager_arrow_right.gif'); ?>" />
+</a>
+<?php else: ?>
+<img class="arrow" alt="Go to Next Page" src="<?php echo $this->designUrl('images', 'pager_arrow_right_off.gif'); ?>" />
+<?php endif ?>
+of <?php echo $this->last; ?> pages
+
+<span class="separator">|</span>
+
+View
+<select class="limit" name="limit">
+<?php foreach ($pageSizes as $ps): ?>
+    <option<?php echo ($ps == $this->itemCountPerPage) ? ' selected="selected"' : ''; ?> value="<?php echo $ps; ?>"><?php echo $ps; ?></option>
+<?php endforeach; ?>
+</select>
+per page
+
+<span class="separator">|</span>
+
+Total <?php echo isset($this->totalItemCount) ? $this->totalItemCount : 0; ?> records found

@@ -146,8 +146,11 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
             }
             $this->render('groupEdit');
         } else {
-            $this->view->userCounts = Default_Model_Ugroup::getUserCounts();
-            $this->view->groups = Default_Model_Ugroup::fetchAll();
+            $form = new Default_Form_Grid_Groups($this->view, $this->getRequest());
+            if ($this->_getParam('ajax')) {
+                $this->_helper->layout()->disableLayout();
+                return $this->render('grid/groups');
+            }
         }
     }
     
@@ -201,7 +204,11 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
                 $this->render('userEdit');
             }
         } else {
-            $this->view->users = Default_Model_User::fetchAll();
+            $form = new Default_Form_Grid_Users($this->view, $this->getRequest());
+            if ($this->_getParam('ajax')) {
+                $this->_helper->layout()->disableLayout();
+                return $this->render('grid/users');
+            }
         }
     }
     

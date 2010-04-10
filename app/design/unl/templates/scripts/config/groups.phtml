@@ -1,37 +1,15 @@
 <?php $this->headTitle('Configuration - Groups'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl('js/jquery.base64.js')); ?>
+<?php $this->headScript()->appendFile($this->baseUrl('js/jquery.grid.js')); ?>
 <?php echo $this->render('config/toolbar.phtml'); ?>
 <?php echo $this->render('messages.phtml'); ?>
 <h1>User Groups</h1> 
 <p class="a-right"><a class="add-group" href="<?php echo $this->url(array(
     'id' => 'new'
 ));?>">Add Group</a></p>
-<table class="data full-width">
-	<thead>
-		<tr>
-			<th class="one-icon">&nbsp;</th>
-			<th>Name</th>
-			<th>Shortname</th>
-			<th>Assigned Users</th>
-		</tr>
-	</thead>
-	<tbody>
-	<?php if (count($this->groups)): ?>
-    <?php $i = 0; ?>
-    <?php foreach ($this->groups as $id => $group): ?>
-    	<tr<?php echo ($i % 2 == 0 ? '' : ' class="alt"'); ?>>
-    		<td><a class="edit-group" title="Edit Group &quot;<?php echo $this->escape($group->getName()); ?>&quot;" href="<?php echo $this->url(array(
-    		    'id' => $group->getId()
-    		)); ?>">&nbsp;</a></td>
-    		<td><?php echo $this->escape($group->getName()); ?></td>
-    		<td><?php echo $this->escape($group->getShortname()); ?></td>
-    		<td><?php echo $this->userCounts[$group->getId()]; ?></td>
-    	</tr>
-    <?php $i++; ?>
-    <?php endforeach; ?>
-    <?php else: ?>
-        <tr>
-        	<td colspan="4">[None]</td>
-        </tr>
-    <?php endif; ?>
-    </tbody>
-</table>
+<div id="groupGrid">
+    <?php echo $this->render('config/grid/groups.phtml'); ?>
+</div>
+<script type="text/javascript">
+WDN.jQuery('#groupGrid').grid('<?php echo $this->url(); ?>', { useAjax:true });
+</script>

@@ -1,0 +1,58 @@
+<table class="actions">
+    <tbody>
+        <tr>
+            <td class="pager">
+                <?php echo $this->paginator; ?>
+            </td>
+            <td class="filter-actions a-right">
+                <input type="button" value="Available Reports" onclick="window.location.href = '<?php echo $this->url(array(
+                    'action' => 'index',
+                    'controller' => 'report'
+                ), 'default', true); ?>';" />
+            </td>
+        </tr>
+    </tbody>
+</table>
+<table class="data full-width">
+    <thead>
+        <tr class="headings">
+            <th><?php echo $this->sortLink($this->sort, $this->desc, '_ticket_id', 'Ticket'); ?></th>
+        <?php foreach ($this->columns as $col): ?>
+            <th><?php echo $this->sortLink($this->sort, $this->desc, $col['index'], $col['title']); ?></th>
+        <?php endforeach; ?>
+        </tr>
+    </thead>
+    <tbody>
+    <?php if ($this->paginator->count()): ?>
+    <?php foreach ($this->paginator as $item): ?>
+        <?php $this->attributeInflection($item, $this->ticketsAttrs[$item['ticket_id']], $this->ticketsDates[$item['ticket_id']]); ?>
+        <?php $rowClass = $this->attributeInflection()->getValue('priority'); ?>    
+        <?php $_url = $this->url(array('id' => $item['ticket_id']), 'ticket', true); ?>
+        <tr<?php echo ($rowClass == 'None') ? '' : ' class="priority-' . $rowClass . '"'; ?> title="<?php echo $_url; ?>">
+            <td>
+                <a href="<?php echo $_url; ?>">#<?php echo $item['ticket_id']; ?></a>
+            </td>
+        <?php foreach ($this->columns as $col): ?>
+            <td>
+            <?php if (isset($col['link'])): ?>
+            <?php $link = $col['link']; ?>
+                <a href="<?php echo $this->url($this->attributeInflection()->processLinkArray($col['link']['params']), $col['link']['route'], true)?>">
+            <?php endif; ?>
+            <?php if (isset($col['prefix'])): ?><?php echo $this->escape($col['prefix']); ?><?php endif; ?><?php echo $this->attributeInflection()->getValue($col['index']); ?><?php if (isset($col['suffix'])): ?><?php echo $this->escape($col['suffix']); ?><?php endif; ?>
+            <?php if (isset($col['link'])): ?>
+                </a>
+            <?php endif; ?>
+            </td>
+        <?php endforeach; ?>
+        </tr>
+    <?php endforeach; ?>
+    <?php else: ?>
+        <tr>
+            <td colspan="5">[No Tickets Found] - How about creating a <a href="<?php echo $this->url(array(
+               'action' => 'new', 
+               'controller' => 'ticket'
+            ), 'default', true); ?>">new ticket?</a></td>
+        </tr>
+    <?php endif;?>
+    </tbody>
+</table>

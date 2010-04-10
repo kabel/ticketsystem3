@@ -8,23 +8,9 @@ WDN.jQuery(function($){
 EOD;
 $this->headScript()->appendScript($onReady);
 ?>
-<?php $pageSizes = array(15, 30, 60, 120); ?>
+<?php $this->headScript()->appendFile($this->baseUrl('js/jquery.grid.js')); ?>
 <?php $this->headTitle($this->reportName); ?>
 <?php echo $this->render('messages.phtml'); ?>
-
-<div class="page-nav">
-	<div><a href="<?php echo $this->url(array(
-	    'action' => 'index',
-	    'controller' => 'report'
-	), 'default', true); ?>">Available Reports</a></div>
-	<div>
-		View: 
-	<?php foreach ($pageSizes as $i => $size): ?>
-		<?php if ($this->pageSize != $size): ?><a href="<?php echo $this->url(array('ps' => $size)); ?>"><?php endif; ?><?php echo $size; ?><?php if ($this->pageSize != $size): ?></a><?php endif; ?>
-		<?php if ($i != count($pageSizes) - 1): ?>|<?php endif;?>
-	<?php endforeach; ?>
-	</div>
-</div>
 <div id="report_head">
     <h1><?php echo $this->escape($this->reportName); ?></h1>
     <?php if (!empty($this->reports)): ?>
@@ -35,49 +21,10 @@ $this->headScript()->appendScript($onReady);
     </ul>
     <?php endif; ?>
 </div>
-<table class="data full-width">
-	<thead>
-		<tr>
-			<th><?php echo $this->sortLink($this->sort, $this->desc, '_ticket_id', 'Ticket'); ?></th>
-		<?php foreach ($this->columns as $col): ?>
-			<th><?php echo $this->sortLink($this->sort, $this->desc, $col['index'], $col['title']); ?></th>
-		<?php endforeach; ?>
-		</tr>
-	</thead>
-	<tbody>
-	<?php if (!empty($this->paginator)): ?>
-	<?php foreach ($this->paginator as $item): ?>
-	<?php $this->attributeInflection($item, $this->ticketsAttrs[$item['ticket_id']], $this->ticketsDates[$item['ticket_id']]); ?>
-		<?php $rowClass = $this->attributeInflection()->getValue('priority'); ?>
-		<tr<?php echo ($rowClass == 'None') ? '' : ' class="priority-' . $rowClass . '"'; ?>>
-			<td>
-				<a href="<?php echo $this->url(array('id' => $item['ticket_id']), 'ticket', true)?>">#<?php echo $item['ticket_id']; ?></a>
-			</td>
-		<?php foreach ($this->columns as $col): ?>
-			<td>
-			<?php if (isset($col['link'])): ?>
-			<?php $link = $col['link']; ?>
-				<a href="<?php echo $this->url($this->attributeInflection()->processLinkArray($col['link']['params']), $col['link']['route'], true)?>">
-			<?php endif; ?>
-			<?php if (isset($col['prefix'])): ?><?php echo $this->escape($col['prefix']); ?><?php endif; ?><?php echo $this->attributeInflection()->getValue($col['index']); ?><?php if (isset($col['suffix'])): ?><?php echo $this->escape($col['suffix']); ?><?php endif; ?>
-			<?php if (isset($col['link'])): ?>
-				</a>
-			<?php endif; ?>
-			</td>
-		<?php endforeach; ?>
-		</tr>
-	<?php endforeach; ?>
-	<?php else: ?>
-		<tr>
-			<td colspan="5">[No Tickets Found] - How about creating a <a href="<?php echo $this->url(array(
-	           'action' => 'new', 
-	           'controller' => 'ticket'
-			), 'default', true); ?>">new ticket?</a></td>
-		</tr>
-	<?php endif; ?>
-	</tbody>
-</table>
-
-<?php if (isset($this->paginator)): ?>
-<?php echo $this->paginator; ?>
-<?php endif; ?>
+<div class="clear"></div>
+<div id="ticketGrid">
+    <?php echo $this->render('report/grid.phtml'); ?>
+</div>
+<script type="text/javascript">
+WDN.jQuery('#ticketGrid').grid('<?php echo $this->url(); ?>', { useAjax:true });
+</script>
