@@ -205,7 +205,7 @@ class Text_Wiki {
     *
     */
 
-    var $delim = "\xEF\xBF\xBE";
+    var $delim = "\x1E";
 
 
     /**
