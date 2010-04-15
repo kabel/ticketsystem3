@@ -27,6 +27,10 @@
   $pageTitle = $this->headTitle()->getContainer()->getArrayCopy();
   $pageTitle = end($pageTitle);
   ?>
+  <link rel="logout" href="<?php echo $this->url(array(
+      'controller' => 'auth',
+      'action'     => 'logout-cas'
+  ), 'default', true); ?>" />
   <?php
   $this->headLink()->prependStylesheet($this->designUrl('css', 'ieLt8.css'), 'screen', 'lt IE 8');
   $this->headLink()->prependStylesheet($this->designUrl('css', 'ie8.css'), 'screen', 'IE 8');

@@ -143,12 +143,7 @@ class AuthController extends TicketSystem_Controller_EmptyAction
     
     public function logoutAction()
     {
-        $auth = Zend_Auth::getInstance();
-        if ($auth->hasIdentity()) { 
-            $userInfo = $auth->getIdentity();
-            $auth->clearIdentity();
-            session_unset();
-            Zend_Session::regenerateId();
+        if ($userInfo = $this->_resetAuth()) { 
             if ($this->_getParam('revoke')) {
                 $this->view->messages = array(
                     'type' => 'notice',
@@ -171,6 +166,7 @@ class AuthController extends TicketSystem_Controller_EmptyAction
     
     public function logoutCasAction()
     {
+        $this->_resetAuth();
         $auth = $this->_getCASAdapter();
         
         if (isset($_SERVER['HTTPS'])
@@ -185,6 +181,21 @@ class AuthController extends TicketSystem_Controller_EmptyAction
             'action' => 'index',
             'controller' => 'index'
         ), 'default', true));
+    }
+    
+    private function _resetAuth()
+    {
+        $auth = Zend_Auth::getInstance();
+        if ($auth->hasIdentity()) { 
+            $userInfo = $auth->getIdentity();
+            $auth->clearIdentity();
+            session_unset();
+            Zend_Session::regenerateId();
+            
+            return $userInfo;
+        }
+        
+        return null;
     }
     
     private function _authenticate($username, $passwd, &$userInfo, $useOldHash = false)
