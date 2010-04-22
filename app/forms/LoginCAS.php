@@ -6,7 +6,7 @@ class Default_Form_LoginCAS extends Zend_Form
     {
         $this->setMethod('get');
         
-        $this->addElement('submit', 'login', array(
+        $this->addElement('submit', 'login-cas', array(
 			'label' => 'Login'
         ));
     }
