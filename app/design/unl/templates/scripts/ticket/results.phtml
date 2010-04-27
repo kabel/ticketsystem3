@@ -8,6 +8,7 @@ EOD;
 $this->headScript()->appendScript($onReady);
 $this->headScript()->appendFile($this->baseUrl('js/jquery.grid.js'));
 ?>
+<div class="clear"></div>
 <div id="ticketGrid">
     <?php echo $this->render('ticket/results-grid.phtml'); ?>
 </div>
