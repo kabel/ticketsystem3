@@ -1,0 +1,49 @@
+<table class="actions">
+    <tbody>
+        <tr>
+            <td class="pager">
+                <?php echo $this->paginator; ?>
+            </td>
+            <td class="filter-actions a-right">&nbsp;</td>
+        </tr>
+    </tbody>
+</table>
+<?php $SEARCH = $this->search; ?>
+<table class="data full-width">
+    <thead>
+        <tr class="headings">
+            <th><?php echo $this->sortLink($this->sort, $this->desc, '_ticket_id', 'Ticket'); ?></th>
+        <?php foreach ($SEARCH['cols'] as $col): ?>
+        <?php if ($col[0] == '_'): ?>
+            <th><?php echo $this->sortLink($this->sort, $this->desc, $col, ucfirst(substr($col, 1))); ?></th>
+        <?php else: ?>
+            <?php $col = Default_Model_Attribute::get($col); ?>
+            <th><?php echo $this->sortLink($this->sort, $this->desc, $col['name'], $col['label']); ?></th>
+        <?php endif; ?>
+        <?php endforeach;?>
+        </tr>
+    </thead>
+    <tbody>
+    <?php if ($this->paginator->count()): ?>
+    <?php foreach ($this->paginator as $item): ?>
+        <?php $this->attributeInflection($item, $this->ticketsAttrs[$item['ticket_id']], $this->ticketsDates[$item['ticket_id']]); ?>
+        <?php $rowClass = $this->attributeInflection()->getValue('priority'); ?>    
+        <?php $_url = $this->url(array('id' => $item['ticket_id']), 'ticket', true); ?>
+        <tr<?php echo ($rowClass == 'None') ? '' : ' class="priority-' . $rowClass . '"'; ?> title="<?php echo $_url; ?>">
+            <td>
+                <a href="<?php echo $_url; ?>">#<?php echo $item['ticket_id']?></a>
+            </td>
+        <?php foreach ($SEARCH['cols'] as $col): ?>
+            <td>
+                <?php echo $this->attributeInflection()->getValue($col); ?>
+            </td>
+        <?php endforeach; ?>
+        </tr>
+    <?php endforeach; ?>
+    <?php else: ?>
+        <tr>
+            <td colspan="<?php echo count($SEARCH['cols']) + 1; ?>">[No Tickets Found]</td>
+        </tr>
+    <?php endif; ?>
+    </tbody>
+</table>

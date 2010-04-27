@@ -1,3 +1,5 @@
 #toolbar ul li a {
 	padding: 3px 3px 4px 21px;
 }
+
+.loading-mask { -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)"; }

@@ -5,3 +5,5 @@ table td { position: relative; }
 #mainnav { padding: 1px; }
 #mainnav li { padding: 0; }
 #mainnav :link, #mainnav :visited { padding: 3px 20px 1px; background-position: 1px 0; }
+
+.loading-mask { -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)"; }

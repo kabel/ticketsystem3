@@ -71,7 +71,7 @@ $this->headScript()->appendScript($onReady);
                 <?php foreach (Default_Model_Attribute::getAll() as $name => $attr): ?>
                 <?php if (!$attr->getIsGrid()) { continue; } ?>
                 <?php $value = $this->attributeOutput($attr, $this->attributeValue($name, $this->ticket['latest'], $this->preview), $this->ticket['self']['ticket_id']); ?>
-                <?php if ($value === false) { continue; } ?>
+        		<?php if ($value === false) { continue; } ?>
         		<?php if ($attr['type'] == Default_Model_Attribute::TYPE_TEXTAREA || ($i % 2 == 0)): ?>
         		</tr>
         		<tr>
@@ -105,12 +105,12 @@ $this->headScript()->appendScript($onReady);
 	<span class="status">(<?php echo $this->escape($this->attributeValue('status', $this->ticket['latest'])); ?><?php echo empty($resolution) ? '' : $this->escape(': ' . $resolution); ?>)</span></h1>
 <div id="ticket">
 	<div class="date">
-		<?php $_date = new Zend_Date($this->ticket['changesets'][0]['create_date'], Zend_Date::ISO_8601); ?>
-        <p>Opened <span title="<?php echo $_date; ?>"><?php echo $this->timeSince($_date); ?></span> ago</p>
+	    <?php $_date = new Zend_Date($this->ticket['changesets'][0]['create_date'], Zend_Date::ISO_8601); ?>
+		<p>Opened <span title="<?php echo $_date; ?>"><?php echo $this->timeSince($_date); ?></span> ago</p>
 	<?php $csCount = count($this->ticket['changesets']); ?>
     <?php if ($csCount > 1): ?>
-		<?php $_date = new Zend_Date($this->ticket['changesets'][$csCount-1]['create_date'], Zend_Date::ISO_8601); ?>
-        <p>Last modified <span title="<?php echo $_date; ?>"><?php echo $this->timeSince($_date); ?></span> ago</p>
+        <?php $_date = new Zend_Date($this->ticket['changesets'][$csCount-1]['create_date'], Zend_Date::ISO_8601); ?>
+		<p>Last modified <span title="<?php echo $_date; ?>"><?php echo $this->timeSince($_date); ?></span> ago</p>
 	<?php endif; ?>
 	</div>
 	<h2 class="summary"><?php echo $this->escape($this->ticket['self']['summary']); ?></h2>
@@ -124,7 +124,7 @@ $this->headScript()->appendScript($onReady);
             <?php foreach (Default_Model_Attribute::getAll() as $name => $attr): ?>
             <?php if (!$attr->getIsGrid()) { continue; } ?>
             <?php $value = $this->attributeOutput($attr, $this->attributeValue($name, $this->ticket['latest']), $this->ticket['self']['ticket_id']); ?>
-            <?php if ($value === false) { continue; } ?>
+    		<?php if ($value === false) { continue; } ?>
     		<?php if ($attr['type'] == Default_Model_Attribute::TYPE_TEXTAREA || ($i % 2 == 0)): ?>
     		</tr>
     		<tr>

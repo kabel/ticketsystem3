@@ -1,0 +1,79 @@
+<table class="actions">
+    <tbody>
+        <tr>
+            <td class="pager">
+                <?php echo $this->paginator; ?>
+            </td>
+            <td class="filter-actions a-right">
+                <input class="reset" type="button" value="Reset Filter" />
+                <input class="filter" type="button" value="Search" />
+            </td>
+        </tr>
+    </tbody>
+</table>
+<table class="data full-width">
+    <thead>
+        <tr class="headings">
+            <th>User</th>
+            <th>Description</th>
+            <th>Level</th>
+            <th>Status</th>
+            <th class="no-link">Action</th>
+        </tr>
+        <tr class="filters">
+            <th>
+                <div>
+                    <input type="text" name="username" value="<?php echo $this->escape(isset($this->filters['username']) ? $this->filters['username'] : ''); ?>" />
+                </div>
+            </th>
+            <th>
+                <div>
+                    <input type="text" name="info" value="<?php echo $this->escape(isset($this->filters['info']) ? $this->filters['info'] : ''); ?>" />
+                </div>
+            </th>
+            <th>
+                <div>
+                    <select name="level">
+                    <?php foreach (array('' => '') + Default_Model_User::getLevelStringArray() as $k => $v): ?>
+                        <option<?php echo (isset($this->filters['level']) && $this->filters['level'] == $k) ? ' selected="selected"' : ''?> value="<?php echo $k; ?>"><?php echo $this->escape($v); ?></option>
+                    <?php endforeach; ?>
+                    </select>
+                </div>
+            </th>
+            <th>
+                <div>
+                    <select name="status">
+                    <?php foreach (array('' => '') + Default_Model_User::getStatusStringArray() as $k => $v): ?>
+                        <option<?php echo (isset($this->filters['status']) && $this->filters['status'] == $k) ? ' selected="selected"' : ''?> value="<?php echo $k; ?>"><?php echo $this->escape($v); ?></option>
+                    <?php endforeach; ?>
+                    </select>
+                </div>
+            </th>
+            <th class="no-link">&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php if ($this->paginator->count()): ?>
+    <?php $i = 0; ?>
+    <?php foreach ($this->paginator as $id => $user): ?>
+        <?php $_url = $this->url(array(
+            'controller' => 'config',
+            'action' => 'users',
+            'id' => $user['user_id']
+        ), 'default', true); ?>
+        <tr<?php echo ($i % 2 == 0 ? '' : ' class="alt"'); ?> title="<?php echo $_url; ?>">
+            <td><?php echo $this->escape($user['username']); ?></td>
+            <td><?php echo $this->escape($user['info']); ?></td>
+            <td><?php echo Default_Model_User::getLevelStringValue($user['level']); ?></td>
+            <td><?php echo Default_Model_User::getStatusStringValue($user['status']); ?></td>
+            <td><a href="<?php echo $_url; ?>">Edit</a></td>
+        </tr>
+    <?php $i++; ?>
+    <?php endforeach; ?>
+    <?php else: ?>
+        <tr>
+            <td colspan="5">[None]</td>
+        </tr>
+    <?php endif;?>
+    </tbody>
+</table>

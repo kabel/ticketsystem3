@@ -23,12 +23,12 @@ $this->headScript()->appendScript($onReady);
 			<tbody>
 				<tr>
 					<th>Reporter:</th>
-                    <td><?php echo empty($this->preview['reporter']) ? '--UNKNOWN--' : $this->escape($this->preview['reporter']); ?></td>
+					<td><?php echo empty($this->preview['reporter']) ? '--UNKNOWN--' : $this->escape($this->preview['reporter']); ?></td>
     			<?php $i = 1; ?>
                 <?php foreach (Default_Model_Attribute::getAll() as $name => $attr): ?>
                 <?php if (!$attr->getIsGrid()) { continue; } ?>
                 <?php $value = $this->attributeOutput($attr, $this->attributeValue($name, array(), $this->preview)); ?>
-                <?php if ($value === false) { continue; }?>
+        		<?php if ($value === false) { continue; }?>
         		<?php if ($attr['type'] == Default_Model_Attribute::TYPE_TEXTAREA || ($i % 2 == 0)): ?>
         		</tr>
         		<tr>

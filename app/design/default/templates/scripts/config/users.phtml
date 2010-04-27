@@ -1,33 +1,15 @@
 <?php $this->headTitle('Configuration - Users'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl('js/jquery.base64.js')); ?>
+<?php $this->headScript()->appendFile($this->baseUrl('js/jquery.grid.js')); ?>
 <?php echo $this->render('config/toolbar.phtml'); ?>
 <?php echo $this->render('messages.phtml'); ?>
 <h1>System Users</h1> 
 <p class="a-right"><a class="add-user" href="<?php echo $this->url(array(
     'id' => 'new'
 ));?>">Add User</a></p>
-<table class="data full-width">
-	<thead>
-		<tr>
-			<th class="one-icon">&nbsp;</th>
-			<th>User</th>
-			<th>Description</th>
-			<th>Level</th>
-			<th>Status</th>
-		</tr>
-	</thead>
-	<tbody>
-    <?php $i = 0; ?>
-    <?php foreach ($this->users as $id => $user): ?>
-    	<tr<?php echo ($i % 2 == 0 ? '' : ' class="alt"'); ?>>
-    		<td><a class="edit-user" title="Edit User &quot;<?php echo $this->escape($user->getUsername()); ?>&quot;" href="<?php echo $this->url(array(
-    		    'id' => $user->getId()
-    		)); ?>">&nbsp;</a></td>
-    		<td><?php echo $this->escape($user->getUsername()); ?></td>
-    		<td><?php echo $this->escape($user->getInfo()); ?></td>
-    		<td><?php echo Default_Model_User::getLevelStringValue($user->getLevel()); ?></td>
-    		<td><?php echo Default_Model_User::getStatusStringValue($user->getStatus()); ?></td>
-    	</tr>
-    <?php $i++; ?>
-    <?php endforeach; ?>
-    </tbody>
-</table>
+<div id="userGrid">
+    <?php echo $this->render('config/grid/users.phtml'); ?>
+</div>
+<script type="text/javascript">
+$('#userGrid').grid('<?php echo $this->url(); ?>', { useAjax:true });
+</script>
