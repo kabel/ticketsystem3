@@ -32,7 +32,7 @@ class ReportController extends TicketSystem_Controller_ProtectedAction
             'url' => $this->view->url()
         );
         
-        $form = new Default_Form_Grid_Tickets($this->view, $this->getRequest(), $report);
+        $form = new Default_Form_Grid_Tickets_Report($this->view, $this->getRequest(), $report);
         if ($this->_getParam('ajax')) {
             $this->_helper->layout()->disableLayout();
             return $this->render('grid');

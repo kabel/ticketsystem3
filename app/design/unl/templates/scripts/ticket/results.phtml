@@ -1,61 +1,16 @@
 <?php 
 echo $this->render('ticket/search.phtml');
-$SEARCH = $this->search;
 $onReady = <<<EOD
 $(function() {
 	$("#filters").toggleClass("collapsed");
 });
 EOD;
 $this->headScript()->appendScript($onReady);
+$this->headScript()->appendFile($this->baseUrl('js/jquery.grid.js'));
 ?>
-<?php $pageSizes = array(15, 30, 60, 120); ?>
-<div style="clear: both; float:right; font-size: 0.8em; text-align: right">
-	<div>
-		View: 
-	<?php foreach ($pageSizes as $i => $size): ?>
-		<?php if ($this->pageSize != $size): ?><a href="<?php echo $this->url(array('ps' => $size)); ?>"><?php endif; ?><?php echo $size; ?><?php if ($this->pageSize != $size): ?></a><?php endif; ?>
-		<?php if ($i != count($pageSizes) - 1): ?>|<?php endif;?>
-	<?php endforeach; ?>
-	</div>
+<div id="ticketGrid">
+    <?php echo $this->render('ticket/results-grid.phtml'); ?>
 </div>
-<table class="data full-width">
-	<thead>
-		<tr>
-			<th><?php echo $this->sortLink($this->sort, $this->desc, '_ticket_id', 'Ticket'); ?></th>
-		<?php foreach ($SEARCH['cols'] as $col): ?>
-			<?php if ($col[0] == '_'): ?>
-			<th><?php echo $this->sortLink($this->sort, $this->desc, $col, ucfirst(substr($col, 1))); ?></th>
-			<?php else: ?>
-			<?php $col = Default_Model_Attribute::get($col); ?>
-			<th><?php echo $this->sortLink($this->sort, $this->desc, $col['name'], $col['label']); ?></th>
-			<?php endif; ?>
-		<?php endforeach;?>
-		</tr>
-	</thead>
-	<tbody>
-	<?php if (!empty($this->paginator)): ?>
-	<?php foreach ($this->paginator as $item): ?>
-	<?php $this->attributeInflection($item, $this->ticketsAttrs[$item['ticket_id']], $this->ticketsDates[$item['ticket_id']]); ?>
-		<?php $rowClass = $this->attributeInflection()->getValue('priority'); ?>
-		<tr<?php echo ($rowClass == 'None') ? '' : ' class="priority-' . $rowClass . '"'; ?>>
-			<td>
-				<a href="<?php echo $this->url(array('id' => $item['ticket_id']), 'ticket', true)?>">#<?php echo $item['ticket_id']?></a>
-			</td>
-		<?php foreach ($SEARCH['cols'] as $col): ?>
-			<td>
-				<?php echo $this->attributeInflection()->getValue($col); ?>
-			</td>
-		<?php endforeach; ?>
-		</tr>
-	<?php endforeach; ?>
-	<?php else: ?>
-		<tr>
-			<td colspan="<?php echo count($this->cols) + 1; ?>">[No Tickets Found]</td>
-		</tr>
-	<?php endif; ?>
-	</tbody>
-</table>
-
-<?php if (isset($this->paginator)): ?>
-<?php echo $this->paginator; ?>
-<?php endif; ?>
+<script type="text/javascript">
+WDN.jQuery('#ticketGrid').grid('<?php echo $this->url(); ?>', { useAjax:true });
+</script>

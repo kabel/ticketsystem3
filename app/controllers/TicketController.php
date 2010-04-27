@@ -78,63 +78,11 @@ class TicketController extends TicketSystem_Controller_ProtectedAction
             'type' => 'search results',
             'url' => $this->view->url()
         );
-        $sort = $this->view->sort = $this->_getParam('sort');
-        $desc = $this->view->desc = $this->_hasParam('desc');
         
-        $search = array();
-        foreach ($this->view->search['filters'] as $name => $filter) {
-            if ($name[0] == '_') {
-                $key = substr($name, 1);
-            } else {
-                $attr = Default_Model_Attribute::get($name);
-                $key = $attr['attribute_id'];
-            }
-            
-            if (isset($filter['mode'])) {
-                $search[$key] = array(
-                    'mode' => $filter['mode'],
-                    'value' => $filter['filter']
-                );
-            } else {
-                $search[$key] = $filter['filter'];
-            }
-        }
-        
-        $select = Default_Model_Ticket::getSelectFromSearch($search, $count, $sort, $desc);
-        
-        if ($count) {
-            $adapter = new Zend_Paginator_Adapter_DbTableSelect($select);
-            $adapter->setRowCount($count);
-            
-            Zend_Paginator::setDefaultScrollingStyle('Sliding');
-            Zend_View_Helper_PaginationControl::setDefaultViewPartial('paginator.phtml');
-            $paginator = $this->view->paginator = new Zend_Paginator($adapter);
-            $paginator->setView($this->view);
-            
-            if ($this->_hasParam('ps')) {
-                $pageSize = $this->_getParam('ps');
-            } elseif (isset($appSession->page_size)) {
-                $pageSize = $appSession->page_size;
-            } else {
-                $pageSize = Default_Model_Setting::get('default_page_size');
-            }
-            
-            $paginator->setItemCountPerPage($pageSize);
-            $this->view->pageSize = $appSession->page_size = $pageSize;
-            
-            if ($pg = $this->_getParam('pg')) {
-                $paginator->setCurrentPageNumber($pg);
-            }
-            
-            $ticketIds = array();
-            $attributes = array(); 
-            foreach ($paginator as $item) {
-                $ticketIds[] = $item['ticket_id'];
-                $attributes[$item['ticket_id']] = Default_Model_AttributeValue::getLatestByTicketId($item['ticket_id']);
-            }
-            
-            $this->view->ticketsAttrs = $attributes;
-            $this->view->ticketsDates = Default_Model_Changeset::getDatesByTicketId($ticketIds);
+        $form = new Default_Form_Grid_Tickets_Search($this->view, $this->getRequest());
+        if ($this->_getParam('ajax')) {
+            $this->_helper->layout()->disableLayout();
+            return $this->render('resultsGrid');
         }
     }
     
