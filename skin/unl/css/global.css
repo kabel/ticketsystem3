@@ -607,4 +607,32 @@ table.actions { width:100%; }
 .pager .arrow { vertical-align:middle; }
 .pager input.page { width:2em; }
 .pager select.limit { width:4em; }
-.separator { font-size:0.9em; padding: 0 6px; } 
+.separator { font-size:0.9em; padding: 0 6px; }
+
+/* LOADING MASK */
+.loading-mask {
+    background-color: #e0e0e0;
+    z-index: 3000;
+    position: absolute;
+    opacity: 0.9;
+}
+
+.loading-mask .loader {
+    box-shadow: 0 0 5px 1px #000;
+    -moz-box-shadow: 0 0 5px 1px #000;
+    -webkit-box-shadow: 0 0 5px #000;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    background: #fcfcfc url("/wdn/templates_3.0/css/images/loadingContent.gif") no-repeat center 82%;
+    border: 1px solid #555;
+    font-size: 0.8em;
+    font-variant: small-caps;
+    position: relative;
+    left: 50%;
+    margin-left: -38px;
+    top: 40%;
+    padding: 5px 5px 21px;
+    text-align: center;
+    width: 76px;
+}

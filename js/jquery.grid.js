@@ -11,7 +11,10 @@ var jQuery = jQuery || WDN.jQuery;
 			var self = this;
 			var reload = function(url) {
 				if (opts.useAjax) {
+					var mask = $('<div class="loading-mask"><p class="loader">Loading...</p></div>').width($(self).width()).height($(self).height());
+					$(self).before(mask);
 					$(self).load(url + (url.match(new RegExp('\\?')) ? '&ajax=true' : '?ajax=true'), function() {
+						$(self).prev('.loading-mask').remove();
 						initGrid();
 					});
 				} else {
