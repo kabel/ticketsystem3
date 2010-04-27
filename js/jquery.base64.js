@@ -42,7 +42,9 @@
  * @param {jQuery} {base64Decode:function(input))
  * @return string
  */
-var jQuery = jQuery || WDN.jQuery;
+if (!jQuery) {
+	jQuery = WDN.jQuery;
+}
 
 (function($){
 	

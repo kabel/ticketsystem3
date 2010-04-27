@@ -1,4 +1,6 @@
-var jQuery = jQuery || WDN.jQuery;
+if (!jQuery) {
+	jQuery = WDN.jQuery;
+}
 
 /*
  * jQuery autoResize (textarea auto-resizer)
