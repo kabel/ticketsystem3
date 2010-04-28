@@ -42,7 +42,13 @@ if (!jQuery) {
       subst = prefix + sel + suffix;
       if (document.selection != undefined) {
         var range = document.selection.createRange().text = subst;
-        textarea.caretPos -= suffix.length;
+        var oSel = document.selection.createRange();
+        if (sel) {
+        	oSel.move('character', range.length);
+        } else {
+	        oSel.move('character', -suffix.length);
+        }
+        oSel.select();
       } else if (textarea.setSelectionRange != undefined) {
         textarea.value = textarea.value.substring(0, start) + subst +
                          textarea.value.substring(end);
