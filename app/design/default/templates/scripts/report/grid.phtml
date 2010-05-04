@@ -48,7 +48,7 @@
     <?php endforeach; ?>
     <?php else: ?>
         <tr>
-            <td colspan="5">[No Tickets Found] - How about creating a <a href="<?php echo $this->url(array(
+            <td colspan="<?php echo count($this->columns) + 1; ?>">[No Tickets Found] - How about creating a <a href="<?php echo $this->url(array(
                'action' => 'new', 
                'controller' => 'ticket'
             ), 'default', true); ?>">new ticket?</a></td>
