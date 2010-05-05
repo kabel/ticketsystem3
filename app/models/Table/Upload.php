@@ -9,14 +9,9 @@ class Default_Model_Table_Upload extends Default_Model_Table_Abstract
   `content_length` int(10) unsigned NOT NULL,
   `content` mediumblob NOT NULL,
   `ticket_id` int(10) unsigned NOT NULL,
-  `uploader` int(10) unsigned default NULL,
-  `create_date` datetime default NULL,
   PRIMARY KEY (`upload_id`),
-  UNIQUE KEY `IX_UPLOAD_TICKET_ID_NAME` (`ticket_id`,`name`(255)),
   KEY `FK_UPLOAD_TICKET_ID` (`ticket_id`),
-  KEY `FK_UPLOAD_UPLOADER` (`uploader`),
   CONSTRAINT `FK_UPLOAD_TICKET_ID` FOREIGN KEY (`ticket_id`) REFERENCES `ticket` (`ticket_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_UPLOAD_UPLOADER` FOREIGN KEY (`uploader`) REFERENCES `user` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
     protected $_installDepends = array(
         'Default_Model_Table_Ticket',

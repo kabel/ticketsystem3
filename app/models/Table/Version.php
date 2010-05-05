@@ -9,7 +9,7 @@ class Default_Model_Table_Version extends Default_Model_Table_Abstract
   PRIMARY KEY (`code`)
 )
 ENGINE = InnoDB CHARSET utf8;",
-        "INSERT INTO `version` VALUES ('core', '0.1.2');"
+        "INSERT INTO `version` VALUES ('core', '0.1.0');"
     );
     
     protected $_name    = 'version';
