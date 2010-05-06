@@ -321,7 +321,7 @@ class Default_Form_EditTicket extends Zend_Form
                         $temp = $this->_getAuthUser()->username;
                     }
                 } elseif (isset($latest[$match[1]])) {
-                    $temp = $latest[$match[1]]['value'];
+                    $temp = $this->getView()->attributeOutput($match[1], $latest[$match[1]]['value'], null, true, true);
                 } else {
                     $temp = 'None';
                 }
