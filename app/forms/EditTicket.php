@@ -432,7 +432,8 @@ class Default_Form_EditTicket extends Zend_Form
         
         $this->addElement('hash', 'csrf_edit_ticket', array(
             'ignore' => true,
-            'decorators' => array('ViewHelper', 'Errors', array('HtmlTag', array('tag' => 'div')))
+            'decorators' => array('ViewHelper', 'Errors', array('HtmlTag', array('tag' => 'div'))),
+            'timeout' => 1800
         ));
     }
     

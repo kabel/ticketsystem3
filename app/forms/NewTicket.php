@@ -18,7 +18,6 @@ class Default_Form_NewTicket extends Zend_Form
             'FormElements',
             array('HtmlTag', array('tag' => 'dl')),
             'Fieldset'
-            
         ));
         
         $attrForm->addElement('text', 'summary_', array(
@@ -134,7 +133,8 @@ class Default_Form_NewTicket extends Zend_Form
         
         $this->addElement('hash', 'csrf_new_ticket', array(
             'ignore' => true,
-            'decorators' => array('ViewHelper', 'Errors', array('HtmlTag', array('tag' => 'div')))
+            'decorators' => array('ViewHelper', 'Errors', array('HtmlTag', array('tag' => 'div'))),
+            'timeout' => 1800
         ));
     }
     
