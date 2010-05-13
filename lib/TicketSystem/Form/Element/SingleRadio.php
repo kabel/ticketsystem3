@@ -25,7 +25,7 @@ class TicketSystem_Form_Element_SingleRadio extends Zend_Form_Element_Xhtml
                 $attr = $aa->getAttribute();
                 if ($attr instanceof Default_Model_Attribute) {
                     if ($attr['type'] == Default_Model_Attribute::TYPE_SELECT) {
-                        $validator = new Zend_Validate_InArray($attr->getMultiOptions(!$attr['is_required']));
+                        $validator = new Zend_Validate_InArray(array_keys($attr->getMultiOptions(!$attr['is_required'])));
                     } elseif ($attr['is_required']) {
                         $validator = new Zend_Validate_NotEmpty();
                     }
