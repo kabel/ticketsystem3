@@ -252,6 +252,7 @@ class Default_Form_EditTicket extends Zend_Form
                     $aaSpec['attribute'] = $attr;
                 } catch (InvalidArgumentException $ex) {
                     $aaValid = false;
+                    unset($def['actionAttribute']);
                 }
                 
                 if ($aaValid) {
@@ -263,7 +264,7 @@ class Default_Form_EditTicket extends Zend_Form
             if (isset($def['description'])) {
                 $elementSpec['description'] = $this->_buildDescription($def['description'], $latest);
             }
-            
+            $elementDecor[] = array('Errors');
             $elementDecor[] = array('HtmlTag', array('tag' => 'div', 'class' => 'action'));
             $elementSpec['decorators'] = $elementDecor;
             
@@ -361,7 +362,11 @@ class Default_Form_EditTicket extends Zend_Form
             isset($actionDef['actionAttribute']['attribute']['model'])) {
                 $model = $actionDef['actionAttribute']['attribute']['model'];
                 $key = 'action_' . $action . '_' . $model;
-                if (empty($latest[$model]) || empty($latest[$model]['value']) || $latest[$model]['value'] != $_POST[$key]) {
+                if (empty($latest[$model]) || empty($latest[$model]['value'])) {
+                    if (!empty($_POST[$key])) {
+                        $changes[$model] = $_POST[$key];
+                    }
+                } elseif ($latest[$model]['value'] != $_POST[$key]) {
                     $changes[$model] = $_POST[$key];
                 }
         }
@@ -392,8 +397,14 @@ class Default_Form_EditTicket extends Zend_Form
                 }
                 
                 $attr = Default_Model_Attribute::get($attribute);
-                if (null !== $attr && (empty($latest[$attribute]) || empty($latest[$attribute]['value']) || $latest[$attribute]['value'] != $value)) {
-                    $changes[$attribute] = $value;
+                if (null !== $attr) {
+                    if (empty($latest[$attribute]) || empty($latest[$attribute]['value'])) {
+                        if (!empty($value)) {
+                            $changes[$attribute] = $value;
+                        }
+                    } elseif ($latest[$attribute]['value'] != $value) {
+                        $changes[$attribute] = $value;
+                    }
                 }
             }
         }

@@ -22,7 +22,7 @@
 <?php echo $this->description; ?>
 
 <?php else: ?>
-<?php if (isset($this->changes)): ?>
+<?php if (!empty($this->changes)): ?>
 <?php $authorShown = true; ?>
 Changes (by <?php echo $this->author; ?>):
 <?php foreach ($this->changes as  $change): ?>
@@ -31,7 +31,7 @@ Changes (by <?php echo $this->author; ?>):
 <?php endforeach; ?>
 
 <?php endif; ?>
-<?php if (isset($this->comment)): ?>
+<?php if (!empty($this->comment)): ?>
 Comment<?php echo (!$authorShown) ? '(by ' . $this->author . ')' : ''; ?>:
 
 <?php echo $this->comment; ?>
