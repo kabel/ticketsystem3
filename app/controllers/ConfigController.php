@@ -93,8 +93,14 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
         $this->view->user = Zend_Auth::getInstance()->getIdentity();
         $this->view->ticketStatusCounts = Default_Model_Ticket::getStatusCounts();
         $this->view->userLevelCounts = Default_Model_User::getLevelCounts();
+        /* @var $db Zend_Db_Adapter_Pdo_Mysql */
         $db = Zend_Registry::get('bootstrap')->getResource('db');
         $this->view->dbConfig = $db->getConfig();
+        $stmt = $db->query($db->select()
+            ->from('TABLES', array('SUM(data_length + index_length)'), 'information_schema')
+            ->where('table_schema = ?', $this->view->dbConfig['dbname'])
+            ->group('table_schema'));
+        $this->view->dbSize = $stmt->fetchColumn(0);
         $this->view->dbVersion = $db->getServerVersion();
     }
     

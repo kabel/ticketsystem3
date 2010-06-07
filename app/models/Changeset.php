@@ -107,6 +107,30 @@ class Default_Model_Changeset extends Default_Model_Abstract
         return $select;
     }
     
+    public static function getExpiredTicketIds($ticketIds)
+    {
+        $timeout = intval(Default_Model_Setting::get('expire_timeout'));
+        if ($timeout < 1) {
+            $timeout = 3;
+        }
+        
+        $resource = self::getResourceInstance();
+        $select = $resource->select()
+            ->from(array('cs1' => $resource->getDbTable()->info(Zend_Db_Table::NAME)), array('ticket_id'))
+            ->join(array('d' => self::getDatesSelect($ticketIds)), 'cs1.changeset_id = d.modified', array())
+            ->where('cs1.create_date < DATE_SUB(NOW(), INTERVAL ? MONTH)', $timeout);
+            
+        $ids = array();
+        $rowset = $resource->fetchAll($select);
+        if (count($rowset)) {
+            foreach ($rowset as $row) {
+                $ids[] = $row['ticket_id'];
+            }
+        }
+        
+        return $ids;
+    }
+    
     public function __construct()
     {
         parent::_init(self::$_resourceNameInit);

@@ -80,6 +80,28 @@ class Default_Model_Ticket extends Default_Model_Abstract
         return self::fetchAll($select);
     }
     
+    public static function expireUploads()
+    {
+        $attribute = self::_getAttributeByName('status');
+        
+        $select = self::_getAttributeValueSelect($attribute['attribute_id'], array('ticket_id'))
+            ->where('av1.value = ?', 'closed');
+            
+        $ids = array();
+        $tickets = self::fetchAll($select);
+        foreach ($tickets as $ticket) {
+            $ids[] = $ticket['ticket_id'];
+        }
+        
+        if (empty($ids)) {
+            return;
+        }
+        
+        $ids = Default_Model_Changeset::getExpiredTicketIds($ids);
+        
+        Default_Model_Upload::expireFromTicketId($ids);
+    }
+    
     public static function getStatusCounts()
     {
         $attribute = self::_getAttributeByName('status');
@@ -414,7 +436,7 @@ class Default_Model_Ticket extends Default_Model_Abstract
      */
     public function getUploads()
     {
-        $select = $this->getResource()->select()->from('upload', array('upload_id', 'name', 'mimetype', 'content_length', 'create_date', 'uploader'));
+        $select = $this->getResource()->select()->from('upload', array('upload_id', 'name', 'mimetype', 'content_length', 'create_date', 'uploader', 'expired_date'));
         return parent::findDependents('Default_Model_Table_Upload', null,  $select);
     }
     

@@ -4,7 +4,7 @@
 <h1>Application Statistics</h1>
 <dl>
 	<dt class="col left a-right" style="clear:both;">Database:</dt>
-	<dd class="two_col left"><strong><?php echo $this->dbConfig['dbname']; ?></strong> on <strong><?php echo $this->dbConfig['host']; ?></strong> running mysql <strong><?php echo $this->dbVersion; ?></strong></dd>
+	<dd class="two_col left"><strong><?php echo $this->dbConfig['dbname']; ?></strong> on <strong><?php echo $this->dbConfig['host']; ?></strong> running mysql <strong><?php echo $this->dbVersion; ?></strong> (<?php echo sprintf('%.2f', $this->dbSize / 1024 / 1024);?> MB)</dd>
 	<dt class="col left a-right" style="clear:both;">Tickets:</dt>
 	<dd class="two_col left">
 		<?php foreach ($this->ticketStatusCounts as $status => $count): ?>

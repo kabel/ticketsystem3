@@ -12,6 +12,11 @@ class Default_Form_Maint extends Zend_Form
             'description' => 'Deletes all information for tickets with a "closed" status'
         ));
         
+        $this->addElement('checkbox', 'expire', array(
+            'label' => 'Expire Uploads',
+            'description' => 'Removes the upload content for old, closed tickets'
+        ));
+        
         $this->addElement('checkbox', 'tickets', array(
 			'label' => 'Reset Tickets:',
             'description' => 'Removes all ticket information'
@@ -110,6 +115,12 @@ class Default_Form_Maint extends Zend_Form
                 $this->_optimizeTable(array('ticket', 'attribute_value', 'changeset', 'uploads'));
                 
                 $content[] = 'Successfully purged closed tickets';
+            }
+            
+            if ($this->expire->isChecked()) {
+                Default_Model_Ticket::expireUploads();
+                
+                $content[] = 'Successfully expired uploads';
             }
             
             if ($this->tickets->isChecked()) {

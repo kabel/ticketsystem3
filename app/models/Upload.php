@@ -72,6 +72,17 @@ class Default_Model_Upload extends Default_Model_Abstract
     	return null;
     }
     
+    public static function expireFromTicketId($ticketIds)
+    {
+        if (!is_array($ticketIds)) {
+            $ticketIds = array($ticketIds);
+        }
+        
+        $today = new Zend_Date();
+        $resource = self::getResourceInstance();
+        $resource->getDbTable()->update(array('content' => null, 'expired_date' => $today->toString('YYYY-MM-dd HH:mm:ss')), array('ticket_id IN (?)' => $ticketIds));
+    }
+    
     public static function getUniqueName($name, $ticketId, $skipOrig = false)
     {
         $resource = self::getResourceInstance();

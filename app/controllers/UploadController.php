@@ -50,6 +50,16 @@ class UploadController extends TicketSystem_Controller_ProtectedAction
             return $this->_helper->redirector('index', 'index');
         }
         
+        if (null === $upload['content']) {
+            $session = new Zend_Session_Namespace('TicketSystem');
+            $session->messages = array(
+                'type' => 'error',
+                'content' => array('The attachment you have requested has been expired.')
+            );
+            
+            return $this->_helper->redirector->gotoRoute(array('id' => $ticket['ticket_id']), 'ticket');
+        }
+        
         $name = str_replace(' ', '_', $upload['name']);
 
         $this->_helper->viewRenderer->setNoRender();

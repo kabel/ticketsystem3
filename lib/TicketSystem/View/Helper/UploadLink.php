@@ -30,13 +30,22 @@ class TicketSystem_View_Helper_UploadLink extends Zend_View_Helper_Abstract
             }
         }
         
-        $output = '<a class="' . $type . '"  onclick="window.open(this.href, \'_blank\'); return false;" href="' . 
-            $this->view->url(array(
-                'action' => 'download',
-                'controller' => 'upload',
-                'id' => $upload['upload_id']
-            ), 'default', true) . '">' . 
-            $this->view->escape($upload['name']) . '</a>';
+        $output = '';
+        $expired = !empty($upload['expired_date']);
+        if (!$expired) {
+            $output .= '<a class="' . $type . '"  onclick="window.open(this.href, \'_blank\'); return false;" href="' . 
+                $this->view->url(array(
+                    'action' => 'download',
+                    'controller' => 'upload',
+                    'id' => $upload['upload_id']
+                ), 'default', true) . '">';
+        }
+        
+        $output .= $this->view->escape($upload['name']);
+        
+        if (!$expired) {
+            $output .= '</a>';
+        }
         
         $output .= ' (' . $this->_getOutputSize($upload['content_length']) . ')';
         
@@ -55,6 +64,11 @@ class TicketSystem_View_Helper_UploadLink extends Zend_View_Helper_Abstract
         
         if (!empty($addedBy)) {
             $output .= ' - added ' . implode(' ', $addedBy);
+        }
+        
+        if ($expired) {
+            $date = new Zend_Date($upload['expired_date'], Zend_Date::ISO_8601);
+            $output .= sprintf(' - expired <span title="%s">%s ago</span>', (string)$date, $this->view->timeSince($date));
         }
         
         return $output;
