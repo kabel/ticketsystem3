@@ -166,7 +166,7 @@ class Default_Model_Setting extends Default_Model_Abstract
             'always_notify_reporter' => array(1, self::TYPE_BOOL),
             'always_notify_updater'  => array(0, self::TYPE_BOOL),
             'default_page_size'      => array(15, self::TYPE_INT),
-            'expire_timout'          => array(3, self::TYPE_INT),
+            'expire_timeout'         => array(3, self::TYPE_INT),
             'global_cc'              => array('', self::TYPE_STRING),
             'lockout_cas'            => array(0, self::TYPE_BOOL),
             'notification_from'      => array('nobody@localhost', self::TYPE_STRING),
