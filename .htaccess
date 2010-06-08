@@ -33,4 +33,11 @@ SetEnv APPLICATION_ENV dev
 
 </IfModule>
 
+<IfModule mod_php5.c>
+    php_value memory_limit 128M
+    php_value post_max_size 32M
+    php_value upload_max_filesize 32M
+    php_value max_execution_time 18000
+</IfModule>
+
 Redirect 301 /ticketsystem/main.php http://ucommxsrv1.unl.edu/ticketsystem/

@@ -19,12 +19,12 @@ class Default_Form_NewAttachment extends Zend_Form
                 array('Label', array('tag' => 'dt'))
             ),
             'validators' => array(
-                array('Size', false, 500 * 1024),
+                array('Size', false, 6.3 * 1024 * 1024),
                 array('Extension', false, array('gif','jpg','jpeg','xls','xlsx','png','pdf','doc','docx','ppt','pptx','pot','pps','zip','txt','rtf','htm','shtml','html'))
             ),
-            'maxFileSize' => (500 * 1024),
+            'maxFileSize' => (6.3 * 1024 * 1024),
             'required' => true,
-            'description' => 'size limit 500 KB'
+            'description' => 'size limit 6.3 MB'
         ));
         
         $this->addElement('submit', 'save', array(

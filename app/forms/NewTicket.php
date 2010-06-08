@@ -103,13 +103,13 @@ class Default_Form_NewTicket extends Zend_Form
             ),
             'validators' => array(
                 array('Count', false, array(0, 5)),
-                array('Size', false, 500 * 1024),
+                array('Size', false, 6.3 * 1024 * 1024),
                 array('Extension', false, array('gif','jpg','jpeg','xls','xlsx','png','pdf','doc','docx','ppt','pptx','pot','pps','zip','txt','rtf','htm','shtml','html'))
             ),
             'multiFile' => 5,
-            'maxFileSize' => (500 * 1024),
+            'maxFileSize' => (6.3 * 1024 * 1024),
             'required' => false,
-            'description' => 'Max file size = 500 KB' 
+            'description' => 'Max file size = 6.3 MB' 
         ));
         
         $this->addSubForm($uploadForm, 'uploads');
