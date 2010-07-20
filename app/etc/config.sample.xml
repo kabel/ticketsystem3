@@ -65,6 +65,11 @@
 			</report>
 		</routes>
 		
+		<cron>
+          <servername>localhost</servername>
+          <baseurl>/workspace/TicketSystem3</baseurl>
+        </cron>
+		
 		<reports>
 			<report>
 				<name>All Tickets</name>

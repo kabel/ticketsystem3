@@ -131,39 +131,42 @@ class Default_Model_Ticket extends Default_Model_Abstract
      * @param int $count The number of unique ticket's for the search returned
      * @param int|string $order The attribute
      * @param boolean $desc Should the attribute be in descending order
+     * @param boolean $noAcl Should the ACL check be skipped
      * @return Zend_Db_Table_Select
      */
-    public static function getSelectFromSearch($search, &$count, $order = null, $desc = false)
+    public static function getSelectFromSearch($search, &$count, $order = null, $desc = false, $noAcl = false)
     {
         $select = self::_getSelect('DISTINCT(t.ticket_id)');
         
-        $acl = Zend_Registry::get('bootstrap')->getResource('acl');
-        $user = Zend_Auth::getInstance()->getIdentity();
-        if (!$acl->isAllowed((string)$user->level, 'ticket', 'view-all')) {
-            $perm = array();
-            $permIds = array();
-            $perm[] = self::_getCond('t.reporter', $user->user_id);
-            
-            $attribute = Default_Model_Attribute::get('owner');
-            $permIds[] = $attribute['attribute_id'];
-            $perm[] = array(
-                "(av0.attribute_id = {$attribute['attribute_id']})",
-                self::_getCond('av0.value', $user->user_id)
-            );
-            
-            $attribute = Default_Model_Attribute::get('group');
-            $userModel = Default_Model_User::fetchActive();
-            $groupIds = $userModel->getGroupIds();
-            if ($acl->isAllowed((string)$user->level, 'ticket', 'view-group') &&
-                !empty($groupIds)) {
+        if (!$noAcl) {
+            $acl = Zend_Registry::get('bootstrap')->getResource('acl');
+            $user = Zend_Auth::getInstance()->getIdentity();
+            if (!$acl->isAllowed((string)$user->level, 'ticket', 'view-all')) {
+                $perm = array();
+                $permIds = array();
+                $perm[] = self::_getCond('t.reporter', $user->user_id);
+                
+                $attribute = Default_Model_Attribute::get('owner');
                 $permIds[] = $attribute['attribute_id'];
                 $perm[] = array(
                     "(av0.attribute_id = {$attribute['attribute_id']})",
-        			self::_getCond('av0.value', $groupIds)
+                    self::_getCond('av0.value', $user->user_id)
                 );
+                
+                $attribute = Default_Model_Attribute::get('group');
+                $userModel = Default_Model_User::fetchActive();
+                $groupIds = $userModel->getGroupIds();
+                if ($acl->isAllowed((string)$user->level, 'ticket', 'view-group') &&
+                    !empty($groupIds)) {
+                    $permIds[] = $attribute['attribute_id'];
+                    $perm[] = array(
+                        "(av0.attribute_id = {$attribute['attribute_id']})",
+            			self::_getCond('av0.value', $groupIds)
+                    );
+                }
+                self::_addAttributeValueJoin($select, $permIds, 0);
+                $select->where(self::_processWhere($perm, false));
             }
-            self::_addAttributeValueJoin($select, $permIds, 0);
-            $select->where(self::_processWhere($perm, false));
         }
         
         $i = 1;

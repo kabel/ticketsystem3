@@ -1,0 +1,28 @@
+Greetings,
+
+The following ticket has been marked as urgent and has not been updated in a timely manner.
+
+<?php $this->attributeInflection($this->ticket, $this->latest, $this->dates); ?>
+#<?php echo $this->ticket['ticket_id']; ?>: <?php echo $this->ticket['summary']; ?>
+
+<?php printf("%'*75s", ''); ?>
+
+<?php foreach ($this->staticAttrs as $attr): ?>
+<?php printf(" %{$this->colWidth}s:  %s", $attr['label'], $this->attributeInflection()->getValue('_' . $attr['name'], false, false, true)); ?>
+
+<?php endforeach; ?>
+<?php foreach (array_keys($this->dates) as $attr): ?>
+<?php printf(" %{$this->colWidth}s:  %s", ucfirst($attr), $this->attributeInflection()->getValue('_' . $attr, false, false, true)); ?>
+
+<?php endforeach; ?>
+<?php foreach ($this->attrs as $attr): ?>
+<?php printf(" %{$this->colWidth}s:  %s", $attr['label'], $this->attributeInflection()->getValue($attr['name'], false, false, true)); ?>
+
+<?php endforeach; ?>
+<?php printf("%'*75s", ''); ?>
+
+Please login and update the reporter on the status of this issue. Thanks.
+
+--
+Ticket URL: <<?php echo 'http://' . $this->server . $this->url(array('id' => $this->ticket['ticket_id']), 'ticket', true); ?>>
+<?php echo Default_Model_Setting::get('site_banner'); ?> <<?php echo 'http://' . $this->server . $this->url(array('action' => 'index', 'controller' => 'index'), 'default', true); ?>>
