@@ -53,10 +53,10 @@ if (!$count) {
 }
 
 $to = array(
-//    'Eric Rasumussen' => 'erasmussen2@unl.edu',
-//    'Brett Bieber' => 'bbieber2@unl.edu',
+    'Eric Rasumussen' => 'erasmussen2@unl.edu',
+    'Brett Bieber' => 'bbieber2@unl.edu',
     'Kevin Abel' => 'kabel2@unl.edu',
-//    'Robert Crisler' => 'rcrisler1@unl.edu'
+    'Robert Crisler' => 'rcrisler1@unl.edu'
 );
 $server = $conf['servername'];
 
@@ -71,7 +71,7 @@ foreach ($rowset as $row) {
     );
     
     $target = new Zend_Date();
-    $target->subHour(4);
+    $target->subHour(3);
     
     if ($target->compare(new Zend_Date($dates['modified'], Zend_Date::ISO_8601)) < 0) {
         continue;
@@ -121,6 +121,4 @@ foreach ($rowset as $row) {
     $notification->setBodyText($body);
     
     $notification->send();
-    
-    echo $body . PHP_EOL . PHP_EOL;
 }
