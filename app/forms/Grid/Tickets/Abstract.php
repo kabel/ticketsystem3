@@ -4,11 +4,9 @@ class Default_Form_Grid_Tickets_Abstract extends Default_Form_Grid_Abstract
 {
     protected function _getPager()
     {
-        $sort = $this->view->sort = $this->getRequest()->getParam('sort');
-        $desc = $this->view->desc = ($this->getRequest()->getParam('desc') !== null);
-        
+        $this->_prepareSort();
         $search = $this->_prepareSearch();
-        $select = Default_Model_Ticket::getSelectFromSearch($search, $count, $sort, $desc);
+        $select = Default_Model_Ticket::getSelectFromSearch($search, $count, $this->view->sort, $this->view->desc);
         
         Zend_View_Helper_PaginationControl::setDefaultViewPartial('config/grid/pager.phtml');
         if ($count) {
@@ -56,5 +54,11 @@ class Default_Form_Grid_Tickets_Abstract extends Default_Form_Grid_Abstract
     protected function _prepareSearch()
     {
         return array();
+    }
+    
+    protected function _prepareSort()
+    {
+        $this->view->sort = $this->getRequest()->getParam('sort');
+        $this->view->desc = ($this->getRequest()->getParam('desc') !== null);
     }
 }

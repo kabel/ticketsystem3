@@ -33,4 +33,16 @@ class Default_Form_Grid_Tickets_Report extends Default_Form_Grid_Tickets_Abstrac
         
         return $search;
     }
+    
+    protected function _prepareSort()
+    {
+        $sort = null;
+        $desc = null;
+        if (isset($this->_report['sort'])) {
+            $sort = $this->_report['sort']['by'];
+            $desc = ($this->_report['sort']['desc'] !== null);
+        }
+        $this->view->sort = $this->getRequest()->getParam('sort', $sort);
+        $this->view->desc = ($this->getRequest()->getParam('desc', $desc));
+    }
 }

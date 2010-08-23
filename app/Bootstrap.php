@@ -13,6 +13,17 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         return $autoloader;
     }
     
+    protected function _initConfig()
+    {
+        $basePath = dirname(__FILE__);
+        $configPath = '/etc/system.xml';
+        
+        $config = new Zend_Config_Xml($basePath . $configPath, $this->getEnvironment(), true);
+        Zend_Registry::set('config', $config);
+        
+        return $config;
+    }
+    
     protected function _initUpdates()
     {
         $this->bootstrap('db');

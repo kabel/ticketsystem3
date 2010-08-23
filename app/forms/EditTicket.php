@@ -153,7 +153,7 @@ class Default_Form_EditTicket extends Zend_Form
             )
         ));
         
-        $actions = Zend_Registry::get('bootstrap')->getOption('actions');
+        $actions = Zend_Registry::get('config')->actions->toArray();
         if (!empty($actions)) {
             $this->_buildChildren($actions, $id, $latest);
         }

@@ -180,7 +180,7 @@ class Default_Model_Attribute extends Default_Model_Abstract
             return $user->username;
         }
         
-        $handlers = Zend_Registry::get('bootstrap')->getOption('handlers');
+        $handlers = Zend_Registry::get('config')->handlers->toArray();
         if (!empty($handlers) && isset($handlers[$this['name']]) && isset($handlers[$this['name']]['listValue'])) {
             $handler = $handlers[$this['name']]['listValue'];
             $method = $handler['method'];

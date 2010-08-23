@@ -369,7 +369,7 @@ class Default_Model_Ticket extends Default_Model_Abstract
     
     public static function getReports()
     {
-        $reports = Zend_Registry::get('bootstrap')->getOption('reports');
+        $reports = Zend_Registry::get('config')->reports->toArray();
         if (empty($reports['report'])) {
             return array();
         } else {
