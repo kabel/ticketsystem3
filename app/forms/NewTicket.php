@@ -134,7 +134,7 @@ class Default_Form_NewTicket extends Zend_Form
         $this->addElement('hash', 'csrf_new_ticket', array(
             'ignore' => true,
             'decorators' => array('ViewHelper', 'Errors', array('HtmlTag', array('tag' => 'div'))),
-            'timeout' => 1800
+            'timeout' => 3600
         ));
     }
     
