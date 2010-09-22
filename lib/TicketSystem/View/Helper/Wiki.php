@@ -21,6 +21,7 @@ class TicketSystem_View_Helper_Wiki extends Zend_View_Helper_Abstract
         //'Newline',
         'Paragraph',
         'Url',
+        'Ticketlink',
         'Colortext',
         'Strong',
         'Bold',
@@ -149,6 +150,7 @@ class TicketSystem_View_Helper_Wiki extends Zend_View_Helper_Abstract
             $wiki = Text_Wiki::factory('Default', $this->_rules);
             $wiki->setParseConf('Smiley', $this->_parseConf['Smiley']);
             $wiki->setRenderConf('Xhtml', 'Smiley', 'prefix', $this->view->designUrl('images', 'smilies/'));
+            $wiki->setRenderConf('Xhtml', 'Ticketlink', 'view', $this->view);
             if ($ticketId) {
                 $wiki->setRenderConf('Xhtml', 'Image', 'upload_ticket_id', $ticketId);
                 $wiki->setRenderConf('Xhtml', 'Image', 'upload_model', 'Default_Model_Upload');
