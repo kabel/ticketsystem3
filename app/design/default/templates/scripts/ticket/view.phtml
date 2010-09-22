@@ -179,8 +179,11 @@ $this->headScript()->appendScript($onReady);
 	<?php $values = $cs->setData($this->ticket['changesets'][$i])->getAttributeValues(); ?>
 	<div class="change">
 		<h3 id="comment:<?php echo $i; ?>" class="change">
-			<?php $changer = $cs->getChanger(); ?>
-			Changed <?php echo $this->timeSince(new Zend_Date($this->ticket['changesets'][$i]['create_date'], Zend_Date::ISO_8601)); ?> ago
+			<?php 
+            $changer = $cs->getChanger(); 
+            $_date = new Zend_Date($this->ticket['changesets'][$i]['create_date'], Zend_Date::ISO_8601);
+            ?>
+            Changed <span title="<?php echo $_date; ?>"><?php echo $this->timeSince($_date); ?></span> ago
 			by <?php echo empty($changer) ? '--UNKNOWN--' : $this->escape($changer['username']); ?>
 			<a class="anchor" href="#comment:<?php echo $i; ?>" title="Link to this change">&para;</a>
 		</h3>
