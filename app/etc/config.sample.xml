@@ -66,9 +66,9 @@
 		</routes>
 		
 		<cron>
-          <servername>localhost</servername>
-          <baseurl>/workspace/TicketSystem3</baseurl>
-        </cron>
+			<servername>localhost</servername>
+			<baseurl>/workspace/TicketSystem3</baseurl>
+		</cron>
 	</prod>
 	
 	<dev zf:extends="prod">
@@ -76,5 +76,20 @@
 			<display_startup_errors value="1" />
 			<display_errors value="1" />
 		</phpSettings>
+		<resources>
+			<db>
+				<params>
+					<profiler>
+						<enabled value="true" />
+						<class value="Zend_Db_Profiler_Firebug" />
+					</profiler>
+				</params>
+			</db>
+			<log>
+				<firebug>
+					<writerName value="Firebug" />
+				</firebug>
+			</log>
+		</resources>
 	</dev>
 </config>
