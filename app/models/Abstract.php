@@ -8,10 +8,10 @@ abstract class Default_Model_Abstract implements ArrayAccess
      * @var array
      */
     protected static $_underscoreCache = array();
-    
+
     /**
      * Gets a collection from on primary key(s)
-     * 
+     *
      * @param mixed $key The value(s) of the primary keys.
      * @return array
      */
@@ -21,31 +21,31 @@ abstract class Default_Model_Abstract implements ArrayAccess
         if (count($args) < 1 || empty($args[0])) {
             throw new Exception('Missing leaf class for instantiation');
         }
-        
+
         $class = $args[0];
         unset($args[0]);
-        
+
         return self::_getCollection($class, 'find', $args);
     }
-    
+
     /**
-     * 
+     *
      * @return Default_Model_Abstract
      */
     public static function findRow()
     {
         $args = func_get_args();
         $collection = call_user_func_array(array('Default_Model_Abstract', 'find'), $args);
-        
+
         if (empty($collection)) {
             return null;
         }
-        
+
         return array_shift($collection);
     }
-    
+
     /**
-     * 
+     *
      * @return Default_Model_Abstract
      */
     public static function fetchRow()
@@ -54,23 +54,23 @@ abstract class Default_Model_Abstract implements ArrayAccess
         if (count($args) < 1 || empty($args[0])) {
             throw new Exception('Missing leaf class for instantiation');
         }
-        
+
         $class = $args[0];
         unset($args[0]);
-        
+
         $obj = new $class;
         $row = call_user_func_array(array($obj->getResource(), 'fetchRow'), $args);
-        
+
         if (!empty($row)) {
             $obj->setData($row);
             return $obj;
         }
-        
+
         return null;
     }
-    
+
     /**
-     * 
+     *
      * @return array
      */
     public static function fetchAll()
@@ -79,18 +79,18 @@ abstract class Default_Model_Abstract implements ArrayAccess
         if (count($args) < 1 || empty($args[0])) {
             throw new Exception('Missing leaf class for instantiation');
         }
-        
+
         $class = $args[0];
         unset($args[0]);
-        
+
         return self::_getCollection($class, 'fetchAll', $args);
     }
-    
+
     private static function _getCollection($class, $func, $args)
     {
         $template = new $class();
         $rowset = call_user_func_array(array($template->getResource(), $func), $args);
-        
+
         $collection = array();
         if (count($rowset)) {
             $usedTemplate = false;
@@ -101,15 +101,15 @@ abstract class Default_Model_Abstract implements ArrayAccess
                 } else {
                     $obj = new $class();
                 }
-                
+
                 $obj->setData($row);
-                $collection[$obj[$obj->getIdFieldName()]] = $obj;
+                $collection[$obj[$obj->getSafeIdFieldName()]] = $obj;
             }
         }
-        
+
         return $collection;
     }
-    
+
     /**
      * Retrieve model resource
      *
@@ -123,24 +123,24 @@ abstract class Default_Model_Abstract implements ArrayAccess
         }
         return call_user_func(array($args[0], 'getInstance'));
     }
-    
+
     protected static function _where($condition, $value, $type = null)
     {
         /* @var $db Zend_Db_Adapter_Pdo_Mysql */
         $db = Zend_Registry::get('bootstrap')->getResource('db');
         $condition = $db->quoteInto($condition, $value, $type);
-        
+
         return "($condition)";
     }
-    
+
     protected static function _processWhere($values, $cond=true)
     {
         if (!is_array($values)) {
             $values = array($values);
         }
-        
+
         $where = array();
-        
+
         if (isset($values['cond'])) {
             $where[] = self::_processWhere($values['values'], $values['cond']);
         } else {
@@ -153,7 +153,7 @@ abstract class Default_Model_Abstract implements ArrayAccess
                         $prefix = 'OR' . ' ';
                     }
                 }
-                
+
                 if (is_array($value)) {
                     $where[] = $prefix . self::_processWhere($value);
                 } else {
@@ -161,23 +161,23 @@ abstract class Default_Model_Abstract implements ArrayAccess
                 }
             }
         }
-        
+
         $count = count($where);
         $where = implode(' ', $where);
-        
+
         if ($count > 1) {
             $where = "($where)";
         }
         return $where;
     }
-    
+
     /**
      * Object attributes
      *
      * @var Zend_Db_Table_Row_Abstract
      */
     protected $_data = null;
-    
+
     /**
      * Name of the resource model
      *
@@ -197,7 +197,7 @@ abstract class Default_Model_Abstract implements ArrayAccess
         $this->_setResourceModel($resourceModel);
         return $this;
     }
-    
+
 	/**
      * Set/Get attribute wrapper
      *
@@ -253,9 +253,9 @@ abstract class Default_Model_Abstract implements ArrayAccess
 
         return self::getResourceInstance($this->_resourceName);
     }
-    
+
     /**
-     * 
+     *
      * @param $withFromPart
      * @return Zend_Db_Table_Select
      */
@@ -274,6 +274,11 @@ abstract class Default_Model_Abstract implements ArrayAccess
         return $this->_getResource()->getIdFieldName();
     }
 
+    public function getSafeIdFieldName()
+    {
+        return implode(',', $this->getIdFieldName());
+    }
+
     /**
      * Retrieve model object identifier
      *
@@ -282,9 +287,21 @@ abstract class Default_Model_Abstract implements ArrayAccess
     public function getId()
     {
         if ($fieldName = $this->getIdFieldName()) {
+			if (is_array($fieldName)) {
+                if (count($fieldName) < 2) {
+                    return $this->getData(current($fieldName));
+                } else {
+                    $cpk = array();
+                    foreach ($fieldName as $key) {
+                        $cpk[$key] = $this->getData($key);
+                    }
+                    return $cpk;
+                }
+            }
+
             return $this->getData($fieldName);
-        } 
-        
+        }
+
         return null;
     }
 
@@ -296,16 +313,32 @@ abstract class Default_Model_Abstract implements ArrayAccess
      */
     public function setId($id)
     {
-        if ($this->getIdFieldName()) {
+        if ($fieldName = $this->getIdFieldName()) {
+            if (is_array($fieldName)) {
+                if (count($fieldName < 2)) {
+                    $this->setData($fieldName[0], $id);
+                } else {
+                    foreach ($fieldName as $key) {
+                        if (empty($id[$key])) {
+                            throw new InvalidArgumentException('Missing part of composite Id while setting Id in model');
+                        }
+
+                        $this->setData($key, $id[$key]);
+                    }
+                }
+
+                return $this;
+            }
+
             $this->setData($this->getIdFieldName(), $id);
         }
-        
+
         return $this;
     }
-    
+
     /**
      * Get row data
-     * 
+     *
      * @param string $key
      * @return mixed
      */
@@ -314,10 +347,10 @@ abstract class Default_Model_Abstract implements ArrayAccess
         if (empty($key)) {
             return $this->_data;
         }
-        
+
         return $this->_data[$key];
     }
-    
+
 	/**
      * Overwrite data in the object.
      *
@@ -340,7 +373,7 @@ abstract class Default_Model_Abstract implements ArrayAccess
             if (is_null($this->_data)) {
                 $this->_data = $this->_getResource()->getDbTable()->createRow();
             }
-            
+
             if(is_array($key)) {
                 $this->_data->setFromArray($key);
             } else {
@@ -407,11 +440,11 @@ abstract class Default_Model_Abstract implements ArrayAccess
     {
         return $this->_getResource();
     }
-    
+
     /**
-     * 
+     *
      * @param string|Zend_Db_Table_Abstract  $dependentTable
-     * @param string                         OPTIONAL $ruleKey 
+     * @param string                         OPTIONAL $ruleKey
      * @param Zend_Db_Table_Select           OPTIONAL $select
      * @return Zend_Db_Table_Rowset_Abstract
      */
@@ -420,14 +453,14 @@ abstract class Default_Model_Abstract implements ArrayAccess
         if (!$this->hasData()) {
             return null;
         }
-        
+
         return $this->_data->findDependentRowset($dependentTable, $ruleKey, $select);
     }
-    
+
 	/**
-     * 
+     *
      * @param string|Zend_Db_Table_Abstract  $parentTable
-     * @param string                         OPTIONAL $ruleKey 
+     * @param string                         OPTIONAL $ruleKey
      * @param Zend_Db_Table_Select           OPTIONAL $select
      * @return Zend_Db_Table_Row_Abstract
      */
@@ -436,12 +469,12 @@ abstract class Default_Model_Abstract implements ArrayAccess
         if (!$this->hasData()) {
             return null;
         }
-        
+
         return $this->_data->findParentRow($parentTable, $ruleKey, $select);
     }
-    
+
     /**
-     * 
+     *
      * @param string|Zend_Db_Table_Abstract  $table
      * @param string|Zend_Db_Table_Abstract  $intersection
      * @param string                         OPTIONAL $rule1
@@ -454,10 +487,10 @@ abstract class Default_Model_Abstract implements ArrayAccess
         if (!$this->hasData()) {
             return null;
         }
-        
+
         return $this->_data->findManyToManyRowset($table, $intersection, $rule1, $rule2, $select);
     }
-    
+
     /**
      * If $key is empty, checks whether there's any data in the object
      * Otherwise checks if the specified attribute is set.
@@ -472,7 +505,7 @@ abstract class Default_Model_Abstract implements ArrayAccess
         }
         return isset($this->_data[$key]);
     }
-    
+
     /**
      * Unset data from the object.
      *
@@ -493,32 +526,32 @@ abstract class Default_Model_Abstract implements ArrayAccess
         }
         return $this;
     }
-    
+
     public function offsetExists($offset)
     {
         return $this->hasData($offset);
     }
-    
+
     public function offsetUnset($offset)
     {
         $this->unsetData($offset);
     }
-    
+
     public function offsetGet($offset)
     {
         return $this->getData($offset);
     }
-    
+
     public function offsetSet($offset, $value)
     {
         $this->setData($offset, $value);
     }
-    
+
     public function toArray()
     {
         return $this->_data->toArray();
     }
-    
+
     /**
      * Converts field names for setters and geters
      *

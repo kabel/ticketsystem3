@@ -2,8 +2,8 @@
 
 class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 {
-    protected $_version = '0.1.3';
-    
+    protected $_version = '0.1.4';
+
     protected function _initAutoload()
     {
         $autoloader = new Zend_Application_Module_Autoloader(array(
@@ -12,34 +12,34 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         ));
         return $autoloader;
     }
-    
+
     protected function _initConfig()
     {
         $basePath = dirname(__FILE__);
         $configPath = '/etc/system.xml';
-        
+
         $config = new Zend_Config_Xml($basePath . $configPath, $this->getEnvironment(), true);
         Zend_Registry::set('config', $config);
-        
+
         return $config;
     }
-    
+
     protected function _initUpdates()
     {
         $this->bootstrap('db');
         $this->bootstrap('autoload');
-        
+
         $version = Default_Model_Version::findRow('core');
-        
+
         if ($version && (version_compare($version->getVersion(), $this->_version) === -1)) {
             $fromVersion = $version->getVersion();
             $toVersion = $this->_version;
-            
+
             $sqlFilesDir = dirname(__FILE__) . '/sql';
             if (!is_dir($sqlFilesDir) || !is_readable($sqlFilesDir)) {
                 return;
             }
-            
+
             $arrAvailableFiles = array();
             $sqlDir = dir($sqlFilesDir);
             while (false !== ($sqlFile = $sqlDir->read())) {
@@ -52,23 +52,23 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
             if (empty($arrAvailableFiles)) {
                 return;
             }
-            
+
             $arrModifyFiles = $this->_getUpdateSqlFiles($fromVersion, $toVersion, $arrAvailableFiles);
             if (empty($arrModifyFiles)) {
                 return;
             }
-            
+
             foreach ($arrModifyFiles as $resourceFile) {
                 $sqlFile = $sqlFilesDir.'/'.$resourceFile['fileName'];
                 $fileType = pathinfo($resourceFile['fileName'], PATHINFO_EXTENSION);
-                
+
                 try {
                     if ($fileType == 'php') {
                         $result = include($sqlFile);
                     } else {
                         $result = false;
                     }
-                    
+
                     if ($result) {
                         $version->setVersion($resourceFile['toVersion']);
                         $version->save();
@@ -79,11 +79,11 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
             }
         }
     }
-    
+
     protected function _getUpdateSqlFiles($fromVersion, $toVersion, $arrFiles)
     {
         $arrRes = array();
-        
+
         uksort($arrFiles, 'version_compare');
         foreach ($arrFiles as $version => $file) {
             $version_info = explode('-', $version);
@@ -98,18 +98,18 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
                 $arrRes[] = array('toVersion'=>$infoTo, 'fileName'=>$file);
             }
         }
-        
+
         return $arrRes;
     }
-    
+
     protected function _initRegistry()
     {
         $registry = Zend_Registry::getInstance();
         Zend_Registry::set('bootstrap', $this);
-        
+
         return $registry;
     }
-    
+
     protected function _initDoctype()
     {
         $this->bootstrap('view');
@@ -117,7 +117,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $view->doctype('XHTML1_TRANSITIONAL');
         $view->env = $this->getEnvironment();
     }
-    
+
     protected function _initRoutes()
     {
         $this->bootstrap('frontController');
@@ -127,38 +127,38 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $router = $front->getRouter();
         $router->addConfig($routes);
     }
-    
+
     protected function _initTheme()
     {
         $basePath = dirname(__FILE__);
         $theme = $this->getTheme();
-        
+
         $this->bootstrap('view');
         $view = $this->getResource('view');
         $view->setBasePath($basePath . '/design/' . $theme . '/templates');
         $view->addHelperPath('TicketSystem/View/Helper', 'TicketSystem_View_Helper');
-        
+
         $this->bootstrap('layout');
         $layout = $this->getResource('layout');
         $layout->setLayoutPath($basePath . '/design/' . $theme . '/layouts');
         //$layout->setView = $view;
     }
-    
+
     protected function _initAcl()
     {
         $this->bootstrap('db');
         $acl = new Zend_Acl();
-        
+
         //ACL Resources
         $acl->addResource('config');
         $acl->addResource('ticket');
-        
+
         //ACL Roles
         $acl->addRole((string)Default_Model_User::LEVEL_GUEST);
         $acl->addRole((string)Default_Model_User::LEVEL_USER, (string)Default_Model_User::LEVEL_GUEST);
         $acl->addRole((string)Default_Model_User::LEVEL_MODERATOR, (string)Default_Model_User::LEVEL_USER);
         $acl->addRole((string)Default_Model_User::LEVEL_ADMIN);
-        
+
         //ACL Rules
         $acl->allow((string)Default_Model_User::LEVEL_ADMIN);
         $acl->allow((string)Default_Model_User::LEVEL_GUEST, 'config', 'profile');
@@ -167,7 +167,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         } else {
             $acl->allow((string)Default_Model_User::LEVEL_USER, 'ticket', 'create');
         }
-        
+
         if (!Default_Model_Setting::get('restrict_view_user')) {
             $acl->allow((string)Default_Model_User::LEVEL_GUEST, 'ticket', 'view-all');
         } else {
@@ -177,18 +177,18 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
                 $acl->allow((string)Default_Model_User::LEVEL_MODERATOR, 'ticket', 'view-group');
             }
         }
-        
+
         $acl->allow((string)Default_Model_User::LEVEL_MODERATOR, 'ticket', 'edit-cc');
         $acl->allow((string)Default_Model_User::LEVEL_MODERATOR, 'ticket', 'reassign');
-        
+
         return $acl;
     }
-    
+
     public function getTheme()
     {
         $skinConfig = $this->getOption('skin');
         $theme = is_null($skinConfig['theme']) ? 'default' : $skinConfig['theme'];
-        
+
         return $theme;
     }
 }

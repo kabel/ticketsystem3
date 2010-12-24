@@ -4,7 +4,7 @@ class Default_Form_EditTicket extends Zend_Form
 {
     protected $_actionCache = array();
     protected $_listValueCache = array();
-    
+
     public function init()
     {
         $this->setMethod('post');
@@ -13,7 +13,7 @@ class Default_Form_EditTicket extends Zend_Form
             'FormElements',
             'Form'
         ));
-        
+
         $this->addElement('textarea', 'comment', array(
             'class' => 'wikitext',
             'required' => false,
@@ -26,36 +26,36 @@ class Default_Form_EditTicket extends Zend_Form
                 array('HtmlTag', array('tag' => 'div', 'class' => 'field'))
             )
         ));
-        
+
         $this->addDisplayGroup(array('comment'), 'comment-field', array(
             'decorators' => array(
                 'FormElements',
                 array('HtmlTag', array('tag' => 'div'))
             )
         ));
-        
+
         $attrForm = new Zend_Form_SubForm();
         $attrForm->setLegend('Change Properties')
             ->setDecorators(array(
             'FormElements',
             array('HtmlTag', array('tag' => 'dl')),
             'Fieldset'
-            
+
         ));
-        
+
         $attrs = Default_Model_Attribute::getAll();
         $i = 0;
         foreach ($attrs as $name => $attr) {
             if ($attr['is_hidden']) {
                 continue;
             }
-            
+
             $spec = array(
                 'required' => (bool)$attr['is_required'],
             	'label' => $attr['label'] . ':',
             	'prefixPath' => array('decorator' => array('TicketSystem_Form_Decorator' => 'TicketSystem/Form/Decorator/'))
             );
-            
+
             $wrapperClass = '';
             if ($attr['type'] == Default_Model_Attribute::TYPE_TEXTAREA) {
                 $i = 0;
@@ -67,19 +67,19 @@ class Default_Form_EditTicket extends Zend_Form
             }
             $spec['decorators'] = $this->_getElementDecorators('properties-' . $name, $wrapperClass);
             $type = $attr['type'];
-            
+
             if (!empty($attr['extra'])) {
                 $extra = Zend_Json::decode($attr['extra']);
             }
-            
-            if ($type == Default_Model_Attribute::TYPE_TEXT && 
+
+            if ($type == Default_Model_Attribute::TYPE_TEXT &&
                 isset($extra['format']) && $extra['format'] == 'text' &&
                 isset($extra['list-acl']) && !$this->_isAclAllowed($extra['list-acl'])) {
                     $type = Default_Model_Attribute::TYPE_CHECKBOX;
                     $this->_listValueCache[$name] = $listItem = $attr->handleListValue();
                     $spec['description'] = 'Add ' . $listItem;
             }
-            
+
             switch ($type) {
                 case Default_Model_Attribute::TYPE_TEXTAREA:
                 case Default_Model_Attribute::TYPE_TEXT:
@@ -91,24 +91,24 @@ class Default_Form_EditTicket extends Zend_Form
                     $spec['multiOptions'] = $options;
                     break;
             }
-            
+
             $attrForm->addElement(Default_Model_Attribute::getElementType($type), $name, $spec);
-            
+
             $i++;
         }
-        
+
         $this->addSubForm($attrForm, 'properties');
     }
-    
+
     public function prepareFromLatest($id, $latest)
     {
         $attrForm = $this->getSubForm('properties');
-        $user = Zend_Auth::getInstance()->getIdentity(); 
-        
+        $user = Zend_Auth::getInstance()->getIdentity();
+
         foreach ($latest as $name => $row) {
             if ($element = $attrForm->getElement($name)) {
                 $element->setValue($row['value']);
-                
+
                 $attr = Default_Model_Attribute::get($name);
                 if ($attr['type'] == Default_Model_Attribute::TYPE_TEXT && !empty($attr['extra'])) {
                     $extra = Zend_Json::decode($attr['extra']);
@@ -120,9 +120,9 @@ class Default_Form_EditTicket extends Zend_Form
                 }
             }
         }
-        
+
         $this->_addActionElements($id, $latest);
-        
+
         $this->addDisplayGroup($this->_getActionElements(), 'action', array(
             'legend' => 'Action',
             'decorators' => array(
@@ -130,14 +130,14 @@ class Default_Form_EditTicket extends Zend_Form
                 'Fieldset'
             )
         ));
-        
+
         $this->_addButtonElements();
     }
-    
+
     protected function _addActionElements($id, $latest)
     {
         $this->addPrefixPath('TicketSystem_Form_Element', 'TicketSystem/Form/Element/', 'element');
-        
+
         $this->_actionCache['leave'] = array();
         $this->addElement('singleRadio', 'action_leave', array(
             'label' => 'leave',
@@ -152,13 +152,13 @@ class Default_Form_EditTicket extends Zend_Form
                 array('HtmlTag', array('tag' => 'div', 'class' => 'action'))
             )
         ));
-        
+
         $actions = Zend_Registry::get('config')->actions->toArray();
         if (!empty($actions)) {
             $this->_buildChildren($actions, $id, $latest);
         }
     }
-    
+
     protected function _buildChildren($children, $id, $latest)
     {
         foreach ($children as $type => $def) {
@@ -171,14 +171,14 @@ class Default_Form_EditTicket extends Zend_Form
             }
         }
     }
-    
+
     protected function _buildChild($type, $def, $id, $latest)
     {
         if ($type == 'action') {
             if (empty($def['name'])) {
                 return;
             }
-            
+
             $name = $def['name'];
             if (array_key_exists($name, $this->_actionCache)) {
                 return;
@@ -197,13 +197,13 @@ class Default_Form_EditTicket extends Zend_Form
                 'ViewHelper',
                 array('Label', array('placement' => 'append'))
             );
-            
+
             if (isset($def['actionAttribute'])) {
                 $aaValid = true;
                 try {
                     $aa = $def['actionAttribute'];
                     $aaSpec = array();
-                    
+
                     if (isset($aa['separator'])) {
                         $aaSpec['separator'] = $aa['separator'];
                     }
@@ -212,16 +212,16 @@ class Default_Form_EditTicket extends Zend_Form
                         if (empty($aa['prior']['attribute'])) {
                             throw new InvalidArgumentException();
                         }
-                        
+
                         $attr = $aa['prior']['attribute'];
                         $default = isset($aa['prior']['default']) ? $aa['prior']['default'] : null;
-                        
-                        if (!empty($latest[$attr])) { 
+
+                        if (!empty($latest[$attr])) {
                             $attr = $this->_getPriorValue($attr, $id, $latest[$attr]['changeset_id'], $default);
                         } else {
                             $attr = $default;
                         }
-                        
+
                         $def['actionAttribute']['prior']['cache'] = $attr;
                     } else {
                         $attr = $aa['attribute'];
@@ -231,7 +231,7 @@ class Default_Form_EditTicket extends Zend_Form
                                 if (null === $attr) {
                                     throw new InvalidArgumentException();
                                 }
-                                
+
                                 if (isset($_POST['action_' . $name . '_' . $attr['name']])) {
                                     $aaSpec['value'] = $_POST['action_' . $name . '_' . $attr['name']];
                                 }
@@ -248,18 +248,18 @@ class Default_Form_EditTicket extends Zend_Form
                             }
                         }
                     }
-                    
+
                     $aaSpec['attribute'] = $attr;
                 } catch (InvalidArgumentException $ex) {
                     $aaValid = false;
                     unset($def['actionAttribute']);
                 }
-                
+
                 if ($aaValid) {
                     $elementDecor[] = array('ActionAttribute', $aaSpec);
                 }
             }
-            
+
             $elementDecor[] = array('Description', array('tag' => 'span', 'class' => 'hint'));
             if (isset($def['description'])) {
                 $elementSpec['description'] = $this->_buildDescription($def['description'], $latest);
@@ -267,23 +267,23 @@ class Default_Form_EditTicket extends Zend_Form
             $elementDecor[] = array('Errors');
             $elementDecor[] = array('HtmlTag', array('tag' => 'div', 'class' => 'action'));
             $elementSpec['decorators'] = $elementDecor;
-            
+
             $this->_actionCache[$name] = $def;
             $this->addElement('singleRadio', 'action_' . $name, $elementSpec);
         } elseif ($type == 'conditional') {
             if (empty($def['children']) || empty($def['value'])) {
                 return;
             }
-            
+
             $condType = isset($def['type']) ? $def['type'] : 'attribute';
-            
+
             $value = $def['value'];
             $not = false;
             if (is_array($value) && isset($value['not'])) {
                 $not = true;
                 $value = $value['not'];
             }
-            
+
             if ($condType == 'acl') {
                 $cond = $this->_isAclAllowed($value);
             } elseif ($condType == 'attribute') {
@@ -293,11 +293,11 @@ class Default_Form_EditTicket extends Zend_Form
                 $attribute = $def['on'];
                 $cond = ($latest[$attribute]['value'] == $value);
             }
-            
+
             if ($not) {
                 $cond = !$cond;
             }
-            
+
             if ($cond) {
                 $this->_buildChildren($def['children'], $id, $latest);
             } elseif (!empty($def['else'])) {
@@ -305,7 +305,7 @@ class Default_Form_EditTicket extends Zend_Form
             }
         }
     }
-    
+
     protected function _buildDescription($desc, $latest)
     {
         if (preg_match_all('/{{(\w+)}}/', $desc, $matches, PREG_SET_ORDER)) {
@@ -315,7 +315,7 @@ class Default_Form_EditTicket extends Zend_Form
                 if (in_array($match[0], $search)) {
                     continue;
                 }
-                
+
                 $temp = '';
                 if ($match[1][0] == '_') {
                     if ($match[1] == '_auth') {
@@ -326,39 +326,39 @@ class Default_Form_EditTicket extends Zend_Form
                 } else {
                     $temp = 'None';
                 }
-                
+
                 $search[] = $match[0];
                 $replace[] = $temp;
             }
-            
+
             $desc = str_replace($search, $replace, $desc);
         }
-        
+
         return $desc;
     }
-    
+
     protected function _getActionElements()
     {
         $actions = array();
         foreach (array_keys($this->_actionCache) as $action) {
             $actions[] = 'action_' . $action;
         }
-        
+
         return $actions;
     }
-    
+
     protected function _isValidAction($action)
     {
         return array_key_exists($action, $this->_actionCache);
     }
-    
+
     protected function _handleActionSave($action, &$changes, $latest)
     {
         $actionDef = $this->_actionCache[$action];
-        
+
         // Auto handle ActionAttributes that use a model
-        if (isset($actionDef['actionAttribute']) && 
-            is_array($actionDef['actionAttribute']['attribute']) && 
+        if (isset($actionDef['actionAttribute']) &&
+            is_array($actionDef['actionAttribute']['attribute']) &&
             isset($actionDef['actionAttribute']['attribute']['model'])) {
                 $model = $actionDef['actionAttribute']['attribute']['model'];
                 $key = 'action_' . $action . '_' . $model;
@@ -370,7 +370,7 @@ class Default_Form_EditTicket extends Zend_Form
                     $changes[$model] = $_POST[$key];
                 }
         }
-        
+
         if (isset($actionDef['save'])) {
             foreach ($actionDef['save'] as $attribute => $value) {
                 if (is_array($value)) {
@@ -395,7 +395,7 @@ class Default_Form_EditTicket extends Zend_Form
                         $value = $this->_getAuthUser()->user_id;
                     }
                 }
-                
+
                 $attr = Default_Model_Attribute::get($attribute);
                 if (null !== $attr) {
                     if (empty($latest[$attribute]) || empty($latest[$attribute]['value'])) {
@@ -409,45 +409,45 @@ class Default_Form_EditTicket extends Zend_Form
             }
         }
     }
-    
+
     protected function _getAuthUser()
     {
         return Zend_Auth::getInstance()->getIdentity();
     }
-    
+
     protected function _isAclAllowed($privledge)
     {
         $user = $this->_getAuthUser();
         $acl = Zend_Registry::get('bootstrap')->getResource('acl');
         return $acl->isAllowed((string)$user->level, 'ticket', $privledge);
     }
-    
+
     protected function _addButtonElements()
     {
         $this->addElement('submit', 'preview', array(
 			'label' => 'Preview',
         	'decorators' => $this->_getButtonDecorators()
         ));
-        
+
         $this->addElement('submit', 'save', array(
 			'label' => 'Submit changes',
 			'decorators' => $this->_getButtonDecorators()
         ));
-        
+
         $this->addDisplayGroup(array('save', 'preview'), 'buttons', array(
             'decorators' => array(
                 'FormElements',
                 array('HtmlTag', array('tag' => 'div'))
             )
         ));
-        
+
         $this->addElement('hash', 'csrf_edit_ticket', array(
             'ignore' => true,
             'decorators' => array('ViewHelper', 'Errors', array('HtmlTag', array('tag' => 'div'))),
             'timeout' => 3600
         ));
     }
-    
+
     protected function _getElementDecorators($id, $class='')
     {
         return array(
@@ -458,7 +458,7 @@ class Default_Form_EditTicket extends Zend_Form
             array('Label', array('tag' => 'dt', 'class' => $class))
         );
     }
-    
+
     protected function _getButtonDecorators()
     {
         return array(
@@ -466,19 +466,19 @@ class Default_Form_EditTicket extends Zend_Form
             'ViewHelper'
         );
     }
-    
+
     protected function _getPriorValue($attrId, $id, $csId, $default = null) {
         if (!is_numeric($attrId)) {
             $attr = Default_Model_Attribute::get($attrId);
             $attrId = $attr['attribute_id'];
         }
-        
+
         $prior = Default_Model_AttributeValue::getPrior($attrId, $id, $csId);
         return isset($prior['value']) ? $prior['value'] : $default;
     }
-    
+
     /**
-     * 
+     *
      * @param Zend_View_Interface $view
      * @param int $id   The ID of a ticket
      * @param array $latest
@@ -489,24 +489,24 @@ class Default_Form_EditTicket extends Zend_Form
         if (!$this->isValid($_POST)) {
             return false;
         }
-        
+
         $values = $this->getValues();
-        
+
         $changes = array();
 
         if ($this->_isValidAction($_POST['action'])) {
             $this->_handleActionSave($_POST['action'], $changes, $latest);
         }
-        
+
         foreach ($values['properties'] as $name => $value) {
             $attr = Default_Model_Attribute::get($name);
             if (null === $attr) {
                 continue;
             }
-            
+
             if ($attr['type'] == Default_Model_Attribute::TYPE_TEXT && !empty($attr['extra'])) {
                 $extra = Zend_Json::decode($attr['extra']);
-                if (isset($extra['format']) && $extra['format'] == 'text' && 
+                if (isset($extra['format']) && $extra['format'] == 'text' &&
                     isset($extra['list-acl']) && !$this->_isAclAllowed($extra['list-acl'])) {
                         if ($element = $this->properties->getElement($name)) {
                             if ($element->isChecked()) {
@@ -521,19 +521,19 @@ class Default_Form_EditTicket extends Zend_Form
                         }
                 }
             }
-            
+
             if (!isset($latest[$name]) || $latest[$name]['value'] != $value) {
                 $changes[$name] = $value;
             }
         }
-        
+
         if ($this->preview->isChecked()) {
             $view->preview = array(
                 'owner' => $this->_getAuthUser()->username,
                 'comment' => $values['comment'],
                 'changes' => $changes
             );
-            
+
             return false;
         } else {
             if (!empty($values['comment']) || !empty($changes)) {
@@ -547,7 +547,7 @@ class Default_Form_EditTicket extends Zend_Form
                     'user_id' => $reporter
                 ));
                 $changeset->save();
-                
+
                 foreach ($changes as $name => $value) {
                     $attr = Default_Model_Attribute::get($name);
                     if (null === $attr) {
@@ -560,14 +560,17 @@ class Default_Form_EditTicket extends Zend_Form
                         'value' => $value
                     ));
                     $valueModel->save();
+
+                    // update the latest index
+                    Default_Model_TicketIndexAttributeLatest::insertUpdate($ticket->getId(), $attr->getId(), $changeset->getId());
                 }
-                
+
                 $session = new Zend_Session_Namespace('TicketSystem');
                 $session->messages = array(
                     'type' => 'success',
                     'content' => array('Successfully updated ticket')
                 );
-                
+
                 $ticket = Default_Model_Ticket::findRow($id);
                 $view->clearVars();
                 $view->changes = array();
@@ -591,7 +594,7 @@ class Default_Form_EditTicket extends Zend_Form
                         );
                     }
                 }
-                
+
                 $recipients = $ticket->getNotifcationRecipients($newLatest);
                 $notification = new Zend_Mail('UTF-8');
                 $notification->setFrom(Default_Model_Setting::get('notification_from'));
@@ -599,43 +602,43 @@ class Default_Form_EditTicket extends Zend_Form
                     if (empty($recipients['cc'])) {
                         return $ticket->getId();
                     }
-                    
+
                     $notification->addTo(Default_Model_Setting::get('notification_from'));
                 } else {
                     foreach ($recipients['to'] as $to)  {
                         $notification->addTo($to[0], $to[1]);
                     }
                 }
-                
+
                 $replyTo = Default_Model_Setting::get('notification_replyto');
                 if (!empty($replyTo)) {
                     $notification->setReplyTo($replyTo);
                 }
-                
+
                 if (!empty($recipients['cc'])) {
                     if (Default_Model_Setting::get('use_public_cc')) {
                         $method = 'addCc';
                     } else {
                         $method = 'addBcc';
                     }
-                    
+
                     foreach ($recipients['cc'] as $cc) {
                         call_user_func_array(array($notification, $method), $cc);
                     }
                 }
-                
+
                 $notification->setSubject('RE: #' . $ticket['ticket_id'] . ': ' . $ticket['summary']);
-                
+
                 $view->ticket = $ticket;
                 $view->latest = $newLatest;
                 $view->author = $this->_getAuthUser()->username;
                 $view->comment = $changeset['comment'];
-                
+
                 $view->dates = array('modified' => $changeset['create_date']);
                 $view->staticAttrs = Default_Model_Ticket::getStaticAttrs();
                 $view->attrs = Default_Model_Attribute::getAll(true);
                 unset($view->attrs['description']);
-                
+
                 $colWidth = 0;
                 foreach ($view->staticAttrs as $col) {
                     if (strlen($col['label']) > $colWidth) {
@@ -653,14 +656,14 @@ class Default_Form_EditTicket extends Zend_Form
                     }
                 }
                 $view->colWidth = $colWidth;
-                
+
                 $body = $view->render('ticket/notification.phtml');
                 $notification->setBodyText($body);
-                
+
                 $notification->send();
             }
         }
-        
+
         return true;
     }
 }
