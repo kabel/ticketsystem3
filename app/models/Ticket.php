@@ -218,6 +218,7 @@ class Default_Model_Ticket extends Default_Model_Abstract
         }
 
         //TODO: Evaluate if there is actual savings or losses by doing the search in a single query
+        //TODO: Add another ticket index table to hold a direct link to the need changeset dates
 
         $select->join(array('d' => Default_Model_Changeset::getDatesSelect()), 't.ticket_id = d.ticket_id', array())
             ->join(array('c' => 'changeset'), 'd.created = c.changeset_id', array('created' => 'create_date'))
