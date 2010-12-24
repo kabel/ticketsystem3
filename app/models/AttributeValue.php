@@ -99,20 +99,37 @@ class Default_Model_AttributeValue extends Default_Model_Abstract
 
     public static function getLatestByTicketId($ticketId)
     {
+        $byIdAndName = self::getLatestByTicketIds($ticketId);
+        if (!empty($byIdAndName) && array_key_exists($ticketId, $byIdAndName)) {
+            return $byIdAndName[$ticketId];
+        }
+
+        return $byIdAndName;
+    }
+
+    public static function getLatestByTicketIds($ticketIds)
+    {
+        if (!is_array($ticketIds)) {
+            $ticketIds = array($ticketIds);
+        }
+
         $resource = self::getResourceInstance();
         $select = $resource->select()
             ->setIntegrityCheck(false)
             ->from(array('av1' => $resource->getDbTable()->info(Zend_Db_Table::NAME)))
             ->join(array('a' => 'attribute'), 'av1.attribute_id = a.attribute_id', array('name'))
             ->join(array('lv' => 'ticket_index_attribute_latest'),
-                'lv.attribute_id = av1.attribute_id AND lv.changeset_id = av1.changeset_id', array())
-            ->where('lv.ticket_id = ?', $ticketId);
+                'lv.attribute_id = av1.attribute_id AND lv.changeset_id = av1.changeset_id', array('ticket_id'))
+            ->where('lv.ticket_id IN (?)', $ticketIds);
 
         $rowset = $resource->fetchAll($select);
         $byName = array();
         if (count($rowset)) {
             foreach ($rowset as $row) {
-                $byName[$row['name']] = $row;
+                if (!array_key_exists($row['ticket_id'], $byName)) {
+                    $byName[$row['ticket_id']] = array();
+                }
+                $byName[$row['ticket_id']][$row['name']] = $row;
             }
         }
 
@@ -138,10 +155,18 @@ class Default_Model_AttributeValue extends Default_Model_Abstract
 
         if (array_key_exists($type, Default_Model_Attribute::$supportedSrc)) {
             $select = Default_Model_Attribute::getResourceInstance()->select()
-                ->where('extra REGEXP ?', '[{[:space:]]"src"[[:space:]]*:[[:space:]]*"' . $type . '"[,}[:space:]]');
+                ->where('extra != ?', '')
+                ->where('type = ?', Default_Model_Attribute::TYPE_SELECT);
             $attrs = Default_Model_Attribute::fetchAll($select);
+            $filtered = array();
+            foreach ($attrs as $attr) {
+                $extra = Zend_Json::decode($attr['extra']);
+                if (isset($extra['src']) && $extra['src'] == $type) {
+                    $filtered[] = $attr;
+                }
+            }
 
-            if (!empty($attrs)) {
+            if (!empty($filtered)) {
                 /* @var $resource Default_Model_Db_Abstract */
                 $modelClass = Default_Model_Attribute::$supportedSrc[$type];
                 $resource = call_user_func(array($modelClass, 'getResourceInstance'));
@@ -150,7 +175,7 @@ class Default_Model_AttributeValue extends Default_Model_Abstract
                 $collection = call_user_func(array($modelClass, 'fetchAll'), $select);
 
                 if (!empty($collection)) {
-                    foreach ($attrs as $attr) {
+                    foreach ($filtered as $attr) {
                         foreach ($collection as $model) {
                             $db = Zend_Registry::get('bootstrap')->getResource('db');
                             /* @var $db Zend_Db_Adapter_Pdo_Mysql */

@@ -10,8 +10,6 @@ class IndexController extends TicketSystem_Controller_ProtectedAction
             unset($appSession->messages);
         }
 
-        TicketSystem_Logger::log('HELLO WORLD!', Zend_Log::INFO);
-
         if ($id = Default_Model_Ticket::getDefaultReport()) {
             return $this->_forward('view', 'report', null, array('id' => $id));
         }

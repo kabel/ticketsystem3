@@ -562,7 +562,7 @@ class Default_Form_EditTicket extends Zend_Form
                     $valueModel->save();
 
                     // update the latest index
-                    Default_Model_TicketIndexAttributeLatest::insertUpdate($ticket->getId(), $attr->getId(), $changeset->getId());
+                    Default_Model_TicketIndexAttributeLatest::insertUpdate($id, $attr->getId(), $changeset->getId());
                 }
 
                 $session = new Zend_Session_Namespace('TicketSystem');

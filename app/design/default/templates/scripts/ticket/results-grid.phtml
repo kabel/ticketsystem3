@@ -26,8 +26,8 @@
     <tbody>
     <?php if ($this->paginator->count()): ?>
     <?php foreach ($this->paginator as $item): ?>
-        <?php $this->attributeInflection($item, $this->ticketsAttrs[$item['ticket_id']], $this->ticketsDates[$item['ticket_id']]); ?>
-        <?php $rowClass = $this->attributeInflection()->getValue('priority'); ?>    
+        <?php $this->attributeInflection($item, $this->ticketsAttrs[$item['ticket_id']], array('created' => $item['created'], 'modified' => $item['modified'])); ?>
+        <?php $rowClass = $this->attributeInflection()->getValue('priority'); ?>
         <?php $_url = $this->url(array('id' => $item['ticket_id']), 'ticket', true); ?>
         <tr<?php echo ($rowClass == 'None') ? '' : ' class="priority-' . $rowClass . '"'; ?> title="<?php echo $_url; ?>">
             <td>

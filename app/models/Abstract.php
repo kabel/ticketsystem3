@@ -103,7 +103,9 @@ abstract class Default_Model_Abstract implements ArrayAccess
                 }
 
                 $obj->setData($row);
-                $collection[$obj[$obj->getSafeIdFieldName()]] = $obj;
+
+                $offset = is_array($obj->getId()) ? implode(',', $obj->getId()) : $obj->getId();
+                $collection[$offset] = $obj;
             }
         }
 
@@ -272,11 +274,6 @@ abstract class Default_Model_Abstract implements ArrayAccess
     public function getIdFieldName()
     {
         return $this->_getResource()->getIdFieldName();
-    }
-
-    public function getSafeIdFieldName()
-    {
-        return implode(',', $this->getIdFieldName());
     }
 
     /**

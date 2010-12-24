@@ -128,15 +128,16 @@ class Default_Model_Ticket extends Default_Model_Abstract
     /**
      *
      * @param array $search
-     * @param int $count The number of unique ticket's for the search returned
      * @param int|string $order The attribute
      * @param boolean $desc Should the attribute be in descending order
      * @param boolean $noAcl Should the ACL check be skipped
      * @return Zend_Db_Table_Select
      */
-    public static function getSelectFromSearch($search, &$count, $order = null, $desc = false, $noAcl = false)
+    public static function getSelectFromSearch($search, $order = null, $desc = false, $noAcl = false)
     {
-        $select = self::_getSelect('DISTINCT(t.ticket_id)');
+        $resource = self::getResourceInstance();
+        $select = self::_getSelect('*', true)->distinct();
+        $joinedAttrs = array();
 
         if (!$noAcl) {
             $acl = Zend_Registry::get('bootstrap')->getResource('acl');
@@ -165,6 +166,9 @@ class Default_Model_Ticket extends Default_Model_Abstract
                     );
                 }
                 self::_addAttributeValueJoin($select, $permIds, 0);
+                foreach ($permIds as $key) {
+                    $joinedAttrs[$key] = 0;
+                }
                 $select->where(self::_processWhere($perm, false));
             }
         }
@@ -173,22 +177,34 @@ class Default_Model_Ticket extends Default_Model_Abstract
         $where = array();
         foreach ($search as $key => $value) {
             if (is_numeric($key)) {
-                $cond = self::_getCond("av{$i}.value", $value);
+                if (array_key_exists($key, $joinedAttrs)) {
+                    $j = $joinedAttrs[$key];
+                } else {
+                    $j = $i;
+                }
+
+                $cond = self::_getCond("av{$j}.value", $value);
                 if (empty($cond)) {
                     continue;
                 }
-                self::_addAttributeValueJoin($select, $key, $i);
+
                 $where[] = array(
-                    "(av{$i}.attribute_id = {$key})",
+                    "(av{$j}.attribute_id = {$key})",
                     $cond
                 );
-                $i++;
+                if (!array_key_exists($key, $joinedAttrs)) {
+                    self::_addAttributeValueJoin($select, $key, $i);
+                    $joinedAttrs[$key] = $i;
+                    $i++;
+                }
             } else {
                 if ($key == 'reporter') {
                     $select->joinLeft(array('u' => 'user'), 't.reporter = u.user_id', array());
                     $cond = self::_getCond('u.username', $value);
-                } else {
+                } elseif (in_array($order, $resource->getDbTable()->info(Zend_Db_Table::COLS))) {
                     $cond = self::_getCond("t.{$key}", $value);
+                } else {
+                    $cond = '';
                 }
                 if (empty($cond)) {
                     continue;
@@ -201,24 +217,11 @@ class Default_Model_Ticket extends Default_Model_Abstract
             $select->where(self::_processWhere($where));
         }
 
-        $ticketIds = array();
-        $resource = self::getResourceInstance();
-        $rowset = $resource->fetchAll($select);
-        $count = count($rowset);
+        //TODO: Evaluate if there is actual savings or losses by doing the search in a single query
 
-        if ($count) {
-            foreach ($rowset as $row) {
-                $ticketIds[] = $row['ticket_id'];
-            }
-        } else {
-            return null;
-        }
-
-        $select = $resource->select()
-            ->from(array('t' => $resource->getDbTable()->info(Zend_Db_Table::NAME)))
-            ->join(array('d' => Default_Model_Changeset::getDatesSelect($ticketIds)), 't.ticket_id = d.ticket_id', array())
-            ->join(array('c' => 'changeset'), 'd.created = c.changeset_id', array())
-            ->join(array('m' => 'changeset'), 'd.modified = m.changeset_id', array());
+        $select->join(array('d' => Default_Model_Changeset::getDatesSelect()), 't.ticket_id = d.ticket_id', array())
+            ->join(array('c' => 'changeset'), 'd.created = c.changeset_id', array('created' => 'create_date'))
+            ->join(array('m' => 'changeset'), 'd.modified = m.changeset_id', array('modified' => 'create_date'));
 
         $defaultDir = 'DESC';
         if (!empty($order)) {
@@ -236,17 +239,26 @@ class Default_Model_Ticket extends Default_Model_Abstract
                     try{
                         $attribute = self::_getAttributeByName($order);
                         $order = $attribute['attribute_id'];
-                        self::_addAttributeValueJoin($select, $order);
-                        $select->where('t.ticket_id IN (?)', $ticketIds)
-                            ->order('av.value ' . ($desc ? 'DESC' : 'ASC'));
+                        if (array_key_exists($order, $joinedAttrs)) {
+                            $j = $joinedAttrs[$order];
+                        } else {
+                            self::_addAttributeValueJoin($select, $order);
+                            $j = '';
+                        }
+
+                        $select->order("av{$j}.value " . ($desc ? 'DESC' : 'ASC'));
                     } catch (Exception $e) { }
                 }
             } else {
                 $attribute = Default_Model_Attribute::findRow($order);
                 if ($attribute) {
-                    self::_addAttributeValueJoin($select, $order);
-                    $select->where('t.ticket_id IN (?)', $ticketIds)
-                        ->order('av.value ' . ($desc ? 'DESC' : 'ASC'));
+                    if (array_key_exists($order, $joinedAttrs)) {
+                        $j = $joinedAttrs[$order];
+                    } else {
+                        self::_addAttributeValueJoin($select, $order);
+                        $j = '';
+                    }
+                    $select->order("av{$j}.value " . ($desc ? 'DESC' : 'ASC'));
                 }
             }
         } else {
@@ -320,12 +332,12 @@ class Default_Model_Ticket extends Default_Model_Abstract
      * @param string $ticketCol [optional] The column/expression to select from the ticket table
      * @return Zend_Db_Table_Select
      */
-    protected static function _getSelect($ticketCol = '*')
+    protected static function _getSelect($ticketCol = '*', $disableItegrity = false)
     {
         $resource = self::getResourceInstance();
         $select = $resource->select();
 
-        if ($ticketCol !== '*') {
+        if ($ticketCol !== '*' || $disableItegrity) {
             $select->setIntegrityCheck(false);
         }
 
