@@ -3,7 +3,7 @@
 <?php $this->headScript()->appendFile($this->baseUrl('js/jquery.grid.js')); ?>
 <?php echo $this->render('config/toolbar.phtml'); ?>
 <?php echo $this->render('messages.phtml'); ?>
-<h1>System Users</h1> 
+<h1>System Users</h1>
 <p class="a-right"><a class="add-user" href="<?php echo $this->url(array(
     'id' => 'new'
 ));?>">Add User</a></p>
@@ -11,5 +11,5 @@
     <?php echo $this->render('config/grid/users.phtml'); ?>
 </div>
 <script type="text/javascript">
-$('#userGrid').grid('<?php echo $this->url(); ?>', { useAjax:true });
+$('#userGrid').grid('<?php echo $this->url(array('ajax' => true)); ?>', { useAjax:true });
 </script>

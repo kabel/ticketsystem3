@@ -15,7 +15,7 @@ if (!jQuery) {
 				if (opts.useAjax) {
 					var mask = $('<div class="loading-mask"><p class="loader">Loading...</p></div>').width($(self).width()).height($(self).height());
 					$(self).before(mask);
-					$(self).load(url + (url.match(new RegExp('\\?')) ? '&ajax=true' : '?ajax=true'), function() {
+					$(self).load(url, function() {
 						$(self).prev('.loading-mask').remove();
 						initGrid();
 					});
@@ -85,7 +85,7 @@ if (!jQuery) {
 				
 				$('.headings a', dataTable).click(function() {
 					if (opts.useAjax) {
-						reload(this.href);
+						reload(this.href + '?ajax=1');
 						return false;
 					}
 				});

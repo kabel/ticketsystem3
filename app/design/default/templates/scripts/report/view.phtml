@@ -1,4 +1,4 @@
-<?php 
+<?php
 $onReady = <<<EOD
 $(function(){
     $('#report_head').hover(function(){
@@ -26,5 +26,5 @@ $this->headScript()->appendScript($onReady);
     <?php echo $this->render('report/grid.phtml'); ?>
 </div>
 <script type="text/javascript">
-$('#ticketGrid').grid('<?php echo $this->url(); ?>', { useAjax:true });
+$('#ticketGrid').grid('<?php echo $this->url(array('ajax' => true)); ?>', { useAjax:true });
 </script>
