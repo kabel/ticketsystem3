@@ -248,6 +248,9 @@ class Default_Form_NewTicket extends Zend_Form
             ));
             $valueModel->save();
 
+            // update the latest index
+            Default_Model_TicketIndexAttributeLatest::insertUpdate($ticket->getId(), $attr->getId(), $changeset->getId());
+
             foreach ($values['properties'] as $name => $value) {
                 $attr = Default_Model_Attribute::get($name);
                 if (null === $attr) {
