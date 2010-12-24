@@ -548,6 +548,9 @@ class Default_Form_EditTicket extends Zend_Form
                 ));
                 $changeset->save();
 
+                // update the dates index
+                Default_Model_TicketIndexChangesetDates::insertUpdate($id, Default_Model_TicketIndexChangesetDates::TYPE_MODIFIED, $changeset->getId());
+
                 foreach ($changes as $name => $value) {
                     $attr = Default_Model_Attribute::get($name);
                     if (null === $attr) {

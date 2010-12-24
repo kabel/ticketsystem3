@@ -239,6 +239,15 @@ class Default_Form_NewTicket extends Zend_Form
             ));
             $changeset->save();
 
+            // insert/update dates index
+            $index = new Default_Model_TicketIndexChangesetDates();
+            $index->setData(array(
+                'ticket_id' => $ticket->getId(),
+                'type' => Default_Model_TicketIndexChangesetDates::TYPE_CREATED,
+                'changeset_id' => $changeset->getId()
+            ));
+            Default_Model_TicketIndexChangesetDates::insertUpdate($ticket->getId(), Default_Model_TicketIndexChangesetDates::TYPE_MODIFIED, $changeset->getId());
+
             $attr = Default_Model_Attribute::get('status');
             $valueModel = new Default_Model_AttributeValue();
             $valueModel->setData(array(

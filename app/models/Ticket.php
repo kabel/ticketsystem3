@@ -217,12 +217,10 @@ class Default_Model_Ticket extends Default_Model_Abstract
             $select->where(self::_processWhere($where));
         }
 
-        //TODO: Evaluate if there is actual savings or losses by doing the search in a single query
-        //TODO: Add another ticket index table to hold a direct link to the need changeset dates
-
-        $select->join(array('d' => Default_Model_Changeset::getDatesSelect()), 't.ticket_id = d.ticket_id', array())
-            ->join(array('c' => 'changeset'), 'd.created = c.changeset_id', array('created' => 'create_date'))
-            ->join(array('m' => 'changeset'), 'd.modified = m.changeset_id', array('modified' => 'create_date'));
+        $select->join(array('dc' => 'ticket_index_changeset_dates'), 't.ticket_id = dc.ticket_id AND dc.type = ' . Default_Model_TicketIndexChangesetDates::TYPE_CREATED, array())
+            ->join(array('c' => 'changeset'), 'dc.changeset_id = c.changeset_id', array('created' => 'create_date'))
+            ->join(array('dm' => 'ticket_index_changeset_dates'), 't.ticket_id = dm.ticket_id AND dm.type = ' . Default_Model_TicketIndexChangesetDates::TYPE_MODIFIED, array())
+            ->join(array('m' => 'changeset'), 'dm.changeset_id = m.changeset_id', array('modified' => 'create_date'));
 
         $defaultDir = 'DESC';
         if (!empty($order)) {
