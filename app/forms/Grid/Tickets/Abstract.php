@@ -10,6 +10,11 @@ class Default_Form_Grid_Tickets_Abstract extends Default_Form_Grid_Abstract
 
         Zend_View_Helper_PaginationControl::setDefaultViewPartial('config/grid/pager.phtml');
         $adapter = new Zend_Paginator_Adapter_DbTableSelect($select);
+        $countSelect = clone $select;
+        $countSelect->reset(Zend_Db_Select::COLUMNS)->reset(Zend_Db_Select::ORDER)
+            ->distinct(false)
+            ->columns(array(new Zend_Db_Expr('COUNT(DISTINCT(t.ticket_id)) AS ' . Zend_Paginator_Adapter_DbSelect::ROW_COUNT_COLUMN)));
+        $adapter->setRowCount($countSelect);
 
         $paginator = new Zend_Paginator($adapter);
         $paginator->setView($this->view);
