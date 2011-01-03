@@ -1,48 +1,23 @@
-<?php $type = ($this->id === 'new') ? 'Add' : 'Edit'; ?>
+<?php
+if ($this->id === 'new') {
+    $type = 'Add';
+} else {
+    $type = 'Edit';
+    $this->headScript()->appendFile($this->baseUrl('js/jquery.base64.js'));
+    $this->headScript()->appendFile($this->baseUrl('js/jquery.grid.js'));
+}
+?>
 <?php $this->headTitle("Configuration - Groups ($type)"); ?>
 <?php echo $this->render('config/toolbar.phtml'); ?>
 <h1><?php echo $type; ?> Group</h1>
 <?php echo $this->form; ?>
-<?php if (!empty($this->users)): ?>
+<?php if ($this->id !== 'new'): ?>
 <div class="clr"></div>
 <h2>Group Users</h2>
-<table class="data full-width">
-	<thead>
-		<tr>
-			<th class="one-icon">&nbsp;</th>
-			<th>User</th>
-			<th>Info</th>
-		</tr>
-	</thead>
-	<tbody>
-	<?php if (count($this->users) || count($this->membership)): ?>
-    <?php foreach ($this->users as $i => $user): ?>
-    	<tr<?php echo ($i % 2 == 0 ? '' : ' class="alt"'); ?>>
-    		<td><a class="edit-user" title="Edit User &quot;<?php echo $this->escape($user['username']); ?>&quot;" href="<?php echo $this->url(array(
-    		    'action' => 'users',
-    		    'controller' => 'config',
-    			'id' => $user['user_id']
-    		), 'default', true); ?>">&nbsp;</a></td>
-    		<td><?php echo $this->escape($user['username']); ?></td>
-    		<td><?php echo $this->escape($user['info']); ?></td>
-    	</tr>
-    <?php endforeach; ?>
-    <?php foreach ($this->membership as $i => $user): ?>
-    	<tr<?php echo ($i % 2 == 0 ? '' : ' class="alt"'); ?>>
-    		<td><a class="edit-user" title="Edit User &quot;<?php echo $this->escape($user['username']); ?>&quot;" href="<?php echo $this->url(array(
-    		    'action' => 'users',
-    		    'controller' => 'config',
-    			'id' => $user['user_id']
-    		), 'default', true); ?>">&nbsp;</a></td>
-    		<td><?php echo $this->escape($user['username']); ?></td>
-    		<td><?php echo $this->escape($user['info']); ?></td>
-    	</tr>
-    <?php endforeach; ?>
-    <?php else: ?>
-    	<tr>
-    		<td colspan="3">[None]</td>
-    	</tr>
-    <?php endif; ?>
-    </tbody>
-</table>
+<div id="userGrid">
+    <?php echo $this->render('config/grid/users.phtml'); ?>
+</div>
+<script type="text/javascript">
+$('#userGrid').grid('<?php echo $this->url(array('ajax' => true)); ?>', { useAjax:true });
+</script>
 <?php endif; ?>

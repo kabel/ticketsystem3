@@ -76,7 +76,7 @@ foreach ($rowset as $row) {
         continue;
     }
 
-    $ticket = Default_Model_Ticket::findRow($row['ticket_id']);
+    $ticket = $row;
     $latest = Default_Model_AttributeValue::getLatestByTicketId($ticket['ticket_id']);
 
     $notification = new Zend_Mail('UTF-8');

@@ -17,24 +17,8 @@ class Default_Form_Grid_Tickets_Abstract extends Default_Form_Grid_Abstract
         $adapter->setRowCount($countSelect);
 
         $paginator = new Zend_Paginator($adapter);
-        $paginator->setView($this->view);
 
-        $appSession = new Zend_Session_Namespace('TicketSystem');
-
-        if ($this->getRequest()->getParam('ps')) {
-            $pageSize = $this->getRequest()->getParam('ps');
-        } elseif (isset($appSession->page_size)) {
-            $pageSize = $appSession->page_size;
-        } else {
-            $pageSize = Default_Model_Setting::get('default_page_size');
-        }
-
-        $paginator->setItemCountPerPage($pageSize);
-        $appSession->page_size = $pageSize;
-
-        if ($pg = $this->getRequest()->getParam('pg')) {
-            $paginator->setCurrentPageNumber($pg);
-        }
+        $this->_setPagerParams($paginator);
 
         $ticketIds = array();
         $attributes = array();
