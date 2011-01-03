@@ -18,7 +18,7 @@ require_once 'Zend/Loader/Autoloader.php';
 Zend_Loader_Autoloader::getInstance();
 
 $application = new Zend_Application(
-    APPLICATION_ENV, 
+    APPLICATION_ENV,
     APPLICATION_PATH . '/etc/config.xml'
 );
 
@@ -46,7 +46,7 @@ $select = Default_Model_Ticket::getSelectFromSearch(array(
             'value' => array('closed', 'on hold')
         ),
         $priority['attribute_id'] => 'critical'
-    ), $count, null, false, true);
+    ), null, false, true);
 
 if (!$count) {
     exit();
@@ -69,17 +69,17 @@ foreach ($rowset as $row) {
         'created' => $dates[$row['ticket_id']]['created'],
         'modified' => $dates[$row['ticket_id']]['modified']
     );
-    
+
     $target = new Zend_Date();
     $target->subHour(3);
-    
+
     if ($target->compare(new Zend_Date($dates['modified'], Zend_Date::ISO_8601)) < 0) {
         continue;
     }
-    
+
     $ticket = Default_Model_Ticket::findRow($row['ticket_id']);
     $latest = Default_Model_AttributeValue::getLatestByTicketId($ticket['ticket_id']);
-    
+
     $notification = new Zend_Mail('UTF-8');
     $notification->setSubject('REMINDER: #' . $ticket['ticket_id'] . ': ' . $ticket['summary']);
     $notification->setFrom(Default_Model_Setting::get('notification_from'));
@@ -88,7 +88,7 @@ foreach ($rowset as $row) {
         $notification->setReplyTo($replyTo);
     }
     $notification->addTo($to);
-    
+
     $view->clearVars();
     $view->ticket = $ticket;
     $view->latest = $latest;
@@ -96,7 +96,7 @@ foreach ($rowset as $row) {
     $view->staticAttrs = $staticAttrs;
     $view->attrs = $attrs;
     unset($view->attrs['description']);
-    
+
     $colWidth = 0;
     foreach ($view->staticAttrs as $col) {
         if (strlen($col['label']) > $colWidth) {
@@ -114,11 +114,11 @@ foreach ($rowset as $row) {
         }
     }
     $view->colWidth = $colWidth;
-    
+
     $view->server = $server;
-    
+
     $body = $view->render('ticket/reminder.phtml');
     $notification->setBodyText($body);
-    
+
     $notification->send();
 }
