@@ -1,16 +1,21 @@
 <?php
 
-class Default_Form_NewTicket extends Zend_Form
+class Default_Form_Ticket_New extends Default_Form_Ticket
 {
+    protected function _getSubmitLabel()
+    {
+        return 'Create Ticket';
+    }
+
+    protected function _getCsrfPostfix()
+    {
+        return 'new';
+    }
+
     public function init()
     {
-        $this->setMethod('post');
-        $this->setAttrib('class', 'form-ticket');
+        parent::init();
         $this->setAttrib('enctype', Zend_Form::ENCTYPE_MULTIPART);
-        $this->setDecorators(array(
-            'FormElements',
-            'Form'
-        ));
 
         $attrForm = new Zend_Form_SubForm();
         $attrForm->setLegend('Properties')
@@ -26,62 +31,7 @@ class Default_Form_NewTicket extends Zend_Form
             'label' => 'Summary:'
         ));
 
-        $attrs = Default_Model_Attribute::getAll();
-
-        $attr = $attrs['description'];
-        $extra = Zend_Json::decode($attr['extra']);
-        $attrForm->addElement(Default_Model_Attribute::getElementType($attr['type']), $attr['name'], array(
-            'class' => ($extra['format'] == 'wiki') ? 'wikitext' : '',
-            'required' => (bool)$attr['is_required'],
-            'label' => $attr['label'] . ':',
-            'decorators' => $this->_getElementDecorators('properties-' . $attr['name']),
-            'prefixPath' => array('decorator' => array('TicketSystem_Form_Decorator' => 'TicketSystem/Form/Decorator/'))
-        ));
-
-        $i = 0;
-        foreach ($attrs as $name => $attr) {
-            if ($attr['is_hidden']) {
-                continue;
-            }
-
-            $spec = array(
-                'required' => (bool)$attr['is_required'],
-            	'label' => $attr['label'] . ':',
-            	'prefixPath' => array('decorator' => array('TicketSystem_Form_Decorator' => 'TicketSystem/Form/Decorator/'))
-            );
-
-            $wrapperClass = '';
-            if ($attr['type'] == Default_Model_Attribute::TYPE_TEXTAREA) {
-                $i = 0;
-            } else {
-                $wrapperClass = 'field-col';
-                if ($i % 2 == 1) {
-                    $wrapperClass .= ' noclr';
-                }
-            }
-            $spec['decorators'] = $this->_getElementDecorators('properties-' . $name, $wrapperClass);
-
-            if (!empty($attr['extra'])) {
-                $extra = Zend_Json::decode($attr['extra']);
-            }
-
-            switch ($attr['type']) {
-                case Default_Model_Attribute::TYPE_TEXTAREA:
-                case Default_Model_Attribute::TYPE_TEXT:
-                    $spec['class'] = ($extra['format'] == 'wiki') ? 'wikitext' : '';
-                    break;
-                case Default_Model_Attribute::TYPE_RADIO:
-                case Default_Model_Attribute::TYPE_SELECT:
-                    $options = $attr->getMultiOptions(!$attr['is_required']);
-                    $spec['multiOptions'] = $options;
-                    break;
-            }
-
-            $attrForm->addElement(Default_Model_Attribute::getElementType($attr['type']), $name, $spec);
-
-            $i++;
-        }
-
+        $this->_addPropertiesToForm($attrForm, 'new');
         $this->addSubForm($attrForm, 'properties');
 
         $uploadForm = new Zend_Form_Subform();
@@ -114,52 +64,7 @@ class Default_Form_NewTicket extends Zend_Form
 
         $this->addSubForm($uploadForm, 'uploads');
 
-        $this->addElement('submit', 'preview', array(
-			'label' => 'Preview',
-        	'decorators' => $this->_getButtonDecorators()
-        ));
-
-        $this->addElement('submit', 'save', array(
-			'label' => 'Create Ticket',
-			'decorators' => $this->_getButtonDecorators()
-        ));
-
-        $this->addDisplayGroup(array('save', 'preview'), 'buttons', array(
-            'decorators' => array(
-                'FormElements',
-                array('HtmlTag', array('tag' => 'div'))
-            )
-        ));
-
-        $this->addElement('hash', 'csrf_new_ticket', array(
-            'ignore' => true,
-            'decorators' => array('ViewHelper', 'Errors', array('HtmlTag', array('tag' => 'div'))),
-            'timeout' => 3600
-        ));
-    }
-
-    protected function _getElementDecorators($id, $class='')
-    {
-        return array(
-            'ViewHelper',
-            'Errors',
-            array('Description', array('tag' => 'p', 'class' => 'description')),
-            array('HtmlTag', array('tag' => 'dd', 'id'  => $id . '-element', 'class' => $class)),
-            array('Label', array('tag' => 'dt', 'class' => $class))
-        );
-    }
-
-    protected function _getButtonDecorators()
-    {
-        return array(
-            'Tooltip',
-            'ViewHelper'
-        );
-    }
-
-    protected function _getAuthUser()
-    {
-        return Zend_Auth::getInstance()->getIdentity();
+        $this->_addButtonElements();
     }
 
     /**
