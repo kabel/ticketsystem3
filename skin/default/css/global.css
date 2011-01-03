@@ -467,7 +467,7 @@ div#ticketchange.ticketdraft h3 {
 
 #mainnav {
  background: #f7f7f7 url(../images/topbar_gradient.png) 0 0;
- border: 1px solid #d7d7d7;
+ border: 1px solid #7F7F7F;
  font-weight: normal;
  font-size: 10px;
  line-height: normal;
@@ -492,12 +492,12 @@ div#ticketchange.ticketdraft h3 {
 #mainnav .active :link, #mainnav .active :visited {
  background: #333 url(../images/topbar_gradient2.png) 0 0 repeat-x;
  border-top: none;
- border-right: 1px solid #d7d7d7;
+ border-right: 1px solid #7F7F7F;
  color: #eee;
  font-weight: bold;
 }
 #mainnav .active :link:hover, #mainnav .active :visited:hover {
- border-right: 1px solid #d7d7d7;
+ border-right: 1px solid #7F7F7F;
 }
 
 /* TABLE/GRID */
