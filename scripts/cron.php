@@ -48,7 +48,8 @@ $select = Default_Model_Ticket::getSelectFromSearch(array(
         $priority['attribute_id'] => 'critical'
     ), null, false, true);
 
-if (!$count) {
+$rowset = $resource->fetchAll($select);
+if (!$rowset->count()) {
     exit();
 }
 
@@ -62,12 +63,10 @@ $server = $conf['servername'];
 
 $staticAttrs = Default_Model_Ticket::getStaticAttrs();
 $attrs = Default_Model_Attribute::getAll();
-$rowset = $resource->fetchAll($select);
 foreach ($rowset as $row) {
-    $dates  = Default_Model_Changeset::getDatesByTicketId($row['ticket_id']);
     $dates  = array(
-        'created' => $dates[$row['ticket_id']]['created'],
-        'modified' => $dates[$row['ticket_id']]['modified']
+        'created' => $row['created'],
+        'modified' => $row['modified']
     );
 
     $target = new Zend_Date();
