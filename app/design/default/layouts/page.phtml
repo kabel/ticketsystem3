@@ -3,20 +3,20 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <link href="<?php echo $this->designUrl('images', 'Developper-16x16.ico'); ?>" rel="shortcut icon"/>
-  <?php 
+  <?php
   $this->headTitle($this->escape($this->siteTitle), 'PREPEND');
-  echo $this->headTitle()->setSeparator(' | ') 
+  echo $this->headTitle()->setSeparator(' | ')
   ?>
   <?php
   $this->headLink()->prependStylesheet($this->designUrl('css', 'ieLt8.css'), 'screen', 'lt IE 8');
   $this->headLink()->prependStylesheet($this->designUrl('css', 'ie8.css'), 'screen', 'IE 8');
   $this->headLink()->prependStylesheet($this->designUrl('css', 'global.css'));
-  echo $this->headLink(); 
+  echo $this->headLink();
   ?>
   <?php echo $this->headStyle(); ?>
   <?php
-  $this->headScript()->prependFile($this->baseUrl('js/jquery-1.4.2.min.js'));
-  echo $this->headScript(); 
+  $this->headScript()->prependFile($this->baseUrl('js/jquery-1.4.4.min.js'));
+  echo $this->headScript();
   ?>
 </head>
 <body>
@@ -34,7 +34,7 @@
     <?php echo $this->layout()->content ?>
   </div>
   <div id="footer">
-    <p>&copy; 2010 Kevin Abel | Lincoln, NE 68504 | <a href="mailto:comments@example.com">comments?</a></p>
+    <p>&copy; 2011 Kevin Abel | Lincoln, NE 68504 | <a href="mailto:comments@example.com">comments?</a></p>
     <p>Validated with <a href="http://validator.w3.org/check/referer">W3C</a> | <a href="http://jigsaw.w3.org/css-validator/check/referer?profile=css3">CSS</a></p>
   </div>
 </div>

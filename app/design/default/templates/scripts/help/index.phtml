@@ -1,7 +1,7 @@
-<?php 
+<?php
 $this->headTitle('Help');
-$this->headLink()->appendStylesheet($this->baseUrl('js/css/redmond/jquery-ui-1.7.2.custom.css'));
-$this->headScript()->appendFile($this->baseUrl('js/jquery-ui-1.7.2.custom.min.js'));
+$this->headLink()->appendStylesheet($this->baseUrl('js/css/redmond/jquery-ui-1.8.7.custom.css'));
+$this->headScript()->appendFile($this->baseUrl('js/jquery-ui-1.8.7.custom.min.js'));
 $onReady = <<<EOD
 $(function() {
     $(".tabs").tabs();
@@ -11,7 +11,7 @@ $this->headScript()->appendScript($onReady);
 
 ?>
 
-<h1>Help</h1> 
+<h1>Help</h1>
 
 <div class="tabs">
 <ul>
@@ -42,14 +42,14 @@ $this->headScript()->appendScript($onReady);
         </ul>
         <p>* Note: Because the system supports different login-types to have the same username, if you wish to ensure the correct username is selected append &quot;:&quot; and 1 (for legacy accounts) or 2 (for CAS accounts), otherwise the first user matching the username will be used.</p>
         <p>A form is displayed on a ticket's details page to allow for modifications. A comment may be provided along with attribute updates to communicate more information. The comment field is <a href="<?php echo $this->url(array('action' => 'wiki')); ?>">wiki-enabled</a>.</p>
-        
+
         <h2>Creating a ticket</h2>
         <p>To create a ticket select the New Ticket link from the main navigation. You will be presented with a form that has fields for each of the attributes currently in the system (that are supported for the &quot;new&quot;). Optional upload fields* are provided. At the end of the form is a Create Ticket button and a Preview button. Pressing Create Ticket will validate your attribute selection, store the ticket information, and redirect you to the new ticket's details page. If notifications have been enabled, you will receive an E-Mail with the ticket's details and a quick link to access your ticket. Pressing the Preview button will validate your attributes and show you a draft version of the ticket details page (please see the caution below). The preview feature is a nice way to ensure your <a href="<?php echo $this->url(array('action' => 'wiki')); ?>">wiki syntax</a> displays the way you want it to before the ticket is stored.</p>
         <div class="help-figure">
             <img class="frame" src="<?php echo $this->designUrl('images', 'help/preview-example.jpg'); ?>" alt="preview feature screen shot" />
         </div>
         <p>* <strong>CAUTION</strong>: Uploads are <em>NOT</em> stored while using the preview feature. Please only use the upload field(s) once you are ready to press Create Ticket. Some system configurations allow for uploading after a ticket has been created too.</p>
-        
+
         <h2>Administration</h2>
         <p>Currently there is no admin interface for editing what attributes are available. However, any changes to the database tables will be reflected in the user interface with little to no controller/model modification.</p>
         <p>Details about how to properly define new attributes in the attribute database table are still under development. The default attributes should provide general direction for the time being.</p>
@@ -60,25 +60,25 @@ $this->headScript()->appendScript($onReady);
         <div class="help-figure">
             <img class="frame" src="<?php echo $this->designUrl('images', 'help/available-reports.jpg'); ?>" alt="Available Reports screen shot" />
         </div>
-        
+
         <p>You can always access the listing of reports by using the Available Reports link located to the right of any report title.</p>
         <div class="help-figure">
             <img class="frame" src="<?php echo $this->designUrl('images', 'help/available-reports-link.jpg'); ?>" alt="Available Reports link screen shot" />
         </div>
-        
+
         <h2>Administration</h2>
         <p>The reports are defined in the application configuration (/app/etc/config.xml). They are located in the <code>&lt;reports&gt;</code> node.</p>
         <p>To define a report create a new <code>&lt;report&gt;</code> node with <code>&lt;name&gt;</code>, <code>&lt;search&gt;</code>, <code>&lt;columns&gt;</code> subnodes.</p>
-        
+
         <h3>Report Definition Schema</h3>
-        
+
         <h4><code>&lt;name&gt;</code> node</h4>
         <p>This node describes the report, its value will be displayed as the page title.</p>
-        
+
         <h4><code>&lt;search&gt;</code> node</h4>
         <p>This node defines the filters that will be applied to the listing. It can contain any number of attribute definitions. Attribute definitions are made by making a node from the attribute name, or from appending an &quot;_&quot; and column name in the case of static attributes (attributes that are actual columns of the ticket table)</p>
         <p><em>Examples:</em></p>
-        <?php 
+        <?php
         $example = <<<EOD
 {{{
 #!xml
@@ -87,7 +87,7 @@ $this->headScript()->appendScript($onReady);
 EOD;
         echo $this->wiki($example);
         ?>
-        <?php 
+        <?php
         $example = <<<EOD
 {{{
 #!xml
@@ -98,7 +98,7 @@ EOD;
         ?>
         <p>Advanced filters are also supported. You can filter multiple attribute values by adding duplicate attribute definition nodes, or you can use the filter mode definition. A filter mode definition is formed by using a <code>&lt;mode&gt;</code> and <code>&lt;value&gt;</code> node. The <code>&lt;mode&gt;</code> node can be any of the following values: &lt;blank&gt; (for is equal), &quot;!&quot; (for is not equal), &quot;^&quot; (for starts with), &quot;$&quot; (for ends with), &quot;~&quot; (for contains), or &quot;!~&quot; (for does not contain). The <code>&lt;value&gt;</code> node can be repeated for as many values as you'd like to include.</p>
         <p>Advanced Example:</p>
-        <?php 
+        <?php
         $example = <<<EOD
 {{{
 #!xml
@@ -111,7 +111,7 @@ EOD;
 EOD;
         echo $this->wiki($example);
         ?>
-        
+
         <h4><code>&lt;columns&gt;</code> node</h4>
         <p>This node defines the grid columns that will be displayed. By default, all reports will have Ticket ID as the first column, with a link to the ticket's details. It is made from multiple nodes that uniquely identify each column. Those identity nodes must each contain a <code>&lt;title&gt;</code> and <code>&lt;index&gt;</code> node. The <code>&lt;title&gt;</code> node contains the value that will be displayed as the column header. The <code>&lt;index&gt;</code> node contains the attribute name, or &quot;_&quot; appended with the column name in the case of static attributes (attributes that are actual columns of the ticket table).</p>
         <p><em>Note:</em> There are two special static attributes that can be displayed. They are</p>
@@ -120,7 +120,7 @@ EOD;
             <li>&quot;_modified&quot; (displays the date the ticket was last modified)</li>
         </ul>
         <p>Exmaple:</p>
-        <?php 
+        <?php
         $example = <<<EOD
 {{{
 #!xml
@@ -136,16 +136,16 @@ EOD;
 EOD;
         echo $this->wiki($example);
         ?>
-        
+
         <h3>Default Report</h3>
         <p>You may specify any report definition as the default report by adding a <code>&lt;default /&gt;</code> node to the report definition.</p>
-        
+
         <h3>WARNING!</h3>
         <p>If the reports node in the application configuration is empty, users will be unable to see any listing of tickets, except from the search feature.</p>
-        
+
         <h3>Report Definition Example</h3>
         <p>The following example definition can be used to create a report for all tickets that have a status of &quot;closed&quot;</p>
-        <?php 
+        <?php
         $example = <<<EOD
 {{{
 #!xml
@@ -200,18 +200,18 @@ EOD;
             <li>Modify your display name (info)</li>
             <li>View your assigned group</li>
         </ul>
-        
+
         <h2>Administration Panels</h2>
-        
+
         <h3>Settings</h3>
         <p>This view displays Application Statistics and allows for the modification of system settings. Each setting has a small description of how it is used in the system.</p>
-        
+
         <h3>Maintenance</h3>
         <p>This view allows for &quot;basic&quot; database maintenance and resets. A warning is always displayed of this view to remind you that the actions are permanent. Each action is described. The optimize feature is used for updating and cleaning MySQL indexes and usually is unnecessary for normal opperation.</p>
-        
+
         <h3>Groups</h3>
         <p>This view displays defined user groups. You are able to add new user groups and edit existing groups. A user group is a way to separate users and tickets and give more permissions to a Moderator user.</p>
-        
+
         <h3>Users</h3>
         <p>This view displays system users. You are able to add new users and edit any user that is not the current user.</p>
     </div>
