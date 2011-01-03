@@ -179,6 +179,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         }
 
         $acl->allow((string)Default_Model_User::LEVEL_MODERATOR, 'ticket', 'edit-cc');
+        $acl->allow((string)Default_Model_User::LEVEL_MODERATOR, 'ticket', 'edit-description');
         $acl->allow((string)Default_Model_User::LEVEL_MODERATOR, 'ticket', 'reassign');
 
         return $acl;

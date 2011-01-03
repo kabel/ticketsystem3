@@ -46,7 +46,12 @@ class Default_Form_EditTicket extends Zend_Form
         $attrs = Default_Model_Attribute::getAll();
         $i = 0;
         foreach ($attrs as $name => $attr) {
-            if ($attr['is_hidden']) {
+            $isHidden = $attr['is_hidden'];
+            if ($attr['name'] == 'description' && $this->_isAclAllowed('edit-description')) {
+                $isHidden = false;
+            }
+
+            if ($isHidden) {
                 continue;
             }
 
@@ -64,6 +69,7 @@ class Default_Form_EditTicket extends Zend_Form
                 if ($i % 2 == 1) {
                     $wrapperClass .= ' noclr';
                 }
+                $i++;
             }
             $spec['decorators'] = $this->_getElementDecorators('properties-' . $name, $wrapperClass);
             $type = $attr['type'];
@@ -93,8 +99,6 @@ class Default_Form_EditTicket extends Zend_Form
             }
 
             $attrForm->addElement(Default_Model_Attribute::getElementType($type), $name, $spec);
-
-            $i++;
         }
 
         $this->addSubForm($attrForm, 'properties');
