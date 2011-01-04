@@ -491,7 +491,7 @@ class Default_Form_Ticket_Edit extends Default_Form_Ticket
                     }
                 }
 
-                $recipients = $ticket->getNotifcationRecipients($newLatest);
+                $recipients = $ticket->getNotifcationRecipients($newLatest, true);
                 $notification = new Zend_Mail('UTF-8');
                 $notification->setFrom(Default_Model_Setting::get('notification_from'));
                 if (empty($recipients['to'])) {

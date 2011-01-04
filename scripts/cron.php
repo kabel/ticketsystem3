@@ -34,6 +34,8 @@ $front = $bootstrap->getResource('frontController');
 $front->getRouter()->addDefaultRoutes();
 $front->setBaseUrl((!empty($conf['baseurl']) ? $conf['baseurl'] : null));
 
+//TODO: Add more logic here to ensure that this cron doesn't run more often than it should
+
 /* @var $view Zend_View */
 $view = $bootstrap->getResource('view');
 $status = Default_Model_Attribute::get('status');
@@ -53,12 +55,6 @@ if (!$rowset->count()) {
     exit();
 }
 
-$to = array(
-    'Eric Rasumussen' => 'erasmussen2@unl.edu',
-    'Brett Bieber' => 'bbieber2@unl.edu',
-    'Kevin Abel' => 'kabel2@unl.edu',
-    'Robert Crisler' => 'rcrisler1@unl.edu'
-);
 $server = $conf['servername'];
 
 $staticAttrs = Default_Model_Ticket::getStaticAttrs();
@@ -86,7 +82,10 @@ foreach ($rowset as $row) {
     if (!empty($replyTo)) {
         $notification->setReplyTo($replyTo);
     }
-    $notification->addTo($to);
+    $recipients = Default_Model_Ticket::getReminderRecipients($latest);
+    foreach ($recipients as $to) {
+        $notification->addTo($to[0], $to[1]);
+    }
 
     $view->clearVars();
     $view->ticket = $ticket;

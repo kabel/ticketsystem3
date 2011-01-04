@@ -11,6 +11,8 @@ class Default_Model_Ticket extends Default_Model_Abstract
         '~'  => array("LIKE CONCAT('%', ?, '%')", ''),
         '!~' => array("NOT LIKE CONCAT('%', ?, '%')", '')
     );
+    protected static $_defaultReminderRecipients;
+    protected static $_reminderGroupRecipientsCache = array();
 
     /**
      *
@@ -541,5 +543,56 @@ class Default_Model_Ticket extends Default_Model_Abstract
         }
 
         return $recipients;
+    }
+
+    public static function getReminderRecipients($latest)
+    {
+        $recipients = array();
+
+        if (!empty($latest['group']['value'])) {
+            if (isset(self::$_reminderGroupRecipientsCache[$latest['group']['value']])) {
+                $recipients = self::$_reminderGroupRecipientsCache[$latest['group']['value']];
+            } else {
+                $group = Default_Model_Ugroup::findRow($latest['group']['value']);
+                $users = array(
+                    'users' => $group->getUsers(),
+                    'members' => $group->getMembership()
+                );
+                foreach ($users as $rowset) {
+                    foreach ($rowset as $user) {
+                        if ($user['level'] == Default_Model_User::LEVEL_MODERATOR && !empty($user['email'])) {
+                            $recipients[] = array($user['email'], $user['info']);
+                        }
+                    }
+                }
+
+                self::$_reminderGroupRecipientsCache[$latest['group']['value']] = $recipients;
+            }
+        }
+
+        if (empty($recipients)) {
+            $recipients = self::_getDefaultReminderRecipients();
+        }
+
+        return $recipients;
+    }
+
+    protected static function _getDefaultReminderRecipients()
+    {
+        if (empty(self::$_defaultReminderRecipients)) {
+            $recipients = array();
+            $users = Default_Model_User::fetchAll(array(
+                'status = ?' => Default_Model_User::STATUS_ACTIVE,
+                'level = ?' => Default_Model_User::LEVEL_ADMIN,
+                'email != ?' => ''
+            ));
+
+            foreach ($users as $user) {
+                $recipients[] = array($user['email'], $user['info']);
+            }
+            self::$_defaultReminderRecipients = $recipients;
+        }
+
+        return self::$_defaultReminderRecipients;
     }
 }
