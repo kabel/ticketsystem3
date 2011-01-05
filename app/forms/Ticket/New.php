@@ -151,6 +151,7 @@ class Default_Form_Ticket_New extends Default_Form_Ticket
                 'type' => Default_Model_TicketIndexChangesetDates::TYPE_CREATED,
                 'changeset_id' => $changeset->getId()
             ));
+            $index->save();
             Default_Model_TicketIndexChangesetDates::insertUpdate($ticket->getId(), Default_Model_TicketIndexChangesetDates::TYPE_MODIFIED, $changeset->getId());
 
             $attr = Default_Model_Attribute::get('status');
