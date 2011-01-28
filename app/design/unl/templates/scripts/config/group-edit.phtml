@@ -18,6 +18,6 @@ if ($this->id === 'new') {
     <?php echo $this->render('config/grid/users.phtml'); ?>
 </div>
 <script type="text/javascript">
-$('#userGrid').grid('<?php echo $this->url(array('ajax' => true)); ?>', { useAjax:true });
+WDN.jQuery('#userGrid').grid('<?php echo $this->url(array('ajax' => true)); ?>', { useAjax:true });
 </script>
 <?php endif; ?>
