@@ -53,7 +53,6 @@ class Default_Form_Ticket_Edit extends Default_Form_Ticket
     public function prepareFromLatest($id, $latest)
     {
         $attrForm = $this->getSubForm('properties');
-        $user = Zend_Auth::getInstance()->getIdentity();
 
         foreach ($latest as $name => $row) {
             if ($element = $attrForm->getElement($name)) {
