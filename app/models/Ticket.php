@@ -485,19 +485,20 @@ class Default_Model_Ticket extends Default_Model_Abstract
 
     public function isAllowed($latest)
     {
-        $user = Zend_Auth::getInstance()->getIdentity();
+        $user = Default_Model_User::fetchActive();
+        $acl = Zend_Registry::get('bootstrap')->getResource('acl');
         $result = true;
 
-        $acl = Zend_Registry::get('bootstrap')->getResource('acl');
-        if (!$acl->isAllowed((string)$user->level, 'ticket', 'view-all')) {
+        if (!$acl->isAllowed((string)$user['level'], 'ticket', 'view-all')) {
             $result = false;
-            if ($this['reporter'] == $user->user_id ||
-                (isset($latest['owner']) && $latest['owner']['value'] == $user->user_id)) {
+            if ($this['reporter'] == $user['user_id'] ||
+                (isset($latest['owner']) && $latest['owner']['value'] == $user['user_id'])) {
                 return true;
             }
 
-            if ($acl->isAllowed((string)$user->level, 'ticket', 'view-group') &&
-                !empty($user->ugroup_id) && $latest['group']['value'] == $user->ugroup_id) {
+            $groupIds = $user->getGroupIds();
+            if ($acl->isAllowed((string)$user['level'], 'ticket', 'view-group') &&
+                !empty($groupIds) && in_array($latest['group']['value'], $groupIds)) {
                 return true;
             }
         }
