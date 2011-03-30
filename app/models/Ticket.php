@@ -560,7 +560,8 @@ class Default_Model_Ticket extends Default_Model_Abstract
                 );
                 foreach ($users as $rowset) {
                     foreach ($rowset as $user) {
-                        if ($user['level'] == Default_Model_User::LEVEL_MODERATOR && !empty($user['email'])) {
+                        if ($user['level'] == Default_Model_User::LEVEL_MODERATOR
+                            && $user['status'] == Default_Model_User::STATUS_ACTIVE && !empty($user['email'])) {
                             $recipients[] = array($user['email'], $user['info']);
                         }
                     }
