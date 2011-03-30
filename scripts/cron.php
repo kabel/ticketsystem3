@@ -83,8 +83,11 @@ foreach ($rowset as $row) {
         $notification->setReplyTo($replyTo);
     }
     $recipients = Default_Model_Ticket::getReminderRecipients($latest);
-    foreach ($recipients as $to) {
+    foreach ($recipients['to'] as $to) {
         $notification->addTo($to[0], $to[1]);
+    }
+    foreach ($recipients['cc'] as $to) {
+        $notification->addCc($to[0], $to[1]);
     }
 
     $view->clearVars();

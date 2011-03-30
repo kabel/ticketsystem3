@@ -2,7 +2,7 @@
 
 class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 {
-    protected $_version = '0.1.5';
+    protected $_version = '0.1.6';
 
     protected function _initAutoload()
     {
@@ -157,9 +157,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $acl->addRole((string)Default_Model_User::LEVEL_GUEST);
         $acl->addRole((string)Default_Model_User::LEVEL_USER, (string)Default_Model_User::LEVEL_GUEST);
         $acl->addRole((string)Default_Model_User::LEVEL_MODERATOR, (string)Default_Model_User::LEVEL_USER);
+        // MODERATOR_ADMIN is used to send out urgent reminders
+        $acl->addRole((string)Default_Model_User::LEVEL_MODERATOR_ADMIN);
         $acl->addRole((string)Default_Model_User::LEVEL_ADMIN);
 
         //ACL Rules
+        $acl->allow((string)Default_Model_User::LEVEL_MODERATOR_ADMIN);
         $acl->allow((string)Default_Model_User::LEVEL_ADMIN);
         $acl->allow((string)Default_Model_User::LEVEL_GUEST, 'config', 'profile');
         if (!Default_Model_Setting::get('restrict_guest')) {

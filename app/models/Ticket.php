@@ -547,7 +547,10 @@ class Default_Model_Ticket extends Default_Model_Abstract
 
     public static function getReminderRecipients($latest)
     {
-        $recipients = array();
+        $recipients = array(
+            'to' => array(),
+            'cc' => array()
+        );
 
         if (!empty($latest['group']['value'])) {
             if (isset(self::$_reminderGroupRecipientsCache[$latest['group']['value']])) {
@@ -560,19 +563,26 @@ class Default_Model_Ticket extends Default_Model_Abstract
                 );
                 foreach ($users as $rowset) {
                     foreach ($rowset as $user) {
-                        if ($user['level'] == Default_Model_User::LEVEL_MODERATOR
+                        if (($user['level'] == Default_Model_User::LEVEL_MODERATOR
+                            || $user['level'] == Default_Model_User::LEVEL_MODERATOR_ADMIN)
                             && $user['status'] == Default_Model_User::STATUS_ACTIVE && !empty($user['email'])) {
-                            $recipients[] = array($user['email'], $user['info']);
+                            $recipients['to'][] = array($user['email'], $user['info']);
                         }
                     }
+                }
+                if ($group['notify_admin']) {
+                    $recipients['cc'] = self::_getDefaultReminderRecipients();
                 }
 
                 self::$_reminderGroupRecipientsCache[$latest['group']['value']] = $recipients;
             }
         }
 
-        if (empty($recipients)) {
-            $recipients = self::_getDefaultReminderRecipients();
+        if (empty($recipients['to'])) {
+            $recipients = array(
+                'to' => self::_getDefaultReminderRecipients(),
+                'cc' => array()
+            );
         }
 
         return $recipients;

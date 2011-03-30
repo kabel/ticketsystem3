@@ -14,17 +14,19 @@
 	</dd>
 	<dt class="col left a-right" style="clear:both;">Users:</dt>
 	<dd class="two_col left">
-	    <?php echo $this->userLevelCounts[Default_Model_User::LEVEL_GUEST]; ?> 
-	        <?php echo strtolower(Default_Model_User::getLevelStringValue(Default_Model_User::LEVEL_GUEST)); ?>(s), 
+	    <?php echo $this->userLevelCounts[Default_Model_User::LEVEL_GUEST]; ?>
+	        <?php echo strtolower(Default_Model_User::getLevelStringValue(Default_Model_User::LEVEL_GUEST)); ?>(s),
         <?php echo $this->userLevelCounts[Default_Model_User::LEVEL_USER]; ?>
             <?php echo strtolower(Default_Model_User::getLevelStringValue(Default_Model_User::LEVEL_USER)); ?>(s),
         <?php echo $this->userLevelCounts[Default_Model_User::LEVEL_MODERATOR]; ?>
             <?php echo strtolower(Default_Model_User::getLevelStringValue(Default_Model_User::LEVEL_MODERATOR)); ?>(s),
+        <?php echo $this->userLevelCounts[Default_Model_User::LEVEL_MODERATOR_ADMIN]; ?>
+            <?php echo strtolower(Default_Model_User::getLevelStringValue(Default_Model_User::LEVEL_MODERATOR_ADMIN)); ?>(s),
         <?php echo $this->userLevelCounts[Default_Model_User::LEVEL_ADMIN]; ?>
             <?php echo strtolower(Default_Model_User::getLevelStringValue(Default_Model_User::LEVEL_ADMIN)); ?>(s),
 	    <?php echo array_sum($this->userLevelCounts); ?> total</dd>
 	<dt class="col left a-right" style="clear:both;">Current User:</dt>
 	<dd class="two_col left"><?php echo $this->user->username; ?> (<?php echo Default_Model_User::getLevelStringValue($this->user->level); ?>)</dd>
 </dl>
-<h1 class="clr">Edit Settings</h1> 
+<h1 class="clr">Edit Settings</h1>
 <?php echo $this->form; ?>
