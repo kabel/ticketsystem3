@@ -49,7 +49,8 @@ if (!jQuery) {
 				var filters = $('.filters input, .filters select', dataTable).filter(function() {
 					return ($(this).val() && $(this).val().length);
 				});
-				reload(addVarToUrl(opts.filterVar, $.base64Encode(filters.serialize())));
+				var filter = $.base64Encode(filters.serialize());
+				reload(addVarToUrl(opts.filterVar, filter == '' ? '~' : filter));
 			};
 			
 			var initGrid = function() {

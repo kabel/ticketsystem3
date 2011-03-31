@@ -118,7 +118,7 @@ class Default_Form_Grid_Abstract
             $this->view->filters = $filters;
             foreach ($this->_validFilters as $col) {
                 if (array_key_exists($col, $filters)) {
-                    $select->where("{$col} LIKE CONCAT('%', ?, '%')", $filters['col']);
+                    $select->where("{$col} LIKE CONCAT('%', ?, '%')", $filters[$col]);
                 }
             }
         }
