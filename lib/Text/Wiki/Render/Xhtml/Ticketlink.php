@@ -24,9 +24,15 @@ class Text_Wiki_Render_Xhtml_Ticketlink extends Text_Wiki_Render {
         } else {
             return '#' . $options['id'];
         }
-        
-        $output = "<a href=\"$src\">#{$options['id']}</a>";
-        
+
+        $class = '';
+        $latest = Default_Model_AttributeValue::getLatestByTicketId($options['id']);
+        if (isset($latest['status']) && $latest['status']['value'] == 'closed') {
+            $class = ' class="ticket-closed"';
+        }
+
+        $output = "<a{$class} href=\"$src\">#{$options['id']}</a>";
+
         return $output;
     }
 }

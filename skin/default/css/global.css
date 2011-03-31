@@ -11,6 +11,7 @@ body { font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Arial, Verdana, s
 a { color: #08c; }
 a:link, a:visited, a:active { text-decoration: none; outline: none; }
 a:hover { text-decoration: underline; }
+a.ticket-closed { text-decoration: line-through; }
 strong, b { font-weight: bold; }
 em, i { font-style: italic; }
 sup { padding-left: 1px; font-size: 10px !important; font-weight: normal !important; vertical-align: baseline; position: relative; bottom: 0.33em; color: #76797c; }

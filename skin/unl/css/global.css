@@ -32,6 +32,9 @@ ul ul.square { margin-top: 4px; margin-bottom: 5px; }
 .block-separator-left { padding: 5px 0 5px 10px; border-left: 1px solid #d7d7d7; }
 .block-separator-left dt { font-weight: bold; }
 
+
+#maincontent a.ticket-closed { text-decoration: line-through; }
+
 /* HELP */
 .help-figure {
     margin-bottom: 1.1em;
