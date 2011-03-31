@@ -268,7 +268,7 @@ class Default_Form_Ticket_Edit extends Default_Form_Ticket
                 $temp = '';
                 if ($match[1][0] == '_') {
                     if ($match[1] == '_auth') {
-                        $temp = $this->_getAuthUser()->username;
+                        $temp = $this->_getAuthUser()->getUsername();
                     }
                 } elseif (isset($latest[$match[1]])) {
                     $temp = $this->getView()->attributeOutput($match[1], $latest[$match[1]]['value'], null, true, true);
@@ -341,7 +341,7 @@ class Default_Form_Ticket_Edit extends Default_Form_Ticket
                     }
                 } else {
                     if ($value == '{{_auth}}') {
-                        $value = $this->_getAuthUser()->user_id;
+                        $value = $this->_getAuthUser()->getId();
                     }
                 }
 
@@ -421,7 +421,7 @@ class Default_Form_Ticket_Edit extends Default_Form_Ticket
 
         if ($this->preview->isChecked()) {
             $view->preview = array(
-                'owner' => $this->_getAuthUser()->username,
+                'owner' => $this->_getAuthUser()->getUsername(),
                 'comment' => $values['comment'],
                 'changes' => $changes
             );
@@ -429,7 +429,7 @@ class Default_Form_Ticket_Edit extends Default_Form_Ticket
             return false;
         } else {
             if (!empty($values['comment']) || !empty($changes)) {
-                $reporter = $this->_getAuthUser()->user_id;
+                $reporter = $this->_getAuthUser()->getId();
                 $create_date = new Zend_Date();
                 $changeset = new Default_Model_Changeset();
                 $changeset->setData(array(
@@ -526,7 +526,7 @@ class Default_Form_Ticket_Edit extends Default_Form_Ticket
 
                 $view->ticket = $ticket;
                 $view->latest = $newLatest;
-                $view->author = $this->_getAuthUser()->username;
+                $view->author = $this->_getAuthUser()->getUsername();
                 $view->comment = $changeset['comment'];
 
                 $view->dates = array('modified' => $changeset['create_date']);

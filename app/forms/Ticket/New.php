@@ -81,7 +81,7 @@ class Default_Form_Ticket_New extends Default_Form_Ticket
         $values = $this->getValues();
 
         if ($this->preview->isChecked()) {
-            $reporter = $this->_getAuthUser()->username;
+            $reporter = $this->_getAuthUser()->getUsername();
             $summary = $values['properties']['summary_'];
             $description = $values['properties']['description'];
 
@@ -97,7 +97,7 @@ class Default_Form_Ticket_New extends Default_Form_Ticket
 
             return false;
         } else {
-            $reporter = $this->_getAuthUser()->user_id;
+            $reporter = $this->_getAuthUser()->getId();
             $ticket = new Default_Model_Ticket();
             $ticket->setData(array(
                 'summary' => $values['properties']['summary_'],
