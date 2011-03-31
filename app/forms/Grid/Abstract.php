@@ -6,7 +6,7 @@ class Default_Form_Grid_Abstract
 
     protected $_sessionName = 'grid';
 
-    protected $_saveFiltersInSession = false;
+    protected $_saveParamsInSession = false;
 
     /**
      *
@@ -44,11 +44,37 @@ class Default_Form_Grid_Abstract
         return $this;
     }
 
-    public function setSaveFiltersInSession(bool $flag)
+    public function setSaveParamsInSession(bool $flag)
     {
-        $this->_saveFiltersInSession = $flag;
+        $this->_saveParamsInSession = $flag;
 
         return $this;
+    }
+
+    public function getParam($param, $default = null, $callback = null)
+    {
+        $session = new Zend_Session_Namespace('TicketSystem');
+        if ($this->_saveParamsInSession && !isset($session->{$this->_sessionName})) {
+            $session->{$this->_sessionName} = array();
+        }
+
+        if ($this->getRequest()->getParam($param) !== null) {
+            $value = $this->getRequest()->getParam($param);
+            if ($callback !== null) {
+                $value = call_user_func($callback, $value);
+            }
+            if ($this->_saveParamsInSession) {
+                $session->{$this->_sessionName}[$param] = $value;
+            }
+
+            return $value;
+        } elseif ($this->_saveParamsInSession && isset($session->{$this->_sessionName}[$param])) {
+            $value = $session->{$this->_sessionName}[$param];
+
+            return $value;
+        }
+
+        return $default;
     }
 
     /**
@@ -62,25 +88,7 @@ class Default_Form_Grid_Abstract
 
     protected function _getFilters()
     {
-        $session = new Zend_Session_Namespace('TicketSystem');
-        if (!isset($session->filters)) {
-            $session->filters = array();
-        }
-        if ($this->getRequest()->getParam('filter') !== null) {
-            $filters = null;
-            if ($this->getRequest()->getParam('filter') != '~') {
-                $filters = $this->_prepareFilterString($this->getRequest()->getParam('filter'));
-            }
-            if ($this->_saveFiltersInSession) {
-                $session->filters[$this->_sessionName] = $filters;
-            }
-            return $filters;
-        } elseif ($this->_saveFiltersInSession && isset($session->filters[$this->_sessionName])) {
-            $filters = $session->filters[$this->_sessionName];
-            return $filters;
-        }
-
-        return null;
+        return $this->getParam('filter', null, array($this, '_prepareFilterString'));
     }
 
     /**
@@ -91,6 +99,9 @@ class Default_Form_Grid_Abstract
      */
     protected function _prepareFilterString($filterString)
     {
+        if ($filterString == '~') {
+            $filterString = '';
+        }
         $data = array();
         $filterString = base64_decode($filterString);
         parse_str($filterString, $data);
@@ -144,7 +155,7 @@ class Default_Form_Grid_Abstract
         $paginator->setItemCountPerPage($pageSize);
         $appSession->page_size = $pageSize;
 
-        if ($pg = $this->getRequest()->getParam('pg')) {
+        if ($pg = $this->getParam('pg')) {
             $paginator->setCurrentPageNumber($pg);
         }
     }

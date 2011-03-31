@@ -2,6 +2,13 @@
 
 class Default_Form_Grid_Tickets_Abstract extends Default_Form_Grid_Abstract
 {
+    public function init()
+    {
+        $this->_saveParamsInSession = true;
+
+        return parent::init();
+    }
+
     protected function _getPager()
     {
         $this->_prepareSort();
@@ -40,7 +47,7 @@ class Default_Form_Grid_Tickets_Abstract extends Default_Form_Grid_Abstract
 
     protected function _prepareSort()
     {
-        $this->view->sort = $this->getRequest()->getParam('sort');
-        $this->view->desc = ($this->getRequest()->getParam('desc') !== null);
+        $this->view->sort = $this->getParam('sort');
+        $this->view->desc = ($this->getParam('desc') !== null);
     }
 }

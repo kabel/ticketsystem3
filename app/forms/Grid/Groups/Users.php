@@ -2,6 +2,8 @@
 
 class Default_Form_Grid_Groups_Users extends Default_Form_Grid_Users
 {
+    protected $_sessionName = 'group-users-grid';
+
     protected function _getPager()
     {
         $id = $this->getRequest()->getParam('id');

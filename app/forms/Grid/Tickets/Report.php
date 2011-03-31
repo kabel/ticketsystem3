@@ -3,19 +3,19 @@
 class Default_Form_Grid_Tickets_Report extends Default_Form_Grid_Tickets_Abstract
 {
     protected $_report;
-    
+
     public function __construct($view, $request, $report)
     {
         $this->_report = $report;
         parent::__construct($view, $request);
     }
-    
+
     protected function _prepareSearch()
     {
         $report = $this->_report;
-        
+
         $this->view->columns = $report['columns'];
-        
+
         $search = array();
         if (!empty($report['search'])) {
             foreach ($report['search'] as $name => $value) {
@@ -26,14 +26,14 @@ class Default_Form_Grid_Tickets_Report extends Default_Form_Grid_Tickets_Abstrac
                 } else {
                     continue;
                 }
-                
+
                 $search[$name] = $value;
             }
         }
-        
+
         return $search;
     }
-    
+
     protected function _prepareSort()
     {
         $sort = null;
@@ -42,7 +42,7 @@ class Default_Form_Grid_Tickets_Report extends Default_Form_Grid_Tickets_Abstrac
             $sort = $this->_report['sort']['by'];
             $desc = ($this->_report['sort']['desc'] !== null);
         }
-        $this->view->sort = $this->getRequest()->getParam('sort', $sort);
-        $this->view->desc = ($this->getRequest()->getParam('desc', $desc));
+        $this->view->sort = $this->getParam('sort', $sort);
+        $this->view->desc = ($this->getParam('desc', $desc));
     }
 }

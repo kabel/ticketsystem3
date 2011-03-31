@@ -2,6 +2,9 @@
 
 class Default_Form_Grid_Users extends Default_Form_Grid_Abstract
 {
+    protected $_sessionName = 'users-grid';
+    protected $_saveParamsInSession = true;
+
     public function init()
     {
         $this->_validFilters = array(
@@ -10,8 +13,6 @@ class Default_Form_Grid_Users extends Default_Form_Grid_Abstract
             'level',
             'status'
         );
-        $this->_sessionName = 'users-grid';
-        $this->_saveFiltersInSession = true;
 
         return parent::init();
     }

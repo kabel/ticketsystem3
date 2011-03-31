@@ -9,7 +9,7 @@ class Default_Form_Grid_Groups extends Default_Form_Grid_Abstract
             'shortname',
         );
         $this->_sessionName = 'groups-grid';
-        $this->_saveFiltersInSession = true;
+        $this->_saveParamsInSession = true;
 
         return parent::init();
     }
