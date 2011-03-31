@@ -421,6 +421,9 @@ table.full-width { width: 100%; }
 	color:#fff;
 	font-weight:bold;
 }
+#maincontent table.data thead .filters {
+	background-color: #E8F2FC;	
+}
 #maincontent table.data th { padding:7px; text-align:left !important; }
 #maincontent table.data th :link, #maincontent table.data th :visited {
 	color: #fff;
@@ -434,7 +437,7 @@ table.data td {
 	padding: 6px 5px; 
 }
 
-table.data .filters input, table.data .filters select { width:100%; }
+table.data .filters input, table.data .filters select { width:96%; }
 
 table.inline {
 	background-color:#FFFFFF;

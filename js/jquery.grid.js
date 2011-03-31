@@ -31,7 +31,7 @@ if (!jQuery) {
 				var re = new RegExp('\/('+varName+'\/.*?\/)');
 				var parts = url.split(new RegExp('\\?'));
 				url = parts[0].replace(re, '/');
-				if (varValue) {
+				if (varValue !== undefined) {
 					url+= varName+'/'+varValue+'/';
 				}
 				if(parts.length>1) {
@@ -77,7 +77,7 @@ if (!jQuery) {
 				});
 				
 				$('.filter-actions .reset', actionTable).click(function() {
-					reload(addVarToUrl(opts.filterVar));
+					reload(addVarToUrl(opts.filterVar, '~'));
 				});
 				$('.filter-actions .filter', actionTable).click(function() {
 					doFilter(dataTable);

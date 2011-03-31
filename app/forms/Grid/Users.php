@@ -2,12 +2,19 @@
 
 class Default_Form_Grid_Users extends Default_Form_Grid_Abstract
 {
-    protected $_validFilters = array(
-        'username',
-        'info',
-        'level',
-        'status'
-    );
+    public function init()
+    {
+        $this->_validFilters = array(
+            'username',
+            'info',
+            'level',
+            'status'
+        );
+        $this->_sessionName = 'users-grid';
+        $this->_saveFiltersInSession = true;
+
+        return parent::init();
+    }
 
     protected function _getPager()
     {

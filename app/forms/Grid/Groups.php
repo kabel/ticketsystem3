@@ -2,10 +2,17 @@
 
 class Default_Form_Grid_Groups extends Default_Form_Grid_Abstract
 {
-    protected $_validFilters = array(
-        'name',
-        'shortname'
-    );
+    public function init()
+    {
+        $this->_validFilters = array(
+            'name',
+            'shortname',
+        );
+        $this->_sessionName = 'groups-grid';
+        $this->_saveFiltersInSession = true;
+
+        return parent::init();
+    }
 
     protected function _getPager()
     {

@@ -4,6 +4,10 @@ class Default_Form_Grid_Abstract
 {
     protected $_validFilters = array();
 
+    protected $_sessionName = 'grid';
+
+    protected $_saveFiltersInSession = false;
+
     /**
      *
      * @var Zend_View_Abstract
@@ -36,6 +40,15 @@ class Default_Form_Grid_Abstract
     public function init()
     {
         $this->view->paginator = $this->_getPager();
+
+        return $this;
+    }
+
+    public function setSaveFiltersInSession(bool $flag)
+    {
+        $this->_saveFiltersInSession = $flag;
+
+        return $this;
     }
 
     /**
@@ -47,18 +60,41 @@ class Default_Form_Grid_Abstract
         return null;
     }
 
+    protected function _getFilters()
+    {
+        $session = new Zend_Session_Namespace('TicketSystem');
+        if (!isset($session->filters)) {
+            $session->filters = array();
+        }
+        if ($this->getRequest()->getParam('filter') !== null) {
+            $filters = null;
+            if ($this->getRequest()->getParam('filter') != '~') {
+                $filters = $this->_prepareFilterString($this->getRequest()->getParam('filter'));
+            }
+            if ($this->_saveFiltersInSession) {
+                $session->filters[$this->_sessionName] = $filters;
+            }
+            return $filters;
+        } elseif ($this->_saveFiltersInSession && isset($session->filters[$this->_sessionName])) {
+            $filters = $session->filters[$this->_sessionName];
+            return $filters;
+        }
+
+        return null;
+    }
+
     /**
      * Decode filter string
      *
      * @param string $filterString
      * @return data
      */
-    protected function prepareFilterString($filterString)
+    protected function _prepareFilterString($filterString)
     {
         $data = array();
         $filterString = base64_decode($filterString);
         parse_str($filterString, $data);
-        array_walk_recursive($data, array($this, 'decodeFilter'));
+        array_walk_recursive($data, array($this, '_decodeFilter'));
         return $data;
     }
 
@@ -67,7 +103,7 @@ class Default_Form_Grid_Abstract
      *
      * @param string $value
      */
-    protected function decodeFilter(&$value)
+    protected function _decodeFilter(&$value)
     {
         $value = rawurldecode($value);
     }
@@ -78,11 +114,11 @@ class Default_Form_Grid_Abstract
      */
     protected function _applyFilters($select)
     {
-        if ($filters = $this->getRequest()->getParam('filter')) {
-            $filters = $this->view->filters = $this->prepareFilterString($filters);
-            foreach ($filters as $col => $val) {
-                if (in_array($col, $this->_validFilters)) {
-                    $select->where("{$col} LIKE CONCAT('%', ?, '%')", $val);
+        if ($filters = $this->_getFilters()) {
+            $this->view->filters = $filters;
+            foreach ($this->_validFilters as $col) {
+                if (array_key_exists($col, $filters)) {
+                    $select->where("{$col} LIKE CONCAT('%', ?, '%')", $filters['col']);
                 }
             }
         }
