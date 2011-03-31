@@ -2,6 +2,8 @@
 
 class Default_Form_Grid_Tickets_Search extends Default_Form_Grid_Tickets_Abstract
 {
+    protected $_sessionName = 'ticket-search-grid';
+
     protected function _prepareSearch()
     {
         $search = array();
@@ -12,7 +14,7 @@ class Default_Form_Grid_Tickets_Search extends Default_Form_Grid_Tickets_Abstrac
                 $attr = Default_Model_Attribute::get($name);
                 $key = $attr['attribute_id'];
             }
-            
+
             if (isset($filter['mode'])) {
                 $search[$key] = array(
                     'mode' => $filter['mode'],
@@ -22,7 +24,7 @@ class Default_Form_Grid_Tickets_Search extends Default_Form_Grid_Tickets_Abstrac
                 $search[$key] = $filter['filter'];
             }
         }
-        
+
         return $search;
     }
 }

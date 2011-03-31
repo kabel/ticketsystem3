@@ -4,6 +4,8 @@ class Default_Form_Grid_Tickets_Report extends Default_Form_Grid_Tickets_Abstrac
 {
     protected $_report;
 
+    protected $_sessionName = 'ticket-report-grid';
+
     public function __construct($view, $request, $report)
     {
         $this->_report = $report;
