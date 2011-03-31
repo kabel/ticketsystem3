@@ -14,9 +14,9 @@
  *
  * @category   Zend
  * @package    Zend_Filter
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Input.php 20096 2010-01-06 02:05:09Z bkarwin $
+ * @version    $Id: Input.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -37,7 +37,7 @@ require_once 'Zend/Validate.php';
 /**
  * @category   Zend
  * @package    Zend_Filter
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Filter_Input
@@ -744,10 +744,10 @@ class Zend_Filter_Input
         $message = $this->_defaults[self::MISSING_MESSAGE];
 
         if (null !== ($translator = $this->getTranslator())) {
-            if ($translator->isTranslated($message)) {
-                $message = $translator->translate($message);
-            } elseif ($translator->isTranslated(self::MISSING_MESSAGE)) {
+            if ($translator->isTranslated(self::MISSING_MESSAGE)) {
                 $message = $translator->translate(self::MISSING_MESSAGE);
+            } else {
+                $message = $translator->translate($message);
             }
         }
 
@@ -764,10 +764,10 @@ class Zend_Filter_Input
         $message = $this->_defaults[self::NOT_EMPTY_MESSAGE];
 
         if (null !== ($translator = $this->getTranslator())) {
-            if ($translator->isTranslated($message)) {
-                $message = $translator->translate($message);
-            } elseif ($translator->isTranslated(self::NOT_EMPTY_MESSAGE)) {
+            if ($translator->isTranslated(self::NOT_EMPTY_MESSAGE)) {
                 $message = $translator->translate(self::NOT_EMPTY_MESSAGE);
+            } else {
+                $message = $translator->translate($message);
             }
         }
 
