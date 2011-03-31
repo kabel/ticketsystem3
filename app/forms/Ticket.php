@@ -25,7 +25,7 @@ abstract class Default_Form_Ticket extends Zend_Form
 
     protected function _getAuthUser()
     {
-        return Zend_Auth::getInstance()->getIdentity();
+        return Default_Model_User::fetchActive();
     }
 
     protected function _getSubmitLabel()
@@ -47,7 +47,7 @@ abstract class Default_Form_Ticket extends Zend_Form
     {
         $user = $this->_getAuthUser();
         $acl = Zend_Registry::get('bootstrap')->getResource('acl');
-        return $acl->isAllowed((string)$user->level, 'ticket', $privledge);
+        return $acl->isAllowed((string)$user['level'], 'ticket', $privledge);
     }
 
     /**

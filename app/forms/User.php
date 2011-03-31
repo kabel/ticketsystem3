@@ -7,7 +7,7 @@ class Default_Form_User extends Default_Form_Profile
         $this->setMethod('post');
         $this->setAttrib('class', 'form-full');
     }
-    
+
     public function setupForUser(Default_Model_User $user=null)
     {
         if (is_null($user) || !$user->hasData()) {
@@ -22,11 +22,12 @@ class Default_Form_User extends Default_Form_Profile
                 'group' => $user['ugroup_id'],
                 'membership' => $user->getGroupIds(true)
             ));
+            $this->getView()->user = $user;
         }
     }
-    
+
     /**
-     * 
+     *
      * @param mixed $id
      * @return boolean
      */
@@ -35,14 +36,14 @@ class Default_Form_User extends Default_Form_Profile
         if ($id === 'new') {
            $userModel = new Default_Model_User();
            $this->setupForUser();
-           
+
            if (!$this->isValid($_POST)) {
                return false;
            }
-           
+
            $values = $this->getValues();
            $session = new Zend_Session_Namespace('TicketSystem');
-           
+
            $data = array(
                'username' => $values['username_new'],
                'info' => $values['info'],
@@ -51,12 +52,12 @@ class Default_Form_User extends Default_Form_Profile
                'login_type' => $values['login_type'],
                'status' => Default_Model_User::STATUS_ACTIVE
            );
-           
+
            if ($values['login_type'] == Default_Model_User::LOGIN_TYPE_LEGACY) {
                $data['passwd'] = md5($values['passwd_new']);
            } else {
                $data['passwd'] = '';
-               
+
                $pf = new UNL_Peoplefinder();
                $pfResult = $pf->getUID($user);
                if ($prResult) {
@@ -70,7 +71,7 @@ class Default_Form_User extends Default_Form_Profile
                     }
                }
            }
-           
+
            if (!empty($values['group'])) {
                $data['ugroup_id'] = $values['group'];
                $pos = array_search($values['group'], $values['membership']);
@@ -80,10 +81,10 @@ class Default_Form_User extends Default_Form_Profile
            } elseif (!empty($values['membership'])) {
                $data['ugroup_id'] = array_shift($values['membership']);
            }
-           
+
            $userModel->setData($data);
            $userModel->save();
-           
+
            if (!empty($values['membership'])) {
                foreach ($values['membership'] as $groupId) {
                    $membershipModel = new Default_Model_Membership();
@@ -94,28 +95,34 @@ class Default_Form_User extends Default_Form_Profile
                    $membershipModel->save();
                }
            }
-           
+
            $session->messages = array(
                'type' => 'success',
                'content' => array("User '{$userModel['username']}' successfully added")
            );
         } else {
            $userModel = Default_Model_User::findRow($id);
-           
+
             if (null === $userModel) {
                 return true;
             }
-           
+
            $this->setupForUser($userModel);
-           
+
            if (!$this->isValid($_POST)) {
                return false;
            }
-           
+
            $values = $this->getValues();
            $session = new Zend_Session_Namespace('TicketSystem');
-           
+
            if ($this->remove->isChecked()) {
+               if (!$this->_checkAdminConstraint($userModel)) {
+                   $this->addError('Removing this user will leave the system without an admin.');
+                   $this->addDecorator('Errors', array('class' => 'errors form-after'));
+                   return false;
+               }
+
                Default_Model_AttributeValue::flattenSrc('user', $userModel->getId());
                $session->messages = array(
                    'type' => 'success',
@@ -127,6 +134,11 @@ class Default_Form_User extends Default_Form_Profile
                    $userModel['status'] = Default_Model_User::STATUS_ACTIVE;
                    $verb = 'enabled';
                } else {
+                   if (!$this->_checkAdminConstraint($userModel)) {
+                       $this->addError('Disabling this user will leave the system without an admin.');
+                       $this->addDecorator('Errors', array('class' => 'errors form-after'));
+                       return false;
+                   }
                    $userModel['status'] = Default_Model_User::STATUS_BANNED;
                    $verb = 'disabled';
                }
@@ -136,12 +148,18 @@ class Default_Form_User extends Default_Form_Profile
                    'content' => array("User '{$userModel['username']}' successfully $verb")
                );
            } else {
+               if (!$this->_checkAdminConstraint($userModel, $values)) {
+                   $this->addError("Changing this user's level will leave the system without an admin.");
+                   $this->addDecorator('Errors', array('class' => 'errors form-after'));
+                   return false;
+               }
+
                $data = array(
                    'level' => $values['level'],
                    'email' => $values['email'],
                    'info' => $values['info']
                );
-               
+
                if (!empty($values['group'])) {
                    $data['ugroup_id'] = $values['group'];
                    $pos = array_search($values['group'], $values['membership']);
@@ -153,7 +171,7 @@ class Default_Form_User extends Default_Form_Profile
                } else {
                    $data['ugroup_id'] = null;
                }
-               
+
                $currentMembership = $userModel->getGroupIds(true);
                if (!empty($values['membership'])) {
                    foreach ($values['membership'] as $groupId) {
@@ -166,7 +184,7 @@ class Default_Form_User extends Default_Form_Profile
                            $membershipModel->save();
                        }
                    }
-                   
+
                    // Batch delete the unselected groups
                    $toRemove = array();
                    foreach ($currentMembership as $groupId) {
@@ -182,15 +200,15 @@ class Default_Form_User extends Default_Form_Profile
                    $db = Zend_Registry::get('bootstrap')->getResource('db');
                    $db->delete('membership', 'user_id = ' . $id);
                }
-               
+
                if (!empty($values['username_new']) && $values['username_new'] !== $userModel['username']) {
                    $data['username'] = $values['username_new'];
                }
-               
+
                if (!empty($values['passwd_new'])) {
                    $data['passwd'] = md5($values['passwd_new']);
                }
-               
+
                $userModel->setData($data);
                $userModel->save();
                $session->messages = array(
@@ -199,10 +217,32 @@ class Default_Form_User extends Default_Form_Profile
                );
            }
         }
-        
+
         return true;
     }
-    
+
+    protected function _checkAdminConstraint($user, $values = null)
+    {
+        $acl = Zend_Registry::get('bootstrap')->getResource('acl');
+        if (!$acl->isAllowed((string)$user['level'])) {
+            return true;
+        }
+
+        if ($values !== null && $acl->isAllowed((string)$values['level'])) {
+            return true;
+        }
+
+        // We are losing an admin user, check for another active
+        $adminCount = -1;
+        $levelCounts = Default_Model_User::getLevelCounts(true);
+        $adminLevels = Default_Model_User::getAdminLevels();
+        foreach ($adminLevels as $level) {
+            $adminCount += $levelCounts[$level];
+        }
+
+        return !($adminCount < 1);
+    }
+
     protected function _addFields($userId=-1, $isCAS=false, $isBanned=false)
     {
         $isNew = ($userId === -1);
@@ -218,7 +258,7 @@ class Default_Form_User extends Default_Form_Profile
         		$_loginType = $_POST['login_type'];
         	}
         }
-        
+
         if (!$isCAS) {
             $db = Zend_Registry::get('bootstrap')->getResource('db');
             $clause = array($db->quoteInto('login_type = ?', $_loginType));
@@ -244,78 +284,78 @@ class Default_Form_User extends Default_Form_Profile
     			'label' => 'Username:'
             ));
             $this->getElement('username_new')->addPrefixPath('TicketSystem_Filter', 'TicketSystem/Filter/', 'filter');
-            
+
             $this->_addPasswordFields($isNew && $_loginType == Default_Model_User::LOGIN_TYPE_LEGACY);
         }
-        
+
         $this->addElement('radio', 'level', array(
             'required' => true,
             'multiOptions' => Default_Model_User::getLevelStringArray(),
             'label' => 'Level:',
             'errorMessages' => array('Must select a permission level')
         ));
-        
+
         $this->_addUserFields(!$isNew || ($isNew && $_loginType == Default_Model_User::LOGIN_TYPE_LEGACY));
-        
+
         $groups = Default_Model_Ugroup::getSelectOptions(false);
-        
+
         if (count($groups) > 0) {
             $this->addElement('select', 'group', array(
                 'multiOptions' => array('') + $groups,
                 'label' => 'Home Group:'
             ));
-            
+
             $this->addElement('multiselect', 'membership', array(
                 'multiOptions' => $groups,
                 'label' => 'Group Memberships:',
                 'size' => 5
             ));
         }
-        
+
         $buttons = array();
         if ($isNew) {
             $this->addElement('submit', 'save', array(
     			'label' => 'Add',
             	'decorators' => $this->_getButtonDecorators()
             ));
-            
+
             $buttons[] = 'save';
         } else {
             $this->addElement('submit', 'save', array(
     			'label' => 'Apply',
             	'decorators' => $this->_getButtonDecorators()
             ));
-            
+
             $this->addElement('submit', 'remove', array(
                 'label' => 'Remove',
             	'decorators' => $this->_getButtonDecorators()
             ));
-            
+
             $this->addElement('submit', 'statuschange', array(
                 'label' => ($isBanned) ? 'Enable' : 'Disable',
             	'decorators' => $this->_getButtonDecorators()
             ));
-            
+
             $this->addElement('submit', 'reset', array(
                 'label' => 'Reset',
                 'decorators' => $this->_getButtonDecorators(),
                 'onclick' => "window.location.href = '" . $this->getView()->url() . "'; return false;"
             ));
-            
+
             $buttons += array('save', 'remove', 'statuschange', 'reset');
         }
-        
+
         $this->addElement('submit', 'cancel', array(
             'label' => 'Cancel',
             'decorators' => $this->_getButtonDecorators(),
             'onclick' => "window.location.href = '" . $this->getView()->url(array(
-            	'action' => 'users', 
+            	'action' => 'users',
             	'controller' => 'config'
             ), 'default', true) . "'; return false;"
         ));
-        
+
         $buttons[] = 'cancel';
-        
+
         $this->addDisplayGroup($buttons, 'buttons', array(
             'decorators' => array(
                 'FormElements',
@@ -323,12 +363,12 @@ class Default_Form_User extends Default_Form_Profile
                 'DtDdWrapper'
             )
         ));
-        
+
         $this->addElement('hash', 'csrf_user', array(
             'ignore' => true
         ));
     }
-    
+
     protected function _getButtonDecorators()
     {
         return array(

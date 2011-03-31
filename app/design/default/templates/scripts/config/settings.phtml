@@ -26,7 +26,7 @@
             <?php echo strtolower(Default_Model_User::getLevelStringValue(Default_Model_User::LEVEL_ADMIN)); ?>(s),
 	    <?php echo array_sum($this->userLevelCounts); ?> total</dd>
 	<dt class="clr col left  a-right">Current User:</dt>
-	<dd class="two_col left"><?php echo $this->user->username; ?> (<?php echo Default_Model_User::getLevelStringValue($this->user->level); ?>)</dd>
+	<dd class="two_col left"><?php echo $this->user['username']; ?> (<?php echo Default_Model_User::getLevelStringValue($this->user['level']); ?>)</dd>
 </dl>
 <h1 class="clr">Edit Settings</h1>
 <?php echo $this->form; ?>

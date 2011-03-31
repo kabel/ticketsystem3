@@ -201,6 +201,10 @@ ul.errors li {
 	padding-left: 16px;
 	background: url(../images/validation_advice_bg.gif) no-repeat 2px 1px;
 }
+ul.errors.form-after {
+	clear: both;
+	margin-left:230px;	
+}
 
 /* FORM */
 input, textarea, select { margin: 2px }

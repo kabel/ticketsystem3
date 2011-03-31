@@ -8,10 +8,10 @@ class Default_Form_NewAttachment extends Zend_Form
         $this->setMethod('post');
         $this->setAttrib('class', 'form-ticket');
         $this->setAttrib('enctype', Zend_Form::ENCTYPE_MULTIPART);
-        
+
         $this->addElement('file', 'attachment', array(
             'label' => 'File:',
-            'decorators' => array(        
+            'decorators' => array(
                 array('File', array('size' => 100, 'class' => 'block')),
                 'Errors',
                 array('Description', array('tag' => 'p', 'class' => 'description')),
@@ -26,18 +26,18 @@ class Default_Form_NewAttachment extends Zend_Form
             'required' => true,
             'description' => 'size limit 6.3 MB'
         ));
-        
+
         $this->addElement('submit', 'save', array(
 			'label' => 'Add Attachment',
 			'decorators' => $this->_getButtonDecorators()
         ));
-        
+
         $this->addElement('submit', 'cancel', array(
             'label' => 'Cancel',
             'decorators' => $this->_getButtonDecorators(),
             'onclick' => "window.location.href = '" . $view->url(array('id' => $view->id), 'ticket', true) . "'; return false;"
         ));
-        
+
         $this->addDisplayGroup(array('save', 'cancel'), 'buttons', array(
             'decorators' => array(
                 'FormElements',
@@ -45,12 +45,12 @@ class Default_Form_NewAttachment extends Zend_Form
                 'DtDdWrapper'
             )
         ));
-        
+
         $this->addElement('hash', 'csrf_new_attachment', array(
             'ignore' => true
         ));
     }
-    
+
     protected function _getButtonDecorators()
     {
         return array(
@@ -58,15 +58,15 @@ class Default_Form_NewAttachment extends Zend_Form
             'ViewHelper'
         );
     }
-    
+
     public function handlePost($ticket)
     {
         if (!$this->isValid($_POST)) {
             return false;
         }
-                
+
         $values = $this->getValues();
-        
+
         if ($this->cancel->isChecked()) {
             return -1;
         } else {
@@ -77,7 +77,7 @@ class Default_Form_NewAttachment extends Zend_Form
                 $content = file_get_contents($file['tmp_name']);
                 $mime = Default_Model_Upload::detectMimeType($file);
                 $name = Default_Model_Upload::getUniqueName($file['name'], $ticket->getId());
-                
+
                 $upload = new Default_Model_Upload();
 				$upload->setData(array(
 				    'name' => $name,
@@ -85,20 +85,20 @@ class Default_Form_NewAttachment extends Zend_Form
 				    'content_length' => $file['size'],
 				    'content' => $content,
 				    'ticket_id' => $ticket->getId(),
-				    'uploader' => Zend_Auth::getInstance()->getIdentity()->user_id,
+				    'uploader' => Zend_Auth::getInstance()->getIdentity(),
 				    'create_date' => $create_date->toString('YYYY-MM-dd HH:mm:ss')
 				));
 				$upload->save();
             } else {
                 return false;
             }
-            
+
             $session = new Zend_Session_Namespace('TicketSystem');
             $session->messages = array(
                 'type' => 'success',
                 'content' => array("Successfully uploaded '{$name}'")
             );
-                        
+
             return true;
         }
     }

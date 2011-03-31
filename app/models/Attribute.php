@@ -7,7 +7,7 @@ class Default_Model_Attribute extends Default_Model_Abstract
     const TYPE_SELECT   = 3;
     const TYPE_RADIO    = 4;
     const TYPE_TEXTAREA = 5;
-    
+
     protected static $_resourceNameInit = 'Default_Model_Db_Attribute';
     protected static $_cache = array();
     protected static $_typeMapping = array(
@@ -21,9 +21,9 @@ class Default_Model_Attribute extends Default_Model_Abstract
         'user' => 'Default_Model_User',
         'ugroup' => 'Default_Model_Ugroup'
     );
-    
+
     /**
-     * 
+     *
      * @param $key The name of the attribute to fetch from cache
      * @return Default_Model_Attribute
      */
@@ -33,12 +33,12 @@ class Default_Model_Attribute extends Default_Model_Abstract
             $select = self::getResourceInstance()->select()->where('name = ?', $key);
             self::fetchRow($select);
         }
-        
+
         return self::$_cache[$key];
     }
-    
+
     /**
-     * 
+     *
      * @return array
      */
     public static function getAll($fromCache = false)
@@ -46,21 +46,21 @@ class Default_Model_Attribute extends Default_Model_Abstract
         if (!$fromCache) {
             $select = self::getResourceInstance()->select()
                 ->order('sort_order');
-                
+
             self::fetchAll($select);
         }
-        
+
         return self::$_cache;
     }
-    
+
     protected static function _saveToCache(Default_Model_Attribute $obj) {
         if ($obj->hasData()) {
             self::$_cache[$obj->getData('name')] = $obj;
         }
     }
-    
+
     /**
-     * 
+     *
      * @return array
      */
     public static function find()
@@ -69,16 +69,16 @@ class Default_Model_Attribute extends Default_Model_Abstract
         $args = func_get_args();
         array_unshift($args, $class);
         $objs = call_user_func_array(array('Default_Model_Abstract', 'find'), $args);
-        
+
         foreach ($objs as $obj) {
             self::_saveToCache($obj);
         }
-        
+
         return $objs;
     }
-    
+
     /**
-     * 
+     *
      * @return Default_Model_Attribute
      */
     public static function findRow()
@@ -87,16 +87,16 @@ class Default_Model_Attribute extends Default_Model_Abstract
         $args = func_get_args();
         array_unshift($args, $class);
         $obj = call_user_func_array(array('Default_Model_Abstract', 'findRow'), $args);
-        
+
         if ($obj !== null) {
             self::_saveToCache($obj);
         }
-        
+
         return $obj;
     }
-    
+
     /**
-     * 
+     *
      * @return array
      */
     public static function fetchAll()
@@ -105,16 +105,16 @@ class Default_Model_Attribute extends Default_Model_Abstract
         $args = func_get_args();
         array_unshift($args, $class);
         $objs = call_user_func_array(array('Default_Model_Abstract', 'fetchAll'), $args);
-        
+
         foreach ($objs as $obj) {
             self::_saveToCache($obj);
         }
-        
+
         return $objs;
     }
-    
+
     /**
-     * 
+     *
      * @return Default_Model_Attribute
      */
     public static function fetchRow()
@@ -123,14 +123,14 @@ class Default_Model_Attribute extends Default_Model_Abstract
         $args = func_get_args();
         array_unshift($args, $class);
         $obj = call_user_func_array(array('Default_Model_Abstract', 'fetchRow'), $args);
-        
+
         if ($obj !== null) {
             self::_saveToCache($obj);
         }
-        
+
         return $obj;
     }
-    
+
 	/**
      * Retrieve model resource
      *
@@ -140,14 +140,14 @@ class Default_Model_Attribute extends Default_Model_Abstract
     {
         return parent::getResourceInstance(self::$_resourceNameInit);
     }
-    
+
     public static function getElementType($type)
     {
         return self::$_typeMapping[$type];
     }
-    
+
     /**
-     * 
+     *
      * @param string $needle
      * @param string $haystack
      * @return boolean
@@ -157,29 +157,29 @@ class Default_Model_Attribute extends Default_Model_Abstract
         if (empty($haystack)) {
             return false;
         }
-        
+
         if (empty($needle)) {
             return true;
         }
-        
+
         $list = array_map('trim', explode(',', $haystack));
         return in_array($needle, $list);
     }
-    
+
     public function __construct()
     {
         parent::_init(self::$_resourceNameInit);
     }
-    
+
     public function handleListValue()
     {
         $extra = Zend_Json::decode($this['extra']);
-        
+
         if (isset($extra['add']) && $extra['add'] == 'user') {
-            $user = Zend_Auth::getInstance()->getIdentity();
-            return $user->username;
+            $user = Default_Model_User::fetchActive();
+            return $user['username'];
         }
-        
+
         $handlers = Zend_Registry::get('config')->handlers->toArray();
         if (!empty($handlers) && isset($handlers[$this['name']]) && isset($handlers[$this['name']]['listValue'])) {
             $handler = $handlers[$this['name']]['listValue'];
@@ -194,15 +194,15 @@ class Default_Model_Attribute extends Default_Model_Abstract
                 return call_user_func($method);
             }
         }
-        
+
         return '';
     }
-    
+
     public function getMultiOptions($allowEmpty = true)
     {
         $options = array();
         $extra = Zend_Json::decode($this['extra']);
-        
+
         if (isset($extra['src']) && array_key_exists($extra['src'], self::$supportedSrc)) {
             $modelClass = self::$supportedSrc[$extra['src']];
             $options = call_user_func(array($modelClass, 'getSelectOptions'), $allowEmpty);
@@ -214,7 +214,7 @@ class Default_Model_Attribute extends Default_Model_Abstract
                 $options[$opt] = $opt;
             }
         }
-        
+
         return $options;
     }
 }

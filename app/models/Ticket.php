@@ -143,23 +143,23 @@ class Default_Model_Ticket extends Default_Model_Abstract
 
         if (!$noAcl) {
             $acl = Zend_Registry::get('bootstrap')->getResource('acl');
-            $user = Zend_Auth::getInstance()->getIdentity();
-            if (!$acl->isAllowed((string)$user->level, 'ticket', 'view-all')) {
+            $user = Default_Model_User::fetchActive();
+            if (!$acl->isAllowed((string)$user['level'], 'ticket', 'view-all')) {
                 $perm = array();
                 $permIds = array();
-                $perm[] = self::_getCond('t.reporter', $user->user_id);
+                $perm[] = self::_getCond('t.reporter', $user['user_id']);
 
                 $attribute = Default_Model_Attribute::get('owner');
                 $permIds[] = $attribute['attribute_id'];
                 $perm[] = array(
                     "(av0.attribute_id = {$attribute['attribute_id']})",
-                    self::_getCond('av0.value', $user->user_id)
+                    self::_getCond('av0.value', $user['user_id'])
                 );
 
                 $attribute = Default_Model_Attribute::get('group');
                 $userModel = Default_Model_User::fetchActive();
                 $groupIds = $userModel->getGroupIds();
-                if ($acl->isAllowed((string)$user->level, 'ticket', 'view-group') &&
+                if ($acl->isAllowed((string)$user['level'], 'ticket', 'view-group') &&
                     !empty($groupIds)) {
                     $permIds[] = $attribute['attribute_id'];
                     $perm[] = array(
@@ -528,9 +528,9 @@ class Default_Model_Ticket extends Default_Model_Abstract
         }
 
         if ($updater && Default_Model_Setting::get('always_notify_updater')) {
-            $user = Zend_Auth::getInstance()->getIdentity();
-            if (!empty($user->email)) {
-                $recipients['to'][] = array($user->email, $user->info);
+            $user = Default_Model_User::fetchActive();
+            if (!empty($user['email'])) {
+                $recipients['to'][] = array($user['email'], $user['info']);
             }
         }
 

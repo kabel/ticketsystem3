@@ -7,20 +7,20 @@ class AuthController extends TicketSystem_Controller_EmptyAction
         if (Zend_Auth::getInstance()->hasIdentity()) {
             return $this->_forward('index', 'index');
         }
-        
+
         $session = new Zend_Session_Namespace('TicketSystem');
-        
+
         $controller = $this->getRequest()->getParam('controller');
         if ($controller === 'auth') {
             $session->returnUrl = $this->view->url(array('action' => 'index', 'controller' => 'index'), 'default', true);
         } else {
             $session->returnUrl = $this->view->url();
         }
-        
+
         $this->_loadLoginForms();
         $this->render('form');
     }
-    
+
     public function loginAction()
     {
         if (!$this->getRequest()->isPost()) {
@@ -31,14 +31,14 @@ class AuthController extends TicketSystem_Controller_EmptyAction
 			$this->_loadLoginForms($form);
 			return $this->render('form');
 		}
-		
+
 		//Init Resource to ensure it's ready
 		Default_Model_User::getResourceInstance();
-		
+
 		$values = $form->getValues();
 		$result = $this->_authenticate($values['username'], $values['passwd'], $userInfo);
 		$auth = Zend_Auth::getInstance();
-		
+
 		if ($result->isValid()) {
 		    if ($userInfo->status == Default_Model_User::STATUS_BANNED) {
 		        $auth->clearIdentity();
@@ -46,11 +46,11 @@ class AuthController extends TicketSystem_Controller_EmptyAction
 		        $this->_loadLoginForms($form);
 			    return $this->render('form');
 		    }
-			$auth->getStorage()->write($userInfo);
+		    $auth->getStorage()->write($userInfo->user_id);
 			$session = new Zend_Session_Namespace('TicketSystem');
 			$returnUrl = $session->returnUrl;
 			unset($session->returnUrl);
-			
+
 			return $this->_helper->redirector->gotoUrl($returnUrl, array('prependBase' => false));
 		} else {
 			$this->view->messages = array(
@@ -58,11 +58,11 @@ class AuthController extends TicketSystem_Controller_EmptyAction
 				'content' => array('Invalid username or password')
 			);
 			$this->_loadLoginForms($form);
-			
+
 			return $this->render('form');
 		}
     }
-    
+
     public function casAction()
     {
         Zend_Session::start();
@@ -75,18 +75,16 @@ class AuthController extends TicketSystem_Controller_EmptyAction
                 ->where('login_type = ?', Default_Model_User::LOGIN_TYPE_CAS)
                 ->where('username = ?', $user);
             $userModel = Default_Model_User::fetchRow($select);
-            
+
             if (!empty($userModel)) {
                 if ($userModel->getStatus() == Default_Model_User::STATUS_BANNED) {
                     $this->view->messages = $this->_getBannedMessage(true);
                     $this->_loadLoginForms();
                     return $this->render('form');
                 }
-                
-                $tempArray = $userModel->toArray();
-                unset($tempArray['passwd']);
-                Zend_Auth::getInstance()->getStorage()->write((object)$tempArray);
-                
+
+                Zend_Auth::getInstance()->getStorage()->write($userModel->getId());
+
                 if (empty($userModel['info']) || empty($userModel['email'])) {
                     return $this->_helper->redirector('profile', 'config', null, array(
                     	'view' => 'oldCAS'
@@ -106,7 +104,7 @@ class AuthController extends TicketSystem_Controller_EmptyAction
                         $email = $pfResult->mail;
                     }
                 }
-                
+
                 $userModel->setData(array(
                     'username' => $user,
                     'passwd' => '',
@@ -116,13 +114,11 @@ class AuthController extends TicketSystem_Controller_EmptyAction
                     'info' => $info,
                     'email' => $email
                 ));
-                 
+
                 $userModel->save();
-                
-                $tempArray = $userModel->toArray();
-                unset($tempArray['passwd']);
-                Zend_Auth::getInstance()->getStorage()->write((object)$tempArray);
-                
+
+                Zend_Auth::getInstance()->getStorage()->write($userModel->getId());
+
                 if (empty($userModel['email'])) {
                     return $this->_helper->redirector('profile', 'config', null, array(
                         'view' => 'newCAS'
@@ -133,17 +129,17 @@ class AuthController extends TicketSystem_Controller_EmptyAction
                 $this->_loadLoginForms();
                 return $this->render('form');
             }
-            
+
             $session = new Zend_Session_Namespace('TicketSystem');
             $returnUrl = $session->returnUrl;
             unset($session->returnUrl);
 			return $this->_helper->redirector->gotoUrl($returnUrl, array('prependBase' => false));
         }
     }
-    
+
     public function logoutAction()
     {
-        if ($userInfo = $this->_resetAuth()) { 
+        if ($userInfo = $this->_resetAuth()) {
             if ($this->_getParam('revoke')) {
                 $this->view->messages = array(
                     'type' => 'notice',
@@ -155,20 +151,20 @@ class AuthController extends TicketSystem_Controller_EmptyAction
         			'content' => array('You successfully logged out')
         		);
             }
-            
-    		if ($userInfo->login_type == Default_Model_User::LOGIN_TYPE_CAS) {
+
+    		if ($userInfo['login_type'] == Default_Model_User::LOGIN_TYPE_CAS) {
     		    $this->view->messages['content'][] = $this->_getCASLogoutMessage();
     		}
         }
-		
+
 		return $this->_forward('index', 'auth');
     }
-    
+
     public function logoutCasAction()
     {
         $this->_resetAuth();
         $auth = $this->_getCASAdapter();
-        
+
         if (isset($_SERVER['HTTPS'])
             && !empty($_SERVER['HTTPS'])
             && $_SERVER['HTTPS'] == 'on') {
@@ -176,41 +172,41 @@ class AuthController extends TicketSystem_Controller_EmptyAction
         } else {
             $protocol = 'http';
         }
-        
+
         return $auth->logout($protocol . '://' . $_SERVER['SERVER_NAME'] . $this->view->url(array(
             'action' => 'index',
             'controller' => 'index'
         ), 'default', true));
     }
-    
+
     private function _resetAuth()
     {
         $auth = Zend_Auth::getInstance();
-        if ($auth->hasIdentity()) { 
-            $userInfo = $auth->getIdentity();
+        if ($auth->hasIdentity()) {
+            $userInfo = Default_Model_User::fetchActive(false);
             $auth->clearIdentity();
             session_unset();
             Zend_Session::regenerateId();
-            
+
             return $userInfo;
         }
-        
+
         return null;
     }
-    
+
     private function _authenticate($username, $passwd, &$userInfo, $useOldHash = false)
     {
         $db = Zend_Registry::get('bootstrap')->getResource('db');
-		
+
         $hash = ($useOldHash) ? 'OLD_PASSWORD(?)' : 'MD5(?)';
         $typeFilter = ' AND login_type = ' . (int) Default_Model_User::LOGIN_TYPE_LEGACY;
-        
+
 		$authAdapter = new Zend_Auth_Adapter_DbTable($db, 'user', 'username', 'passwd', $hash . $typeFilter);
 		$authAdapter->setIdentity($username)
 		            ->setCredential($passwd);
-					
+
 		$result = Zend_Auth::getInstance()->authenticate($authAdapter);
-		
+
 		if ($useOldHash) {
 		    if ($result->isValid()) {
 		        $userInfo = $authAdapter->getResultRowObject(null, 'passwd');
@@ -218,10 +214,10 @@ class AuthController extends TicketSystem_Controller_EmptyAction
 		        $user['passwd'] = md5($passwd);
 		        $user->save();
 		    }
-		    
+
 		    return $result;
 		}
-		
+
 		if ($result->isValid()) {
 		    $userInfo = $authAdapter->getResultRowObject(null, 'passwd');
 		    return $result;
@@ -231,14 +227,14 @@ class AuthController extends TicketSystem_Controller_EmptyAction
 		    return $result;
 		}
     }
-    
+
     private function _getCASAdapter()
     {
         $auth = UNL_Auth::factory('SimpleCAS', array('requestClass' => 'Zend_Http_Client'));
-        
+
         return $auth;
     }
-    
+
     private function _getBannedMessage($isCAS=false)
     {
         $messages = array(
@@ -248,10 +244,10 @@ class AuthController extends TicketSystem_Controller_EmptyAction
         if ($isCAS) {
             $messages['content'][] = $this->_getCASLogoutMessage();
         }
-        
+
         return $messages;
     }
-    
+
     private function _getLockoutMessage()
     {
         $messages = array(
@@ -261,25 +257,25 @@ class AuthController extends TicketSystem_Controller_EmptyAction
                 $this->_getCASLogoutMessage()
             )
         );
-        
+
         return $messages;
     }
-    
+
     private function _getCASLogoutMessage()
     {
         return 'If finished with all services, please <a href="' . $this->view->url(array('action' => 'logout-cas', 'controller' => 'auth'), 'default', true) . '">logout</a> from CAS';
     }
-    
+
     private function _loadLoginForms($legacy=null, $cas=null)
     {
         if (is_null($legacy)) {
             $legacy = new Default_Form_Login();
         }
-        
+
         if (is_null($cas)) {
             $cas = new Default_Form_LoginCAS();
         }
-        
+
         $this->view->form_legacy = $legacy;
         $this->view->form_cas = $cas;
     }

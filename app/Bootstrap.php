@@ -162,8 +162,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $acl->addRole((string)Default_Model_User::LEVEL_ADMIN);
 
         //ACL Rules
-        $acl->allow((string)Default_Model_User::LEVEL_MODERATOR_ADMIN);
-        $acl->allow((string)Default_Model_User::LEVEL_ADMIN);
+        foreach (Default_Model_User::getAdminLevels() as $level) {
+            $acl->allow((string)$level);
+        }
         $acl->allow((string)Default_Model_User::LEVEL_GUEST, 'config', 'profile');
         if (!Default_Model_Setting::get('restrict_guest')) {
             $acl->allow((string)Default_Model_User::LEVEL_GUEST, 'ticket', 'create');

@@ -10,7 +10,8 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
 
         $toolbar = array();
 
-        if ($this->_isAclAllowed((string)Zend_Auth::getInstance()->getIdentity()->level, 'config')) {
+        $user = Default_Model_User::fetchActive();
+        if ($this->_isAclAllowed((string)$user['level'], 'config')) {
             $toolbar = array(
                 array(
                     'label' => 'Users',
@@ -39,7 +40,7 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
             );
         }
 
-        if ($this->_isAclAllowed((string)Zend_Auth::getInstance()->getIdentity()->level, 'config', 'profile')) {
+        if ($this->_isAclAllowed((string)$user['level'], 'config', 'profile')) {
             $toolbar[] = array(
                 'label' => 'My Profile',
                 'action' => 'profile',
@@ -90,7 +91,7 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
             return $this->_helper->redirector('settings', 'config');
         }
 
-        $this->view->user = Zend_Auth::getInstance()->getIdentity();
+        $this->view->user = Default_Model_User::fetchActive();
         $this->view->ticketStatusCounts = Default_Model_Ticket::getStatusCounts();
         $this->view->userLevelCounts = Default_Model_User::getLevelCounts();
         /* @var $db Zend_Db_Adapter_Pdo_Mysql */
@@ -170,7 +171,7 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
 
         // Check for postback
         if ($this->getRequest()->isPost()) {
-            if (empty($id) || $id == Zend_Auth::getInstance()->getIdentity()->user_id || isset($_POST['cancel'])) {
+            if (empty($id) || isset($_POST['cancel'])) {
                 return $this->_helper->redirector('users', 'config');
             }
 
@@ -191,18 +192,6 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
             if ($id === 'new') {
                 $form->setupForUser();
                 $this->render('userEdit');
-            } else if ($id == Zend_Auth::getInstance()->getIdentity()->user_id) {
-                $userModel = $this->view->user = Default_Model_User::fetchActive();
-                $group = $this->view->group = new Default_Model_Ugroup();
-                if ($data = $userModel->getGroup()) {
-                    $group->setData($data);
-                }
-                $this->view->membership = $userModel->getGroupIds(true);
-                $this->view->messages = array(
-                    'type' => 'notice',
-                    'content' => array('Editing the account you are using is dangerous and therefore has been disabled.')
-                );
-                $this->render('userView');
             } else {
                 $user = Default_Model_User::findRow($id);
 

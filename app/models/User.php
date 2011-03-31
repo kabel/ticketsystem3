@@ -17,6 +17,7 @@ class Default_Model_User extends Default_Model_Abstract
     protected static $_resourceNameInit = 'Default_Model_Db_User';
     protected static $_levelStringCache;
     protected static $_loginTypeStringCache;
+    protected static $_activeUserCache;
 
     protected $_group;
     protected $_membership;
@@ -73,18 +74,21 @@ class Default_Model_User extends Default_Model_Abstract
      *
      * @return Default_Model_User
      */
-    public static function fetchActive()
+    public static function fetchActive($redirect = true)
     {
-        $user = Zend_Auth::getInstance()->getIdentity();
-        $userModel = self::findRow($user->user_id);
+        if (null === self::$_activeUserCache) {
+            $userId = Zend_Auth::getInstance()->getIdentity();
+            self::$_activeUserCache = self::findRow($userId);
+        }
 
-        if (empty($userModel) || $userModel['status'] == self::STATUS_BANNED) {
+        $user = self::$_activeUserCache;
+        if ($redirect && (empty($user) || $user['status'] == self::STATUS_BANNED)) {
             /* @var $redirector Zend_Controller_Action_Helper_Redirector */
             $redirector = Zend_Controller_Action_HelperBroker::getStaticHelper('redirector');
             $redirector->gotoSimple('logout', 'auth', null, array('revoke' => true));
         }
 
-        return $userModel;
+        return $user;
     }
 
     /**
@@ -213,7 +217,15 @@ class Default_Model_User extends Default_Model_Abstract
         );
     }
 
-    public static function getLevelCounts()
+    public static function getAdminLevels()
+    {
+        return array(
+            self::LEVEL_ADMIN,
+            self::LEVEL_MODERATOR_ADMIN,
+        );
+    }
+
+    public static function getLevelCounts($active = false)
     {
         $counts = array(
             self::LEVEL_GUEST     => 0,
@@ -230,6 +242,10 @@ class Default_Model_User extends Default_Model_Abstract
             	'COUNT(user_id) AS count'
             ))
             ->group('level');
+
+        if ($active) {
+            $select->where('status = ?', self::STATUS_ACTIVE);
+        }
 
         $rowset = $resource->fetchAll($select);
         if (count($rowset)) {

@@ -30,6 +30,7 @@ ul ul.square { margin-top: 4px; margin-bottom: 5px; }
 .clear, .clr { clear: both; }
 .clearer { clear: both; display: block; margin: 0; padding: 0; height: 0; line-height: 1px; font-size: 1px; }
 .block-separator-left { padding: 5px 0 5px 10px; border-left: 1px solid #d7d7d7; }
+.block-separator-left dt { font-weight: bold; }
 
 /* HELP */
 .help-figure {
@@ -79,6 +80,10 @@ ul.errors {
 ul.errors li {
 	padding-left: 16px;
 	background: url(../images/validation_advice_bg.gif) no-repeat 2px 1px;
+}
+ul.errors.form-after {
+	clear: both;
+	margin-left:230px;	
 }
 
 /* FORM */
