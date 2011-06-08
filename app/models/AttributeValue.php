@@ -171,7 +171,7 @@ class Default_Model_AttributeValue extends Default_Model_Abstract
                 $modelClass = Default_Model_Attribute::$supportedSrc[$type];
                 $resource = call_user_func(array($modelClass, 'getResourceInstance'));
                 $select = $resource->select()
-                    ->where($resource->getIdFieldName() . ($not ? ' NOT' : '') . ' IN (?)', $ids);
+                    ->where(current($resource->getIdFieldName()) . ($not ? ' NOT' : '') . ' IN (?)', $ids);
                 $collection = call_user_func(array($modelClass, 'fetchAll'), $select);
 
                 if (!empty($collection)) {
