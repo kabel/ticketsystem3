@@ -92,19 +92,21 @@ class AuthController extends TicketSystem_Controller_EmptyAction
                 }
             } elseif (!Default_Model_Setting::get('lockout_cas')) {
                 $userModel = new Default_Model_User();
-                $pf = new UNL_Peoplefinder();
-                /* @var $pf UNL_Peoplefinder_Driver_WebService */
-                $pfResult = $pf->getUID($user);
+                $pf = new UNL_Peoplefinder(new UNL_Peoplefinder_Driver_WebService_JSON());
+                /* @var $pf UNL_Peoplefinder_Driver_WebService_JSON */
                 $info = $email = '';
-                if ($pfResult) {
-                    $info = (!empty($pfResult->eduPersonNickname)) ? $pfResult->eduPersonNickname . $pfResult->sn :  $pfResult->displayName;
+                try {
+                    $pfResult = $pf->getUID($user);
+                    $info = (!empty($pfResult->eduPersonNickname)) ? $pfResult->eduPersonNickname->{0} . $pfResult->sn->{0} :  $pfResult->displayName->{0};
                     if (isset($pfResult->mail)) {
                         if (isset($pfResult->unlEmailAlias)) {
-                            $email = $pfResult->unlEmailAlias . '@unl.edu';
+                            $email = $pfResult->unlEmailAlias->{0} . '@unl.edu';
                         } else {
-                            $email = $pfResult->mail;
+                            $email = $pfResult->mail->{0};
                         }
                     }
+                } catch (Exception $e) {
+                    //ignore peoplefinder exceptions
                 }
 
                 $userModel->setData(array(
