@@ -72,6 +72,7 @@ class ConfigController extends TicketSystem_Controller_ProtectedAction
             return $this->_helper->redirector('profile', 'config');
         }
 
+        $this->view->user = $userModel;
         $group = $this->view->group = new Default_Model_Ugroup();
         if ($data = $userModel->getGroup()) {
             $group->setData($data);

@@ -4,7 +4,7 @@
 
 <?php if (!empty($this->screen)): ?>
 <?php if ($this->screen == 'newCAS'): ?>
-<h3>Welcome <?php echo (empty($this->user->info)) ? $this->user->username : $this->escape($this->user->info); ?>!</h3>
+<h3>Welcome <?php echo (!$this->user->getInfo()) ? $this->user->getUsername() : $this->escape($this->user->getInfo()); ?>!</h3>
 <p>We noticed you are new to this service. Please complete the form below with your info and e-mail to ensure full functionality.</p>
 <?php elseif ($this->screen == 'oldCAS'): ?>
 <p>Please complete the form below with your info and e-mail to ensure full functionality.</p>
