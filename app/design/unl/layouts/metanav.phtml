@@ -3,6 +3,7 @@
 	<div class="nav_wrapper">
         <ul>
             <?php $total = count($this->metanav) + count($this->mainnav); ?>
+            <?php $i = 0; ?>
         	<?php foreach ($this->mainnav as $i => $nav): ?>
             <li<?php echo $this->classDecorator($nav['class'], $nav['active'], $i, $total); ?>>
                 <a href="<?php echo $this->url(array(
