@@ -95,13 +95,15 @@ class AuthController extends TicketSystem_Controller_EmptyAction
                 $pf = new UNL_Peoplefinder();
                 /* @var $pf UNL_Peoplefinder_Driver_WebService */
                 $pfResult = $pf->getUID($user);
-                $info = (!empty($pfResult->eduPersonNickname)) ? $pfResult->eduPersonNickname :  $pfResult->displayName;
-                $email = '';
-                if (isset($pfResult->mail)) {
-                    if (isset($pfResult->unlEmailAlias)) {
-                        $email = $pfResult->unlEmailAlias . '@unl.edu';
-                    } else {
-                        $email = $pfResult->mail;
+                $info = $email = '';
+                if ($pfResult) {
+                    $info = (!empty($pfResult->eduPersonNickname)) ? $pfResult->eduPersonNickname . $pfResult->sn :  $pfResult->displayName;
+                    if (isset($pfResult->mail)) {
+                        if (isset($pfResult->unlEmailAlias)) {
+                            $email = $pfResult->unlEmailAlias . '@unl.edu';
+                        } else {
+                            $email = $pfResult->mail;
+                        }
                     }
                 }
 
