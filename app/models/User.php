@@ -257,6 +257,34 @@ class Default_Model_User extends Default_Model_Abstract
         return $counts;
     }
 
+    public static function getRemoteUserData($uid)
+    {
+        $data = array(
+            'info' => '',
+            'email' => ''
+        );
+
+        //BEGIN UNL PEOPLEFINDER MODULE
+        $pf = new UNL_Peoplefinder(new UNL_Peoplefinder_Driver_WebService_JSON());
+        /* @var $pf UNL_Peoplefinder_Driver_WebService_JSON */
+        try {
+            $pfResult = $pf->getUID($uid);
+            $data['info'] = (!empty($pfResult->eduPersonNickname)) ? $pfResult->eduPersonNickname->{0} . $pfResult->sn->{0} :  $pfResult->displayName->{0};
+            if (isset($pfResult->mail)) {
+                if (isset($pfResult->unlEmailAlias)) {
+                    $data['email'] = $pfResult->unlEmailAlias->{0} . '@unl.edu';
+                } else {
+                    $data['email'] = $pfResult->mail->{0};
+                }
+            }
+        } catch (Exception $e) {
+            //ignore peoplefinder exceptions
+        }
+        //END PEOPLEFINDER MODULE
+
+        return $data;
+    }
+
     public function __construct()
     {
         parent::_init(self::$_resourceNameInit);
@@ -326,6 +354,11 @@ class Default_Model_User extends Default_Model_Abstract
         }
 
         return $ids;
+    }
+
+    public function getRemoteData()
+    {
+        return self::getRemoteUserData($this->getUsername());
     }
 
     public function __toString()

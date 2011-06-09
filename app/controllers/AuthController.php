@@ -85,6 +85,17 @@ class AuthController extends TicketSystem_Controller_EmptyAction
 
                 Zend_Auth::getInstance()->getStorage()->write($userModel->getId());
 
+                //ensure remote data is fresh
+                $remoteData = $userModel->getRemoteData();
+                if (!empty($remoteData['email']) && $userModel['email'] != $remoteData['email']) {
+                    $userModel['email'] = $remoteData['email'];
+                    $userModel->save();
+                }
+                if (empty($userModel['info']) && !empty($remoteData['info'])) {
+                    $userModel['info'] = $remoteData['info'];
+                    $userModel->save();
+                }
+
                 if (empty($userModel['info']) || empty($userModel['email'])) {
                     return $this->_helper->redirector('profile', 'config', null, array(
                     	'view' => 'oldCAS'
@@ -92,22 +103,7 @@ class AuthController extends TicketSystem_Controller_EmptyAction
                 }
             } elseif (!Default_Model_Setting::get('lockout_cas')) {
                 $userModel = new Default_Model_User();
-                $pf = new UNL_Peoplefinder(new UNL_Peoplefinder_Driver_WebService_JSON());
-                /* @var $pf UNL_Peoplefinder_Driver_WebService_JSON */
-                $info = $email = '';
-                try {
-                    $pfResult = $pf->getUID($user);
-                    $info = (!empty($pfResult->eduPersonNickname)) ? $pfResult->eduPersonNickname->{0} . $pfResult->sn->{0} :  $pfResult->displayName->{0};
-                    if (isset($pfResult->mail)) {
-                        if (isset($pfResult->unlEmailAlias)) {
-                            $email = $pfResult->unlEmailAlias->{0} . '@unl.edu';
-                        } else {
-                            $email = $pfResult->mail->{0};
-                        }
-                    }
-                } catch (Exception $e) {
-                    //ignore peoplefinder exceptions
-                }
+                $remoteData = Default_Model_User::getRemoteUserData($user);
 
                 $userModel->setData(array(
                     'username' => $user,
@@ -115,15 +111,15 @@ class AuthController extends TicketSystem_Controller_EmptyAction
                     'login_type' => Default_Model_User::LOGIN_TYPE_CAS,
                     'level' => Default_Model_User::LEVEL_USER,
                     'status' => Default_Model_User::STATUS_ACTIVE,
-                    'info' => $info,
-                    'email' => $email
+                    'info' => $remoteData['info'],
+                    'email' => $remoteData['email']
                 ));
 
                 $userModel->save();
 
                 Zend_Auth::getInstance()->getStorage()->write($userModel->getId());
 
-                if (empty($userModel['email'])) {
+                if (empty($userModel['info']) || empty($userModel['email'])) {
                     return $this->_helper->redirector('profile', 'config', null, array(
                         'view' => 'newCAS'
                     ));

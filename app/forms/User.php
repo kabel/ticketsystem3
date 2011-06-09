@@ -57,18 +57,12 @@ class Default_Form_User extends Default_Form_Profile
                $data['passwd'] = md5($values['passwd_new']);
            } else {
                $data['passwd'] = '';
-
-               $pf = new UNL_Peoplefinder();
-               $pfResult = $pf->getUID($user);
-               if ($prResult) {
-                   $data['info'] = (!empty($pfResult->eduPersonNickname)) ? $pfResult->eduPersonNickname :  $pfResult->displayName;
-                   if (isset($pfResult->mail)) {
-                        if (isset($pfResult->unlEmailAlias)) {
-                            $data['email'] = $pfResult->unlEmailAlias . '@unl.edu';
-                        } else {
-                            $data['email'] = $pfResult->mail;
-                        }
-                    }
+               $remoteData = Default_Model_User::getRemoteUserData($data['username']);
+               if (empty($data['info'])) {
+                   $data['info'] = $remoteData['info'];
+               }
+               if (!empty($remoteData['email'])) {
+                   $data['email'] = $remoteData['email'];
                }
            }
 
